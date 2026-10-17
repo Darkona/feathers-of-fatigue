@@ -107,6 +107,10 @@ neoForge {
             sourceSet(sourceSets.api)
         }
     }
+    unitTest {
+        enable()
+        testedMod = mods."${mod_id}"
+    }
 }
 
 configurations {
@@ -115,6 +119,14 @@ configurations {
 
 dependencies {
     implementation sourceSets.api.output
+
+    // Bundled, so the mod runs with nothing else installed. The range lets other mods' copies resolve to one version.
+    jarJar(implementation("dev.darkona.jdlib:JDLib")) {
+        version {
+            strictly jdlib_range
+            prefer jdlib_version
+        }
+    }
 
     // Optional compat: every use sits behind a ModList check.
     compileOnly "maven.modrinth:cold-sweat:${cold_sweat_version}"
@@ -128,6 +140,13 @@ dependencies {
     compileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"
     compileOnly "maven.modrinth:jade:${jade_version}"
     localRuntime "top.theillusivec4.curios:curios-neoforge:${curios_version}"
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
 }
 
 // Compat mods on the dev runtime, for boot checks and GameTests with them loaded:
@@ -176,6 +195,7 @@ var generateModMetadata = tasks.register('generateModMetadata', ProcessResources
             serene_seasons_range   : serene_seasons_range,
             lso_range              : lso_range,
             overflowing_bars_range : overflowing_bars_range,
+            jdlib_range            : jdlib_range,
             curios_range           : curios_range,
             jade_range             : jade_range,
     ]
