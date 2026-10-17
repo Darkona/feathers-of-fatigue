@@ -17,11 +17,14 @@ import com.darkona.feathersoffatigue.style.FeatherStylePack;
 import com.darkona.feathersoffatigue.weight.ArmorWeights;
 import com.darkona.feathersoffatigue.weight.WeightSplit;
 import com.mojang.blaze3d.systems.RenderSystem;
-import fuzs.overflowingbars.client.gui.RowCountRenderer;
-import net.minecraft.client.DeltaTracker;
+import dev.darkona.jdlib.api.hud.HudCompat;
+import dev.darkona.jdlib.api.hud.HudFrame;
+import dev.darkona.jdlib.api.hud.HudGate;
+import dev.darkona.jdlib.api.hud.HudSide;
+import dev.darkona.jdlib.api.hud.JDHudBars;
+import dev.darkona.jdlib.api.hud.VanillaLayer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -32,7 +35,9 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.fml.ModList;
+
+import java.util.function.BooleanSupplier;
+import java.util.function.IntSupplier;
 
 import static com.darkona.feathersoffatigue.api.registry.FeathersIds.id;
 import static com.darkona.feathersoffatigue.client.gui.Icons.*;
@@ -53,8 +58,9 @@ public final class FeathersHud {
     private static final int ICONS_PER_ROW = 10;
     private static final int FEATHERS_PER_ROW = ICONS_PER_ROW * 2;
     private static final int ROW_HEIGHT = 10;
-    /** Disabled after the installed Overflowing Bars version rejects the expected renderer API. */
-    private static boolean overflowingBars = ModList.get().isLoaded("overflowingbars");
+    /** The height of the stack the row sits on when it does not follow the right-hand stack. */
+    private static final int UNSTACKED_BASE = 49;
+    private static final int ICON_SIZE = 9;
 
     private static final ClientFeathersData DATA = ClientFeathersData.INSTANCE;
 
@@ -152,15 +158,36 @@ public final class FeathersHud {
         }
     }
 
-    public static void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.options.hideGui || mc.gameMode == null || !mc.gameMode.canHurtPlayer() || !(mc.getCameraEntity() instanceof LocalPlayer player)) return;
-        if (!DATA.hasFeathers() || DATA.maxStamina() <= 0) return;
+    /**
+     * The registration of the bar for JDLib: after air, on the right-hand stack, where thirst mods such as Thirst Was
+     * Taken draw their bar. The gate is JDLib's standard one plus having feathers.
+     */
+    public static JDHudBars.Spec spec(BooleanSupplier stacks, IntSupplier xOffset, IntSupplier yOffset) {
+        return new JDHudBars.Spec(LAYER_ID, VanillaLayer.AIR_LEVEL, JDHudBars.Order.ABOVE, HudSide.RIGHT, 0,
+                HudGate.standard().and(mc -> DATA.hasFeathers() && DATA.maxStamina() > 0),
+                stacks, xOffset, yOffset, UNSTACKED_BASE, FeathersHud::paint);
+    }
 
-        Gui gui = mc.gui;
-        boolean stack = FeathersClientConfig.AFFECTED_BY_RIGHT_HEIGHT.get();
-        int x = graphics.guiWidth() / 2 + 91 - 9 + FeathersClientConfig.X_OFFSET.get();
-        int y = graphics.guiHeight() - (stack ? gui.rightHeight : 49) + FeathersClientConfig.Y_OFFSET.get();
+    /** The registration with the client config's values. */
+    public static JDHudBars.Spec spec() {
+        return spec(FeathersClientConfig.AFFECTED_BY_RIGHT_HEIGHT::get, FeathersClientConfig.X_OFFSET::get, FeathersClientConfig.Y_OFFSET::get);
+    }
+
+    /** What the bar takes of the right-hand stack: its row and the bonus rows, also while faded out. */
+    static int reservedHeight(int bonusRows) {
+        return ROW_HEIGHT * (1 + bonusRows);
+    }
+
+    /** The row's left icon x: JDLib's edge is the right end of the 9 px icon that is the last of the row. */
+    static int rowX(int edgeX) {
+        return edgeX - ICON_SIZE;
+    }
+
+    private static int paint(HudFrame frame) {
+        GuiGraphics graphics = frame.graphics();
+        LocalPlayer player = frame.player();
+        int x = rowX(frame.edgeX());
+        int y = frame.topY();
 
         // Riding a mount that has feathers, only the mount's matter: they replace the rider's, in the mount's colors.
         FeathersView mount = DATA.mount();
@@ -168,8 +195,6 @@ public final class FeathersHud {
         boolean riding = vehicle != null;
         FeathersView shown = riding ? mount : DATA;
         int bonusRows = bonusRows(shown);
-        // Reserve space while faded out so the bars above remain stable.
-        if (stack) gui.rightHeight += ROW_HEIGHT * (1 + bonusRows);
 
         if (alpha > 0) {
             RenderSystem.enableBlend();
@@ -185,7 +210,9 @@ public final class FeathersHud {
             RenderSystem.disableBlend();
         }
 
-        if (FeathersServerConfig.DEBUG_MODE.get()) drawDebug(graphics, mc.font, player);
+        if (FeathersServerConfig.DEBUG_MODE.get()) drawDebug(graphics, Minecraft.getInstance().font, player);
+        // Reserved while faded out so the bars above remain stable.
+        return reservedHeight(bonusRows);
     }
 
     /** The creature the player rides, when its feathers are known and replace the player's row; else null. */
@@ -405,28 +432,10 @@ public final class FeathersHud {
         return 0;
     }
 
-    /** "x2", "x3"...: drawn every frame, built once. */
-    private static final String[] ROW_COUNTS = new String[64];
-
-    static {
-        for (int i = 0; i < ROW_COUNTS.length; i++) ROW_COUNTS[i] = "x" + i;
-    }
-
     private static void drawRowCount(GuiGraphics graphics, int x, int y, int layers) {
-        Font font = Minecraft.getInstance().font;
-        if (overflowingBars) {
-            try {
-                // Its count is value / maxRowCount: rows of one each, so the layer count comes out as is.
-                RowCountRenderer.drawBarRowCount(graphics, x + 18, y, layers, true, 1, font);
-                // It resets the color, fade included.
-                graphics.setColor(1f, 1f, 1f, alpha);
-                return;
-            } catch (LinkageError e) {
-                overflowingBars = false;
-                Feathers.LOGGER.warn("Overflowing Bars' row count renderer isn't compatible, using the built-in one", e);
-            }
-        }
-        graphics.drawString(font, layers < ROW_COUNTS.length ? ROW_COUNTS[layers] : "x" + layers, x + 11, y + 1, 0xFFFFFF);
+        HudCompat.rowCount(graphics, x, y, layers, 1);
+        // Overflowing Bars' renderer resets the color, fade included.
+        graphics.setColor(1f, 1f, 1f, alpha);
     }
 
     /**

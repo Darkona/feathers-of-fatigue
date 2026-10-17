@@ -11,6 +11,7 @@ import com.darkona.feathersoffatigue.config.FeathersServerConfig;
 import com.darkona.feathersoffatigue.core.FeathersServiceImpl;
 import com.darkona.feathersoffatigue.style.FeatherStylePack;
 import com.darkona.feathersoffatigue.style.BuiltInFeatherAnimations;
+import dev.darkona.jdlib.api.hud.JDHudBars;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -28,8 +29,6 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
-import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
-import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
 import static com.darkona.feathersoffatigue.api.registry.FeathersIds.id;
@@ -64,10 +63,9 @@ public final class ClientEvents {
         });
     }
 
-    @SubscribeEvent
-    public static void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
-        // Top of the right-hand stack: after air, where thirst mods such as Thirst Was Taken draw their bar.
-        event.registerAbove(VanillaGuiLayers.AIR_LEVEL, FeathersHud.LAYER_ID, FeathersHud::render);
+    /** Called from the mod constructor, before JDLib closes its bar list at {@code RegisterGuiLayersEvent}. */
+    public static void registerHud() {
+        JDHudBars.register(FeathersHud.spec());
     }
 
     /* Game bus */
