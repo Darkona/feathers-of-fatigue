@@ -4,67 +4,52 @@ import com.darkona.feathersoffatigue.api.ClimateProvider;
 import com.darkona.feathersoffatigue.api.RegenFactor;
 import com.darkona.feathersoffatigue.api.StaminaModifier;
 import com.darkona.feathersoffatigue.api.WeightSource;
-import com.darkona.feathersoffatigue.api.spi.Registrations;
+import dev.darkona.jdlib.core.registry.PriorityList;
+import dev.darkona.jdlib.core.registry.PriorityList.Snapshot;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.Arrays;
-import java.util.Comparator;
-
-/**
- * What other mods (and Feathers of Fatigue's own compats) plug in. Registration is rare and happens at startup; reads
- * happen every tick. So each kind lives in an array that registration replaces wholesale, read without locks or
- * iterators.
- */
 public final class Extensions {
 
-    public record ClimateEntry(ResourceLocation id, int priority, ClimateProvider provider) {}
-
-    public record RegenEntry(ResourceLocation id, RegenFactor factor) {}
-
-    public record WeightEntry(ResourceLocation id, WeightSource source) {}
-
-    public record ModifierEntry(ResourceLocation id, int ordinal, StaminaModifier modifier) {}
-
-    private static volatile ClimateEntry[] climates = new ClimateEntry[0];
-    private static volatile RegenEntry[] regenFactors = new RegenEntry[0];
-    private static volatile WeightEntry[] weightSources = new WeightEntry[0];
-    private static volatile ModifierEntry[] modifiers = new ModifierEntry[0];
+    private static final PriorityList<ResourceLocation, ClimateProvider> CLIMATES =
+            new PriorityList<>(PriorityList.Order.HIGHEST_FIRST, PriorityList.Ties.REGISTRATION);
+    private static final PriorityList<ResourceLocation, RegenFactor> REGEN_FACTORS =
+            new PriorityList<>(PriorityList.Order.LOWEST_FIRST, PriorityList.Ties.REGISTRATION);
+    private static final PriorityList<ResourceLocation, WeightSource> WEIGHT_SOURCES =
+            new PriorityList<>(PriorityList.Order.LOWEST_FIRST, PriorityList.Ties.REGISTRATION);
+    private static final PriorityList<ResourceLocation, StaminaModifier> MODIFIERS =
+            new PriorityList<>(PriorityList.Order.LOWEST_FIRST, PriorityList.Ties.REGISTRATION);
 
     private Extensions() {}
 
-    public static ClimateEntry[] climates() {
-        return climates;
+    public static Snapshot<ResourceLocation, ClimateProvider> climates() {
+        return CLIMATES.snapshot();
     }
 
-    public static RegenEntry[] regenFactors() {
-        return regenFactors;
+    public static Snapshot<ResourceLocation, RegenFactor> regenFactors() {
+        return REGEN_FACTORS.snapshot();
     }
 
-    public static WeightEntry[] weightSources() {
-        return weightSources;
+    public static Snapshot<ResourceLocation, WeightSource> weightSources() {
+        return WEIGHT_SOURCES.snapshot();
     }
 
-    public static ModifierEntry[] modifiers() {
-        return modifiers;
+    public static Snapshot<ResourceLocation, StaminaModifier> modifiers() {
+        return MODIFIERS.snapshot();
     }
 
-    public static synchronized void addClimate(ResourceLocation id, int priority, ClimateProvider provider) {
-        ClimateEntry[] next = Registrations.withEntry(climates, new ClimateEntry(id, priority, provider), ClimateEntry::id);
-        Arrays.sort(next, Comparator.comparingInt(ClimateEntry::priority).reversed());
-        climates = next;
+    public static void addClimate(ResourceLocation id, int priority, ClimateProvider provider) {
+        CLIMATES.put(id, priority, provider);
     }
 
-    public static synchronized void addRegenFactor(ResourceLocation id, RegenFactor factor) {
-        regenFactors = Registrations.withEntry(regenFactors, new RegenEntry(id, factor), RegenEntry::id);
+    public static void addRegenFactor(ResourceLocation id, RegenFactor factor) {
+        REGEN_FACTORS.put(id, 0, factor);
     }
 
-    public static synchronized void addWeightSource(ResourceLocation id, WeightSource source) {
-        weightSources = Registrations.withEntry(weightSources, new WeightEntry(id, source), WeightEntry::id);
+    public static void addWeightSource(ResourceLocation id, WeightSource source) {
+        WEIGHT_SOURCES.put(id, 0, source);
     }
 
-    public static synchronized void addModifier(ResourceLocation id, int ordinal, StaminaModifier modifier) {
-        ModifierEntry[] next = Registrations.withEntry(modifiers, new ModifierEntry(id, ordinal, modifier), ModifierEntry::id);
-        Arrays.sort(next, Comparator.comparingInt(ModifierEntry::ordinal));
-        modifiers = next;
+    public static void addModifier(ResourceLocation id, int ordinal, StaminaModifier modifier) {
+        MODIFIERS.put(id, ordinal, modifier);
     }
 }

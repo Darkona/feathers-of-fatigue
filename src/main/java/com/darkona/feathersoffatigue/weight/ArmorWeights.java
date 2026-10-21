@@ -1,5 +1,6 @@
 package com.darkona.feathersoffatigue.weight;
 
+import dev.darkona.jdlib.core.registry.PriorityList;
 import com.darkona.feathersoffatigue.Feathers;
 import com.darkona.feathersoffatigue.api.WeightSource;
 import com.darkona.feathersoffatigue.api.event.ArmorWeightEvent;
@@ -33,16 +34,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Armor weight: how many feathers worn armor makes unusable.
- * <p>
- * A piece's base weight comes from the most specific source that has an answer: a config rule for the item, a
- * config rule for one of its tags, the {@link FeathersDataMaps#ARMOR_WEIGHT} data map, a config rule for its armor
- * material and piece, a config rule for its armor material, and for other armor its defense points times
- * {@code unlisted_armor_weight_per_defense}. Lightweight removes a share per level; Curse of Heaviness doubles it.
- * The worn total plus every {@link WeightSource} goes through {@link ArmorWeightEvent} and
- * is then scaled by the armor weight multiplier attribute, and rounded once.
- */
 public final class ArmorWeights {
 
     private static final EquipmentSlot[] ARMOR_SLOTS = {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
@@ -50,8 +41,6 @@ public final class ArmorWeights {
 
     private record TagRule(TagKey<Item> tag, int weight) {}
 
-    /* Parsed config rules, and the resolved base weight per item. Guarded by the class lock: tooltips read them on
-       the client thread while the integrated server fills them. */
     private static final Reference2IntOpenHashMap<Item> itemRules = new Reference2IntOpenHashMap<>();
     private static final List<TagRule> tagRules = new ArrayList<>();
     private static final Object2IntOpenHashMap<String> materialPieceRules = new Object2IntOpenHashMap<>();
@@ -68,9 +57,6 @@ public final class ArmorWeights {
 
     private ArmorWeights() {}
 
-    /**
-     * Forgets parsed rules and cached weights: the config or the datapacks changed.
-     */
     public static synchronized void invalidate() {
         rulesLoaded = false;
         baseWeightCache.clear();
@@ -126,9 +112,6 @@ public final class ArmorWeights {
         rulesLoaded = true;
     }
 
-    /**
-     * The weight of an item before enchantments.
-     */
     public static synchronized int baseWeight(ItemStack stack) {
         if (stack.isEmpty()) return 0;
         Item item = stack.getItem();
@@ -167,9 +150,6 @@ public final class ArmorWeights {
         return 0;
     }
 
-    /**
-     * One piece's weight with its enchantments. Fractional: totals are rounded once.
-     */
     public static double pieceWeight(ItemStack stack) {
         int base = baseWeight(stack);
         if (base == 0) return 0;
@@ -178,16 +158,11 @@ public final class ArmorWeights {
         return base * lightness * (1 + levels.heavy());
     }
 
-    /** A stack's Lightweight and Heavy levels, read from its enchantments component. */
     private record EnchantmentLevels(ItemEnchantments enchantments, int lightweight, int heavy) {}
 
     private static final EnchantmentLevels NO_LEVELS = new EnchantmentLevels(ItemEnchantments.EMPTY, 0, 0);
-    /** The last component read: a tooltip asks for the same stack every frame, and the component is immutable. */
     private static volatile EnchantmentLevels lastLevels = NO_LEVELS;
 
-    /**
-     * Reads the levels straight from the component, so no registry access is needed.
-     */
     private static EnchantmentLevels enchantmentLevels(ItemEnchantments enchantments) {
         if (enchantments.isEmpty()) return NO_LEVELS;
         EnchantmentLevels levels = lastLevels;
@@ -203,38 +178,24 @@ public final class ArmorWeights {
         return levels;
     }
 
-    /** The head armor share in a {@link WeightSplit}. */
     public static final int HEAD = 0;
-    /** The chest armor share in a {@link WeightSplit}. */
     public static final int CHEST = 1;
-    /** The leg armor share in a {@link WeightSplit}. */
     public static final int LEGS = 2;
-    /** The foot armor share in a {@link WeightSplit}. */
     public static final int FEET = 3;
-    /** The share without a specific armor piece or colored source. */
     public static final int OTHER = 4;
-    /** The number of built-in weight shares. */
     public static final int PARTS = 5;
 
-    /**
-     * The entity's weight: armor plus weight sources, after the event and the multiplier. 0 when disabled.
-     */
     @SuppressWarnings("unused")
     public static int totalWeight(LivingEntity entity) {
         return totalWeight(entity, null);
     }
 
-    /**
-     * Same, and divides the total into {@code split} (when not null): each armor piece, each weight source with a
-     * color of its own, and the rest, scaled like the total and rounded so they add up to it.
-     */
     public static int totalWeight(LivingEntity entity, @Nullable WeightSplit split) {
         if (split != null) split.clear();
         if (!FeathersServerConfig.ENABLE_ARMOR_WEIGHTS.get()) return 0;
 
         double head = pieceWeight(entity.getItemBySlot(EquipmentSlot.HEAD));
         double chest = pieceWeight(entity.getItemBySlot(EquipmentSlot.CHEST));
-        // A mount's armor (horse armor) covers its body: it counts as its chest piece.
         if (!(entity instanceof Player)) chest += pieceWeight(entity.getItemBySlot(EquipmentSlot.BODY));
         double legs = pieceWeight(entity.getItemBySlot(EquipmentSlot.LEGS));
         double feet = pieceWeight(entity.getItemBySlot(EquipmentSlot.FEET));
@@ -247,11 +208,13 @@ public final class ArmorWeights {
             split.shares.add(feet);
             split.shares.add(0);
         }
-        for (Extensions.WeightEntry entry : Extensions.weightSources()) {
-            double weight = entry.source().weight(entity);
+        PriorityList.Snapshot<ResourceLocation, WeightSource> sources = Extensions.weightSources();
+        for (int i = 0; i < sources.size(); i++) {
+            WeightSource source = sources.value(i);
+            double weight = source.weight(entity);
             if (weight <= 0) continue;
             raw += weight;
-            int tint = split != null ? tintOf(entry.source(), entity) : NO_TINT;
+            int tint = split != null ? tintOf(source, entity) : NO_TINT;
             if (tint == NO_TINT) {
                 other += weight;
             } else {
@@ -280,7 +243,6 @@ public final class ArmorWeights {
 
     private static final int NO_TINT = Integer.MIN_VALUE;
 
-    /** A source's own color, its item's (as {@code -(id + 1)}, see {@link WeightSplit#tint}), or none. */
     private static int tintOf(WeightSource source, LivingEntity entity) {
         int color = source.color(entity);
         if (color != WeightSource.NO_COLOR) return color & 0xFFFFFF;
@@ -289,10 +251,6 @@ public final class ArmorWeights {
         return -(BuiltInRegistries.ITEM.getId(item) + 1);
     }
 
-    /**
-     * Rounds the shares, times {@code scale}, to whole feathers adding up to {@code total}: floors first, then the
-     * largest remainders.
-     */
     private static void round(WeightSplit split, int total, double scale) {
         int count = split.shares.size();
         int assigned = 0;
@@ -322,7 +280,6 @@ public final class ArmorWeights {
         }
     }
 
-    /** Share {@code i}: a part below {@link #PARTS}, a colored source after. */
     private static int feathers(WeightSplit split, int i) {
         return i < PARTS ? split.parts[i] : split.sources.getInt(2 * (i - PARTS) + 1);
     }

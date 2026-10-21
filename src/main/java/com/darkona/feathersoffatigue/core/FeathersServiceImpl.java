@@ -1,5 +1,6 @@
 package com.darkona.feathersoffatigue.core;
 
+import dev.darkona.jdlib.core.registry.PriorityList;
 import com.darkona.feathersoffatigue.Feathers;
 import com.darkona.feathersoffatigue.api.*;
 import com.darkona.feathersoffatigue.api.event.DrainEvent;
@@ -170,8 +171,9 @@ public final class FeathersServiceImpl implements FeathersService {
     public static int effectiveCost(LivingEntity entity, FeathersView feathers, @Nullable AttributeInstance usage,
                                     ResourceLocation source, double baseCost) {
         int cost = (int) Math.min(Integer.MAX_VALUE, Math.round(baseCost * (usage != null ? usage.getValue() : 1.0)));
-        for (Extensions.ModifierEntry modifier : Extensions.modifiers()) {
-            cost = modifier.modifier().modifyCost(entity, feathers, source, cost);
+        PriorityList.Snapshot<ResourceLocation, StaminaModifier> modifiers = Extensions.modifiers();
+        for (int i = 0; i < modifiers.size(); i++) {
+            cost = modifiers.value(i).modifyCost(entity, feathers, source, cost);
         }
         return Math.max(0, cost);
     }
