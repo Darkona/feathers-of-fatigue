@@ -5,12 +5,12 @@ import com.darkona.feathersoffatigue.api.FeathersView;
 import com.darkona.feathersoffatigue.api.Stamina;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
 import com.darkona.feathersoffatigue.core.FeathersServiceImpl;
-import com.darkona.feathersoffatigue.core.SpendLog;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import dev.darkona.jdlib.api.command.JDDebugCommand;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -31,11 +31,9 @@ public final class FeathersCommands {
 
     private static final String TARGETS = "targets";
     private static final String AMOUNT = "amount";
-    private static final String SECONDS = "seconds";
-    private static final int DEFAULT_DEBUG_SECONDS = 30;
     private static final double MAX_FEATHERS_ARG = Integer.MAX_VALUE / Stamina.PER_FEATHER;
-    private static final SimpleCommandExceptionType NO_FEATHERS =
-            new SimpleCommandExceptionType(Component.literal("None of those have feathers"));
+    private static final Component NO_FEATHERS_TEXT = Component.literal("None of those have feathers");
+    private static final SimpleCommandExceptionType NO_FEATHERS = new SimpleCommandExceptionType(NO_FEATHERS_TEXT);
 
     private FeathersCommands() {}
 
@@ -56,10 +54,7 @@ public final class FeathersCommands {
                 .then(Commands.literal("regen")
                         .then(Commands.argument(TARGETS, EntityArgument.entities())
                                 .then(Commands.argument(AMOUNT, DoubleArgumentType.doubleArg(-40, 40)).executes(FeathersCommands::setRegen))))
-                .then(Commands.literal("debug")
-                        .then(Commands.argument(TARGETS, EntityArgument.entities())
-                                .executes(FeathersCommands::debugDefault)
-                                .then(Commands.argument(SECONDS, IntegerArgumentType.integer(1, 600)).executes(FeathersCommands::debug))))
+                .then(JDDebugCommand.recentSources("debug", entity -> FeathersServiceImpl.data(entity).spendLog(), FeathersAPI::hasFeathers, NO_FEATHERS_TEXT, amount -> "%.2f feathers".formatted(feathersOf(amount))))
                 .then(Commands.literal("spend")
                         .then(Commands.argument(TARGETS, EntityArgument.entities())
                                 .then(Commands.argument(AMOUNT, DoubleArgumentType.doubleArg(0, MAX_FEATHERS_ARG)).executes(FeathersCommands::spend)))));
@@ -74,28 +69,6 @@ public final class FeathersCommands {
         return targets;
     }
 
-    private static int debug(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
-        return debugFor(ctx, IntegerArgumentType.getInteger(ctx, SECONDS));
-    }
-
-    private static int debugFor(CommandContext<CommandSourceStack> ctx, int seconds) throws CommandSyntaxException {
-        List<LivingEntity> targets = targets(ctx);
-        for (LivingEntity entity : targets) {
-            SpendLog log = FeathersServiceImpl.data(entity).spendLog();
-            var totals = log != null ? log.totalsSince(entity.level().getGameTime() - seconds * 20L) : null;
-            if (totals == null || totals.isEmpty()) {
-                ctx.getSource().sendSuccess(() -> Component.literal("%s spent nothing in the last %ds".formatted(entity.getName().getString(), seconds)), false);
-                continue;
-            }
-            StringBuilder lines = new StringBuilder("%s, last %ds:".formatted(entity.getName().getString(), seconds));
-            for (var entry : totals.object2IntEntrySet()) {
-                lines.append("\n  ").append(entry.getKey()).append(": %.2f feathers".formatted(feathersOf(entry.getIntValue())));
-            }
-            ctx.getSource().sendSuccess(() -> Component.literal(lines.toString()), false);
-        }
-        return targets.size();
-    }
-
     private static int info(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         List<LivingEntity> entities = targets(ctx);
         for (LivingEntity entity : entities) {
@@ -108,10 +81,6 @@ public final class FeathersCommands {
                             f.exhausted() ? ", EXHAUSTED" : "", FeathersAPI.getClimate(entity), f.restState(), f.restMultiplier())), false);
         }
         return entities.size();
-    }
-
-    private static int debugDefault(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
-        return debugFor(ctx, DEFAULT_DEBUG_SECONDS);
     }
 
     private static double feathersOf(int stamina) {

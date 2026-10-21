@@ -12,7 +12,6 @@ import com.darkona.feathersoffatigue.api.client.FeatherVariants;
 import com.darkona.feathersoffatigue.client.ClientFeathersData;
 import com.darkona.feathersoffatigue.client.SyncedFeathers;
 import com.darkona.feathersoffatigue.config.FeathersClientConfig;
-import com.darkona.feathersoffatigue.config.FeathersServerConfig;
 import com.darkona.feathersoffatigue.weight.ArmorWeights;
 import com.darkona.feathersoffatigue.weight.WeightSplit;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -26,7 +25,6 @@ import dev.darkona.jdlib.core.hud.BarFade;
 import dev.darkona.jdlib.core.hud.GainFlash;
 import dev.darkona.jdlib.core.hud.IconMotion;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -152,7 +150,6 @@ public final class FeathersHud {
             RenderSystem.disableBlend();
         }
 
-        if (FeathersServerConfig.DEBUG_MODE.get()) drawDebug(graphics, Minecraft.getInstance().font, player);
         return reservedHeight(bonusRows);
     }
 
@@ -334,22 +331,5 @@ public final class FeathersHud {
     private static FeatherStyle style(ResourceLocation id) {
         FeatherStyle style = FeatherStyles.resolve(id);
         return style != null ? style : FALLBACK;
-    }
-
-    private static void drawDebug(GuiGraphics graphics, Font font, LocalPlayer player) {
-        int line = 2;
-        graphics.drawString(font, "Feathers %d/%d  stamina %d/%d  bonus %d  weight %d".formatted(DATA.feathers(), DATA.maxFeathers(),
-                DATA.stamina(), DATA.maxStamina(), DATA.bonusStamina(), DATA.weight()), 2, line, 0xFFFFFF);
-        line += 10;
-        graphics.drawString(font, "Strain %d/%d  regen delay %d  exhausted %s  rest %s".formatted(DATA.strain(), DATA.maxStrain(),
-                DATA.regenDelay(), DATA.exhausted(), DATA.restState()), 2, line, 0xFF8080);
-        line += 10;
-        graphics.drawString(font, "Regen %.2f f/s  usage x%.2f".formatted(FeathersAPI.getRegenPerSecond(player),
-                FeathersAPI.getUsageMultiplier(player)), 2, line, 0xDDDD00);
-        line += 10;
-        ResourceLocation source = DATA.lastSpendSource();
-        if (source != null) {
-            graphics.drawString(font, "Spent %d on %s".formatted(DATA.lastSpendCost(), source), 2, line, 0x80FF80);
-        }
     }
 }

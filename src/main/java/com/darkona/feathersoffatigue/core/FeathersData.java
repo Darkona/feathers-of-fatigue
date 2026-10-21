@@ -6,6 +6,7 @@ import com.darkona.feathersoffatigue.api.RestState;
 import com.darkona.feathersoffatigue.api.Stamina;
 import com.darkona.feathersoffatigue.api.registry.FeathersAttributes;
 import com.darkona.feathersoffatigue.weight.WeightSplit;
+import dev.darkona.jdlib.core.debug.RecentSourceLog;
 import dev.darkona.jdlib.core.stat.FractionalCarry;
 import dev.darkona.jdlib.core.stat.LayeredPayment;
 import dev.darkona.jdlib.core.stat.ShownFields;
@@ -26,6 +27,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public final class FeathersData implements FeathersView, INBTSerializable<CompoundTag> {
+
+    private static final int SPEND_LOG_SIZE = 32;
+    private static final int SPEND_FOLD_TICKS = 20;
 
     enum Shown { STAMINA, MAX_STAMINA, STRAIN, MAX_STRAIN, BONUS, WEIGHT, EXHAUSTED, DELAYED, REST }
 
@@ -53,7 +57,7 @@ public final class FeathersData implements FeathersView, INBTSerializable<Compou
     long totalRegenerated;
     Climate climate = Climate.NEUTRAL;
 
-    SpendLog spendLog;
+    RecentSourceLog<ResourceLocation> spendLog;
 
     @Nullable AttributeInstance regenAttribute;
     @Nullable AttributeInstance usageAttribute;
@@ -196,11 +200,11 @@ public final class FeathersData implements FeathersView, INBTSerializable<Compou
     }
 
     void logSpend(ResourceLocation source, int amount, long gameTime) {
-        if (spendLog == null) spendLog = new SpendLog();
+        if (spendLog == null) spendLog = new RecentSourceLog<>(SPEND_LOG_SIZE, SPEND_FOLD_TICKS);
         spendLog.record(source, amount, gameTime);
     }
 
-    public @Nullable SpendLog spendLog() {
+    public @Nullable RecentSourceLog<ResourceLocation> spendLog() {
         return spendLog;
     }
 
