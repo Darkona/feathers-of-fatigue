@@ -13,7 +13,6 @@ import com.darkona.feathersoffatigue.client.ClientFeathersData;
 import com.darkona.feathersoffatigue.client.SyncedFeathers;
 import com.darkona.feathersoffatigue.config.FeathersClientConfig;
 import com.darkona.feathersoffatigue.config.FeathersServerConfig;
-import com.darkona.feathersoffatigue.style.FeatherStylePack;
 import com.darkona.feathersoffatigue.weight.ArmorWeights;
 import com.darkona.feathersoffatigue.weight.WeightSplit;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -318,7 +317,7 @@ public final class FeathersHud {
 
     private static void refreshStyles(LocalPlayer player) {
         ResourceLocation chosen = FeatherStyles.select(player, DATA);
-        FeatherStyle style = chosen != null ? FeatherStylePack.resolve(chosen) : null;
+        FeatherStyle style = chosen != null ? FeatherStyles.resolve(chosen) : null;
         OWN.set(style != null ? style : style(switch (FeathersClientConfig.FEATHER_COLOR.get()) {
             case GREEN -> FeatherStyles.GREEN;
             case BLUE -> FeatherStyles.BLUE;
@@ -333,7 +332,7 @@ public final class FeathersHud {
     }
 
     private static FeatherStyle style(ResourceLocation id) {
-        FeatherStyle style = FeatherStylePack.resolve(id);
+        FeatherStyle style = FeatherStyles.resolve(id);
         return style != null ? style : FALLBACK;
     }
 

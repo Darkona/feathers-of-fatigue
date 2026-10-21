@@ -2,6 +2,7 @@ package com.darkona.feathersoffatigue.client;
 
 import com.darkona.feathersoffatigue.api.FeathersAPI;
 import com.darkona.feathersoffatigue.api.client.ClientFeathers;
+import com.darkona.feathersoffatigue.api.client.FeatherStylePack;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
 import com.darkona.feathersoffatigue.basic.BasicExertion;
 import com.darkona.feathersoffatigue.client.gui.FeatherColors;
@@ -9,7 +10,6 @@ import com.darkona.feathersoffatigue.client.gui.FeathersHud;
 import com.darkona.feathersoffatigue.config.FeathersClientConfig;
 import com.darkona.feathersoffatigue.config.FeathersServerConfig;
 import com.darkona.feathersoffatigue.core.FeathersServiceImpl;
-import com.darkona.feathersoffatigue.style.FeatherStylePack;
 import com.darkona.feathersoffatigue.style.BuiltInFeatherAnimations;
 import dev.darkona.jdlib.api.hud.JDHudBars;
 import net.minecraft.ChatFormatting;

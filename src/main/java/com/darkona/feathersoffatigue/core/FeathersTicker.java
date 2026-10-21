@@ -1,5 +1,8 @@
 package com.darkona.feathersoffatigue.core;
 
+import com.darkona.feathersoffatigue.api.StaminaModifier;
+import com.darkona.feathersoffatigue.api.RegenFactor;
+import dev.darkona.jdlib.core.registry.PriorityList;
 import com.darkona.feathersoffatigue.api.RestState;
 import com.darkona.feathersoffatigue.api.Stamina;
 import com.darkona.feathersoffatigue.api.event.DrainEvent;
@@ -228,13 +231,13 @@ public final class FeathersTicker {
     }
 
     private static void applyRegenFactors(LivingEntity entity, FeathersData data) {
-        Extensions.RegenEntry[] factors = Extensions.regenFactors();
+        PriorityList.Snapshot<ResourceLocation, RegenFactor> factors = Extensions.regenFactors();
         AttributeInstance regen = data.regenAttribute(entity);
         if (regen == null) return;
 
         double sum = 0;
-        for (Extensions.RegenEntry factor : factors) {
-            sum += factor.factor().feathersPerSecond(entity, data);
+        for (int i = 0; i < factors.size(); i++) {
+            sum += factors.value(i).feathersPerSecond(entity, data);
         }
         AttributeModifier current = regen.getModifier(REGEN_FACTORS);
         if (sum == 0) {
@@ -335,8 +338,9 @@ public final class FeathersTicker {
 
         int regen = data.regenCarry.add(perTick);
 
-        for (Extensions.ModifierEntry modifier : Extensions.modifiers()) {
-            regen = modifier.modifier().modifyRegen(entity, data, regen);
+        PriorityList.Snapshot<ResourceLocation, StaminaModifier> modifiers = Extensions.modifiers();
+        for (int i = 0; i < modifiers.size(); i++) {
+            regen = modifiers.value(i).modifyRegen(entity, data, regen);
         }
 
         if (regen < 0) {

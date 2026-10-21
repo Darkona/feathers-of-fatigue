@@ -6,8 +6,8 @@ import com.darkona.feathersoffatigue.api.client.FeatherStyles;
 import com.darkona.feathersoffatigue.api.client.FeatherVariants;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
 import com.darkona.feathersoffatigue.api.registry.FeathersMobEffects;
-import com.darkona.feathersoffatigue.style.FeatherStylePack;
-import com.darkona.feathersoffatigue.style.FeatherStylePack.Patch;
+import com.darkona.feathersoffatigue.api.client.FeatherStylePack;
+import com.darkona.feathersoffatigue.api.client.FeatherStylePack.Patch;
 import com.google.gson.JsonParser;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.gametest.framework.GameTest;
@@ -93,7 +93,7 @@ public class StyleTests {
         FeatherStyles.registerStyle(id, replacement);
         helper.assertValueEqual(FeatherStyles.get(id), replacement, "the later registration");
         helper.assertTrue(FeatherStyles.version() != version, "caches see the change");
-        helper.assertValueEqual(FeatherStylePack.resolve(id), replacement, "resolved without a resource pack change");
+        helper.assertValueEqual(FeatherStyles.resolve(id), replacement, "resolved without a resource pack change");
         helper.succeed();
     }
 
@@ -164,16 +164,16 @@ public class StyleTests {
         FeatherStylePack.PATCHES.merge(merged, higher);
         FeatherStylePack.PATCHES.set(merged);
         try {
-            helper.assertValueEqual(FeatherStylePack.resolve(partial), FeatherStyle.opaque(0x123456, 0xFF0000).withVariant(FeatherVariants.GLINT)
+            helper.assertValueEqual(FeatherStyles.resolve(partial), FeatherStyle.opaque(0x123456, 0xFF0000).withVariant(FeatherVariants.GLINT)
                     .withSprites(id("textures/gui/higher.png")), "registered body, lower pack's border and no overlay, higher pack's variant and sprites");
-            helper.assertValueEqual(FeatherStylePack.resolve(added), FeatherStyle.opaque(0x00FF00, 0x000000)
+            helper.assertValueEqual(FeatherStyles.resolve(added), FeatherStyle.opaque(0x00FF00, 0x000000)
                     .withOverlay(FeatherVariants.HEAT, FeatherStyle.WHITE, 0x80FF0000), "a new style: black border, the packs' overlay");
-            helper.assertTrue(FeatherStylePack.resolve(bodyless) == null, "a new style needs a body");
+            helper.assertTrue(FeatherStyles.resolve(bodyless) == null, "a new style needs a body");
             helper.assertValueEqual(FeatherStyles.get(partial), registered, "the registry keeps what code registered");
         } finally {
             FeatherStylePack.PATCHES.set(Map.of());
         }
-        helper.assertValueEqual(FeatherStylePack.resolve(partial), registered, "packs gone, the registered style");
+        helper.assertValueEqual(FeatherStyles.resolve(partial), registered, "packs gone, the registered style");
         helper.succeed();
     }
 }

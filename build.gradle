@@ -131,6 +131,7 @@ configurations {
 
 dependencies {
     implementation sourceSets.api.output
+    apiCompileOnly 'dev.darkona.jdlib:JDLib'
 
     // Bundled, so the mod runs with nothing else installed. The range lets other mods' copies resolve to one version.
     jarJar(implementation("dev.darkona.jdlib:JDLib")) {
@@ -252,6 +253,13 @@ publishing {
             artifactId = "${archives_base_name}-api"
             artifact apiJar
             artifact apiSourcesJar
+            pom.withXml {
+                def dependency = asNode().appendNode('dependencies').appendNode('dependency')
+                dependency.appendNode('groupId', 'dev.darkona.jdlib')
+                dependency.appendNode('artifactId', 'JDLib')
+                dependency.appendNode('version', jdlib_version)
+                dependency.appendNode('scope', 'compile')
+            }
         }
     }
     repositories {

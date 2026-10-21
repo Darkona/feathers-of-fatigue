@@ -1,11 +1,8 @@
-package com.darkona.feathersoffatigue.style;
+package com.darkona.feathersoffatigue.api.client;
 
-import com.darkona.feathersoffatigue.api.client.FeatherStyle;
-import com.darkona.feathersoffatigue.api.client.FeatherStyles;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.darkona.jdlib.api.hud.PackPatches;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,30 +44,4 @@ public final class FeatherStylePack {
     }
 
     public static final PackPatches<Patch> PATCHES = new PackPatches<>(FILE, "styles", Patch.CODEC, Patch::over);
-
-    private static final FeatherStyle MISSING = new FeatherStyle(0, 0);
-    private static final Object2ObjectOpenHashMap<ResourceLocation, FeatherStyle> RESOLVED = new Object2ObjectOpenHashMap<>();
-    private static int resolvedVersion = -1;
-    private static int resolvedPatches = -1;
-
-    private FeatherStylePack() {}
-
-    public static synchronized @Nullable FeatherStyle resolve(ResourceLocation id) {
-        int version = FeatherStyles.version();
-        int patchVersion = PATCHES.version();
-        if (version != resolvedVersion || patchVersion != resolvedPatches) {
-            RESOLVED.clear();
-            resolvedVersion = version;
-            resolvedPatches = patchVersion;
-        }
-        FeatherStyle cached = RESOLVED.get(id);
-        if (cached == null) {
-            Patch patch = PATCHES.get(id);
-            FeatherStyle registered = FeatherStyles.get(id);
-            cached = patch != null ? patch.applyTo(registered) : registered;
-            if (cached == null) cached = MISSING;
-            RESOLVED.put(id, cached);
-        }
-        return cached == MISSING ? null : cached;
-    }
 }
