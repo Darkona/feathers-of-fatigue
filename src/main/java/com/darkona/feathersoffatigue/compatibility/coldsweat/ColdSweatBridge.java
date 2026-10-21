@@ -1,6 +1,5 @@
 package com.darkona.feathersoffatigue.compatibility.coldsweat;
 
-import com.momosoftworks.coldsweat.api.util.Temperature;
 import com.momosoftworks.coldsweat.core.init.ModEffects;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -8,10 +7,6 @@ import net.minecraft.world.entity.LivingEntity;
 final class ColdSweatBridge {
 
     private ColdSweatBridge() {}
-
-    static double bodyTemperature(LivingEntity entity) {
-        return Temperature.get(entity, Temperature.Trait.BODY);
-    }
 
     static boolean canApplyCold(LivingEntity entity) {
         return !(entity.hasEffect(ModEffects.GRACE) || entity.hasEffect(ModEffects.ICE_RESISTANCE));
