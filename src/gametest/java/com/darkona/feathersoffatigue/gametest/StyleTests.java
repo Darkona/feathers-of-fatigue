@@ -24,10 +24,6 @@ import java.util.Map;
 import static com.darkona.feathersoffatigue.api.registry.FeathersIds.id;
 import static com.darkona.feathersoffatigue.gametest.TestSupport.player;
 
-/**
- * The feather style API: registry, providers and resource packs' feather_styles.json. None of it touches client
- * classes, so it runs here. Registrations are global and permanent, so providers only answer for tagged players.
- */
 @GameTestHolder(FeathersIds.MOD_ID)
 @PrefixGameTestTemplate(false)
 public class StyleTests {
@@ -110,7 +106,6 @@ public class StyleTests {
         both.addTag(MARK);
         both.addTag(HIGH_MARK);
         helper.assertValueEqual(FeatherStyles.select(both, FeathersAPI.get(both)), HIGH, "the higher priority");
-        // Above Feathers of Fatigue's own states: a cold marked player still gets the test style.
         low.addEffect(new MobEffectInstance(FeathersMobEffects.COLD, 200));
         helper.assertValueEqual(FeatherStyles.select(low, FeathersAPI.get(low)), LOW, "over the cold state");
         helper.succeed();
@@ -150,7 +145,7 @@ public class StyleTests {
         ResourceLocation bodyless = id("test_style_bodyless");
         FeatherStyle registered = FeatherStyle.opaque(0x123456, 0x654321).withVariant(FeatherVariants.CRYSTAL).withOverlay(FeatherVariants.FROST, -1, -1);
         FeatherStyles.registerStyle(partial, registered);
-        Map<ResourceLocation, Patch> lower = FeatherStylePack.parse(JsonParser.parseString("""
+        Map<ResourceLocation, Patch> lower = FeatherStylePack.PATCHES.parse(JsonParser.parseString("""
                 {"styles": {
                   "feathers_of_fatigue:test_style_partial": {"border": "#FF0000", "sprites": "feathers_of_fatigue:textures/gui/lower.png", "overlay": "none"},
                   "feathers_of_fatigue:test_style_added": {"body": "#00FF00"},
@@ -159,15 +154,15 @@ public class StyleTests {
                   "Not An Id": {"body": "#000000"}
                 }}"""), "lower");
         helper.assertValueEqual(lower.size(), 3, "broken entries are skipped, the rest kept");
-        Map<ResourceLocation, Patch> higher = FeatherStylePack.parse(JsonParser.parseString("""
+        Map<ResourceLocation, Patch> higher = FeatherStylePack.PATCHES.parse(JsonParser.parseString("""
                 {"styles": {"feathers_of_fatigue:test_style_partial": {"sprites": "feathers_of_fatigue:textures/gui/higher.png", "variant": "feathers_of_fatigue:glint"},
                             "feathers_of_fatigue:test_style_added": {"overlay": "feathers_of_fatigue:heat", "overlay_accent": "#80FF0000"}}}"""), "higher");
-        helper.assertValueEqual(FeatherStylePack.parse(JsonParser.parseString("[]"), "not an object").size(), 0, "no styles object, nothing");
+        helper.assertValueEqual(FeatherStylePack.PATCHES.parse(JsonParser.parseString("[]"), "not an object").size(), 0, "no styles object, nothing");
 
         Map<ResourceLocation, Patch> merged = new HashMap<>();
-        FeatherStylePack.merge(merged, lower);
-        FeatherStylePack.merge(merged, higher);
-        FeatherStylePack.setPatches(merged);
+        FeatherStylePack.PATCHES.merge(merged, lower);
+        FeatherStylePack.PATCHES.merge(merged, higher);
+        FeatherStylePack.PATCHES.set(merged);
         try {
             helper.assertValueEqual(FeatherStylePack.resolve(partial), FeatherStyle.opaque(0x123456, 0xFF0000).withVariant(FeatherVariants.GLINT)
                     .withSprites(id("textures/gui/higher.png")), "registered body, lower pack's border and no overlay, higher pack's variant and sprites");
@@ -176,7 +171,7 @@ public class StyleTests {
             helper.assertTrue(FeatherStylePack.resolve(bodyless) == null, "a new style needs a body");
             helper.assertValueEqual(FeatherStyles.get(partial), registered, "the registry keeps what code registered");
         } finally {
-            FeatherStylePack.setPatches(Map.of());
+            FeatherStylePack.PATCHES.set(Map.of());
         }
         helper.assertValueEqual(FeatherStylePack.resolve(partial), registered, "packs gone, the registered style");
         helper.succeed();
