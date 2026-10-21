@@ -6,11 +6,13 @@ import com.darkona.feathersoffatigue.api.client.FeatherStylePack;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
 import com.darkona.feathersoffatigue.basic.BasicExertion;
 import com.darkona.feathersoffatigue.client.gui.FeatherColors;
+import com.darkona.feathersoffatigue.client.gui.FeathersDebugOverlay;
 import com.darkona.feathersoffatigue.client.gui.FeathersHud;
 import com.darkona.feathersoffatigue.config.FeathersClientConfig;
 import com.darkona.feathersoffatigue.config.FeathersServerConfig;
 import com.darkona.feathersoffatigue.core.FeathersServiceImpl;
 import com.darkona.feathersoffatigue.style.BuiltInFeatherAnimations;
+import dev.darkona.jdlib.api.hud.JDDebugOverlay;
 import dev.darkona.jdlib.api.hud.JDHudBars;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -29,6 +31,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
 import static com.darkona.feathersoffatigue.api.registry.FeathersIds.id;
@@ -48,6 +51,11 @@ public final class ClientEvents {
         ClientFeathers.setService(ClientFeathersData.INSTANCE);
         FeathersServiceImpl.setClientBridge(ClientFeathersData.INSTANCE);
         BuiltInFeatherAnimations.register();
+    }
+
+    @SubscribeEvent
+    public static void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
+        JDDebugOverlay.register(event, id("debug"), FeathersDebugOverlay.SPEC);
     }
 
     @SubscribeEvent

@@ -2,6 +2,7 @@ package com.darkona.feathersoffatigue.network;
 
 import com.darkona.feathersoffatigue.client.ClientFeathersData;
 import com.darkona.feathersoffatigue.core.FeathersData;
+import dev.darkona.jdlib.api.debug.JDDebugFeed;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -24,8 +25,6 @@ public final class FeathersNetwork {
 
         registrar.playToClient(SyncPayload.TYPE, SyncPayload.STREAM_CODEC,
                 (payload, context) -> ClientFeathersData.accept(payload));
-        registrar.playToClient(SpendDebugPayload.TYPE, SpendDebugPayload.STREAM_CODEC,
-                (payload, context) -> ClientFeathersData.acceptDebug(payload));
     }
 
     public static void sendSync(ServerPlayer player, LivingEntity entity, FeathersData data) {
@@ -37,7 +36,7 @@ public final class FeathersNetwork {
     }
 
     public static void sendSpendDebug(LivingEntity entity, ResourceLocation source, int cost) {
-        if (entity instanceof ServerPlayer player) send(player, new SpendDebugPayload(source, cost));
+        if (entity instanceof ServerPlayer player) JDDebugFeed.send(player, source, cost);
     }
 
     private static void send(ServerPlayer player, CustomPacketPayload payload) {

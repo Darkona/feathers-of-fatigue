@@ -6,7 +6,6 @@ import com.darkona.feathersoffatigue.api.SpendResult;
 import com.darkona.feathersoffatigue.api.Stamina;
 import com.darkona.feathersoffatigue.api.client.ClientFeathersService;
 import com.darkona.feathersoffatigue.core.FeathersServiceImpl;
-import com.darkona.feathersoffatigue.network.SpendDebugPayload;
 import com.darkona.feathersoffatigue.network.SpendRequestPayload;
 import com.darkona.feathersoffatigue.network.SyncPayload;
 import net.minecraft.client.Minecraft;
@@ -21,15 +20,11 @@ public final class ClientFeathersData extends SyncedFeathers implements ClientFe
 
     public static final ClientFeathersData INSTANCE = new ClientFeathersData();
 
-    public static final int DEBUG_LINE_TICKS = 60;
 
     private final SyncedFeathers mount = new SyncedFeathers();
     private int mountId = -1;
     private boolean mountSeated;
 
-    private ResourceLocation lastSpendSource;
-    private int lastSpendCost;
-    private int lastSpendTicks;
 
     private ClientFeathersData() {}
 
@@ -44,26 +39,18 @@ public final class ClientFeathersData extends SyncedFeathers implements ClientFe
         }
     }
 
-    public static void acceptDebug(SpendDebugPayload payload) {
-        INSTANCE.lastSpendSource = payload.source();
-        INSTANCE.lastSpendCost = payload.cost();
-        INSTANCE.lastSpendTicks = DEBUG_LINE_TICKS;
-    }
-
     @Override
     void clear() {
         super.clear();
         mount.clear();
         mountId = -1;
         mountSeated = false;
-        lastSpendSource = null;
     }
 
     @Override
     void tick() {
         super.tick();
         mount.tick();
-        if (lastSpendTicks > 0) lastSpendTicks--;
         if (mountId == -1) return;
         LocalPlayer player = Minecraft.getInstance().player;
         Entity vehicle = player != null ? player.getVehicle() : null;
@@ -78,14 +65,6 @@ public final class ClientFeathersData extends SyncedFeathers implements ClientFe
 
     public FeathersView mount() {
         return mountSeated && mount.hasFeathers() ? mount : FeathersView.NONE;
-    }
-
-    public ResourceLocation lastSpendSource() {
-        return lastSpendTicks > 0 ? lastSpendSource : null;
-    }
-
-    public int lastSpendCost() {
-        return lastSpendCost;
     }
 
     @Override
