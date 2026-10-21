@@ -26,9 +26,6 @@ import java.util.List;
 
 import static com.darkona.feathersoffatigue.api.registry.FeathersIds.id;
 
-/**
- * {@code /feathers}: inspect and set the feathers of players and mounts. Permission level 2.
- */
 @EventBusSubscriber(modid = FeathersIds.MOD_ID)
 public final class FeathersCommands {
 
@@ -36,7 +33,6 @@ public final class FeathersCommands {
     private static final String AMOUNT = "amount";
     private static final String SECONDS = "seconds";
     private static final int DEFAULT_DEBUG_SECONDS = 30;
-    /** Largest feather amount that still fits in stamina units. */
     private static final double MAX_FEATHERS_ARG = Integer.MAX_VALUE / Stamina.PER_FEATHER;
     private static final SimpleCommandExceptionType NO_FEATHERS =
             new SimpleCommandExceptionType(Component.literal("None of those have feathers"));
@@ -69,9 +65,6 @@ public final class FeathersCommands {
                                 .then(Commands.argument(AMOUNT, DoubleArgumentType.doubleArg(0, MAX_FEATHERS_ARG)).executes(FeathersCommands::spend)))));
     }
 
-    /**
-     * The targeted entities that have feathers: players, and mounts when enabled.
-     */
     private static List<LivingEntity> targets(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         List<LivingEntity> targets = new ArrayList<>();
         for (Entity entity : EntityArgument.getEntities(ctx, TARGETS)) {
@@ -117,7 +110,6 @@ public final class FeathersCommands {
         return entities.size();
     }
 
-    /** {@code /feathers debug <targets>} without seconds: the last 30. */
     private static int debugDefault(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         return debugFor(ctx, DEFAULT_DEBUG_SECONDS);
     }

@@ -11,11 +11,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 
-/**
- * Where the server learns a ridden mount jumps: the rider's jump packet. One hook for every mount that jumps like a
- * horse, whatever class it overrides (horses, camels, SWEM horses, ostriches...): an exhausted mount's jump is
- * refused, and a jump costs its feathers by power.
- */
 @Mixin(ServerGamePacketListenerImpl.class)
 public abstract class ServerGamePacketListenerImplMixin {
 
@@ -31,7 +26,6 @@ public abstract class ServerGamePacketListenerImplMixin {
     @WrapOperation(method = "handlePlayerCommand", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/world/entity/PlayerRideableJumping;handleStartJump(I)V"))
     private void feathers_of_fatigue$chargeJump(PlayerRideableJumping mount, int power, Operation<Void> original) {
-        // A jump does not start when the mount cannot pay its cost.
         if (!(mount instanceof LivingEntity living) || MountExertion.chargeJump(living, player, power)) original.call(mount, power);
     }
 }

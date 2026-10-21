@@ -60,7 +60,6 @@ public final class ModPotions {
         builder.addMix(Potions.AWKWARD, Items.MAGMA_BLOCK, HOT_POTION);
         builder.addMix(HOT_POTION, Items.GLOWSTONE_DUST, STRONG_HOT_POTION);
 
-        // Cooling protects from Heat and Fatigue.
         builder.addMix(Potions.AWKWARD, Items.PACKED_ICE, COOLING_POTION);
         builder.addMix(COOLING_POTION, Items.REDSTONE, LONG_COOLING_POTION);
 

@@ -7,9 +7,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 
-/**
- * The fallback climate from biome, weather and sun, at priority 0: any temperature mod's provider outranks it.
- */
 public final class VanillaClimate {
 
     private VanillaClimate() {}
@@ -29,10 +26,6 @@ public final class VanillaClimate {
                 ? Climate.HOT : Climate.NEUTRAL;
     }
 
-    /**
-     * Rain or snow falling on a cold biome. Not {@code isRainingAt}: it is false where the precipitation is snow,
-     * which is where the biome is coldest.
-     */
     private static boolean isColdWeather(Level level, BlockPos pos) {
         if (!level.isRaining() || !level.canSeeSky(pos)) return false;
         Biome biome = level.getBiome(pos).value();

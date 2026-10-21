@@ -21,10 +21,6 @@ import java.util.Objects;
 import static com.darkona.feathersoffatigue.api.registry.FeathersIds.id;
 import static com.darkona.feathersoffatigue.gametest.TestSupport.player;
 
-/**
- * Tests the feather animation API and built-in triggers with explicit settings. GameTests do not load the client
- * configuration or register the client-only built-in provider.
- */
 @GameTestHolder(FeathersIds.MOD_ID)
 @PrefixGameTestTemplate(false)
 public class AnimationTests {

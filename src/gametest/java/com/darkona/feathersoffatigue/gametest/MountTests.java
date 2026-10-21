@@ -33,10 +33,6 @@ import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 import static com.darkona.feathersoffatigue.api.registry.FeathersIds.id;
 import static com.darkona.feathersoffatigue.gametest.TestSupport.player;
 
-/**
- * Mounts have feathers: a stamina trait of their own that foals inherit, jumps that cost by power, and an exhausted
- * mount slows down and cannot jump.
- */
 @GameTestHolder(FeathersIds.MOD_ID)
 @PrefixGameTestTemplate(false)
 public class MountTests {
@@ -72,7 +68,6 @@ public class MountTests {
 
         NeoForge.EVENT_BUS.post(new BabyEntitySpawnEvent(mare, stallion, foal));
         double trait = foal.getAttribute(FeathersAttributes.MAX_FEATHERS).getBaseValue();
-        // Average 29, nudged by at most a sixth of the 14-30 range (about 2.7).
         helper.assertTrue(trait >= 26 && trait <= 30, "the foal takes after strong parents: " + trait);
         helper.succeed();
     }
@@ -80,7 +75,6 @@ public class MountTests {
     @GameTest(template = "empty")
     public static void jumpsCostByPower(GameTestHelper helper) {
         Horse horse = horse(helper);
-        // Pass the rider directly because a fake player outside the level cannot mount the horse.
         int before = FeathersAPI.get(horse).stamina();
         MountExertion.chargeJump(horse, player(helper), 50);
         int expected = Stamina.ofFeathers(FeathersServerConfig.MOUNT_JUMP_FEATHERS.get() * 0.5);
@@ -105,11 +99,6 @@ public class MountTests {
         helper.succeed();
     }
 
-    /**
-     * A creature that stops being a mount (mounts turned off, a reload that drops its tag or data map entry) while
-     * strained and exhausted gets back to normal: no strained effect, no slowdown, no leftover exhaustion. Only the
-     * effect this mod put on it goes: one from elsewhere stays.
-     */
     @GameTest(template = "empty")
     public static void exMountsAreReleased(GameTestHelper helper) {
         Horse horse = horse(helper);
@@ -130,22 +119,17 @@ public class MountTests {
         MountExertion.release(horse);
         helper.assertTrue(horse.hasEffect(FeathersMobEffects.STRAINED), "someone else's Strained effect stays");
 
-        // A mount again: exhaustion slows it down as before.
         horse.removeEffect(FeathersMobEffects.STRAINED);
         FeathersAPI.spend(horse, id("test"), FeathersAPI.get(horse).availableStamina() + FeathersAPI.get(horse).maxStrain());
         MountExertion.tickMount(horse);
         helper.assertTrue(MountExertion.isSlowedDown(horse), "an exhausted mount slows down again");
 
-        // A creature that never had feathers is left alone: no feathers appear on it.
         Cow cow = helper.spawn(EntityType.COW, new BlockPos(1, 2, 1));
         MountExertion.release(cow);
         helper.assertFalse(cow.hasData(FeathersAttachments.FEATHERS), "a cow gets no feathers from the release");
         helper.succeed();
     }
 
-    /**
-     * A creature made a mount by data alone: the test datapack (src/gametest/resources) gives pigs mount stats.
-     */
     @GameTest(template = "empty")
     public static void dataMakesAnyCreatureAMount(GameTestHelper helper) {
         Pig pig = helper.spawn(EntityType.PIG, new BlockPos(1, 2, 1));
@@ -156,9 +140,6 @@ public class MountTests {
         helper.succeed();
     }
 
-    /**
-     * The opt-out tag wins even over horses: the test datapack lists donkeys in feathers_of_fatigue:no_feathers.
-     */
     @GameTest(template = "empty")
     public static void optedOutCreaturesHaveNoFeathers(GameTestHelper helper) {
         helper.assertFalse(FeathersAPI.hasFeathers(helper.spawn(EntityType.DONKEY, new BlockPos(1, 2, 1))), "donkeys opted out");
@@ -166,10 +147,6 @@ public class MountTests {
         helper.succeed();
     }
 
-    /**
-     * The built-in data map gives stamina to other mods' mounts when those mods are installed
-     * ({@code -Pcompat=naturalist,mobwrangler}). The test passes without those optional mods.
-     */
     @GameTest(template = "empty")
     public static void otherModsMountsHaveFeathers(GameTestHelper helper) {
         checkSpawned(helper, "naturalist", "naturalist:ostrich");

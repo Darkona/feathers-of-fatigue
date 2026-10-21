@@ -21,9 +21,6 @@ import static com.darkona.feathersoffatigue.api.registry.FeathersIds.id;
 import static com.darkona.feathersoffatigue.gametest.TestSupport.player;
 import static com.darkona.feathersoffatigue.gametest.TestSupport.tick;
 
-/**
- * Regeneration, its pauses, and continuous drains. Default regeneration: 0.4 feathers/s = 20 stamina a tick.
- */
 @GameTestHolder(FeathersIds.MOD_ID)
 @PrefixGameTestTemplate(false)
 public class RegenTests {
@@ -37,10 +34,6 @@ public class RegenTests {
         return player;
     }
 
-    /**
-     * The game keeps attribute bases when a player dies and respawns, and so do the maximum and regeneration set by
-     * {@code /feathers max} and {@code /feathers regen}: the respawned player does not get the config's back.
-     */
     @GameTest(template = "empty")
     public static void commandBasesSurviveDeath(GameTestHelper helper) {
         ServerPlayer dead = player(helper);
@@ -48,7 +41,6 @@ public class RegenTests {
         FeathersAPI.setMaxFeathers(dead, 30);
         FeathersAPI.setBaseRegenPerSecond(dead, 1.5);
 
-        // PlayerList.respawn: restoreFrom copies the bases, posts the clone event, then the new player joins the level.
         ServerPlayer respawned = player(helper);
         respawned.getAttributes().assignBaseValues(dead.getAttributes());
         NeoForge.EVENT_BUS.post(new PlayerEvent.Clone(respawned, dead, true));
@@ -113,7 +105,6 @@ public class RegenTests {
         ServerPlayer player = player(helper);
         FeathersAPI.spend(player, TEST, Stamina.ofFeathers(21), SpendOptions.DEFAULT.withRegenDelay(0));
         tick(player, 25);
-        // 20 on the first tick, then 5 a tick once the strained effect cuts regeneration by 75%.
         helper.assertValueEqual(FeathersAPI.get(player).strain(), 1000 - 20 - 24 * 5, "strain after 25 ticks of payback");
         helper.assertValueEqual(FeathersAPI.get(player).stamina(), 0, "no stamina while strained");
         helper.succeed();

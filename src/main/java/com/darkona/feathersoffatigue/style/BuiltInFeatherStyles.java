@@ -10,10 +10,6 @@ import static com.darkona.feathersoffatigue.api.client.FeatherStyles.*;
 import static com.darkona.feathersoffatigue.api.client.FeatherVariants.*;
 import static com.darkona.feathersoffatigue.api.registry.FeathersIds.id;
 
-/**
- * Feathers of Fatigue's own sprites and styles, registered like any other mod's. The colors tint each variant into the
- * hand-drawn feathers it reproduces.
- */
 public final class BuiltInFeatherStyles {
 
     public static final ResourceLocation STATUS_PROVIDER = id("status");

@@ -29,15 +29,10 @@ import static com.darkona.feathersoffatigue.gametest.TestSupport.player;
 import static com.darkona.feathersoffatigue.gametest.TestSupport.tick;
 import static com.darkona.feathersoffatigue.gametest.TestSupport.withCompat;
 
-/**
- * Drives each survival mod into an extreme with its own API and checks the feathers react: cold, scorching heat,
- * thirst. Each test passes without action when its optional mod is absent ({@code -Pcompat=...}).
- */
 @GameTestHolder(FeathersIds.MOD_ID)
 @PrefixGameTestTemplate(false)
 public class SurvivalCompatTests {
 
-    /** Applies the climate the providers report and returns it. */
     private static Climate applyClimate(ServerPlayer player) {
         Climate climate = ClimateEffects.evaluate(player);
         ClimateEffects.apply(player, climate);
@@ -55,7 +50,6 @@ public class SurvivalCompatTests {
         helper.assertTrue(player.hasEffect(FeathersMobEffects.FATIGUE), mod + ": the Fatigue effect");
     }
 
-    /** Advances past the 20-tick thirst update interval and reads the resulting regeneration. */
     private static double regenAfterFactors(ServerPlayer player) {
         player.tickCount = 0;
         tick(player, 1);
@@ -148,15 +142,11 @@ public class SurvivalCompatTests {
         helper.succeed();
     }
 
-    /**
-     * Only meaningful without a body-temperature mod: those outrank the seasons, by design.
-     */
     @GameTest(template = "empty")
     public static void sereneSeasonsWinterIsCold(GameTestHelper helper) {
         boolean bodyTemperatureMod = ColdSweatCompat.LOADED || ToughAsNailsCompat.LOADED || LegendarySurvivalCompat.LOADED;
         if (SereneSeasonsCompat.LOADED && !bodyTemperatureMod) withCompat(() -> {
             ServerPlayer player = player(helper);
-            // Well above the test area, under open sky: winter only chills those outdoors.
             player.moveTo(helper.absoluteVec(new Vec3(0, 100, 0)));
             helper.getLevel().getServer().getCommands().performPrefixedCommand(
                     helper.getLevel().getServer().createCommandSourceStack().withSuppressedOutput(), "season set mid_winter");

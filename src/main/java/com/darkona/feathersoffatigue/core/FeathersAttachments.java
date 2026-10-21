@@ -12,10 +12,6 @@ public final class FeathersAttachments {
     private static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES =
             DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, FeathersIds.MOD_ID);
 
-    /**
-     * Not copied on death: a respawned player starts with full feathers. NeoForge copies it on every other clone,
-     * such as returning from the End.
-     */
     public static final DeferredHolder<AttachmentType<?>, AttachmentType<FeathersData>> FEATHERS =
             ATTACHMENT_TYPES.register("feathers", () -> AttachmentType.serializable(FeathersData::new).build());
 

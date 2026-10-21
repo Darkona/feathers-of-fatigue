@@ -3,10 +3,6 @@ package com.darkona.feathersoffatigue.core;
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
 import net.minecraft.resources.ResourceLocation;
 
-/**
- * Stores recent spend activity by source for {@code /feathers debug}. A fixed ring combines spends from the same
- * source within one second, which prevents drains from flooding the log. The first spend creates the log.
- */
 public final class SpendLog {
 
     private static final int SIZE = 32;
@@ -31,9 +27,6 @@ public final class SpendLog {
         if (count < SIZE) count++;
     }
 
-    /**
-     * Stamina spent per source since {@code sinceGameTime}, most recent source first.
-     */
     public Object2IntLinkedOpenHashMap<ResourceLocation> totalsSince(long sinceGameTime) {
         Object2IntLinkedOpenHashMap<ResourceLocation> totals = new Object2IntLinkedOpenHashMap<>();
         for (int i = 0; i < count; i++) {

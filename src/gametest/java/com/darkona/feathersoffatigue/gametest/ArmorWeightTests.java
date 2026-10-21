@@ -39,9 +39,6 @@ import static com.darkona.feathersoffatigue.api.registry.FeathersIds.id;
 import static com.darkona.feathersoffatigue.gametest.TestSupport.player;
 import static com.darkona.feathersoffatigue.gametest.TestSupport.tick;
 
-/**
- * Armor weight with the default rules (per material), Lightweight, and the weight multiplier attribute.
- */
 @GameTestHolder(FeathersIds.MOD_ID)
 @PrefixGameTestTemplate(false)
 public class ArmorWeightTests {
@@ -62,7 +59,6 @@ public class ArmorWeightTests {
         };
     }
 
-    /** Runs a test with armor weight enabled, then restores the previous setting. */
     private static void withWeights(GameTestHelper helper, Runnable test) {
         boolean before = FeathersServerConfig.ENABLE_ARMOR_WEIGHTS.get();
         FeathersServerConfig.ENABLE_ARMOR_WEIGHTS.set(true);

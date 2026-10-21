@@ -24,9 +24,6 @@ import static com.darkona.feathersoffatigue.gametest.TestSupport.player;
 import static com.darkona.feathersoffatigue.gametest.TestSupport.saveAndLoad;
 import static com.darkona.feathersoffatigue.gametest.TestSupport.tick;
 
-/**
- * Heat tiers, heat protection and Endurance.
- */
 @GameTestHolder(FeathersIds.MOD_ID)
 @PrefixGameTestTemplate(false)
 public class EffectsTests {
@@ -40,9 +37,6 @@ public class EffectsTests {
         helper.succeed();
     }
 
-    /**
-     * Heat that Fire Resistance refuses is not offered to the player again at every climate check.
-     */
     @GameTest(template = "empty")
     public static void refusedHeatIsNotOfferedAgain(GameTestHelper helper) {
         ServerPlayer player = player(helper);
@@ -116,10 +110,6 @@ public class EffectsTests {
         helper.succeed();
     }
 
-    /**
-     * Drinking Endurance again extends what is left of the golden feathers instead of refilling them; a stronger
-     * level adds only its extra feathers.
-     */
     @GameTest(template = "empty")
     public static void refreshedEnduranceKeepsWhatIsLeft(GameTestHelper helper) {
         ServerPlayer player = player(helper);

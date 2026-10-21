@@ -4,9 +4,6 @@ import dev.ghen.thirst.foundation.common.capability.IThirst;
 import dev.ghen.thirst.foundation.common.capability.ModAttachment;
 import net.minecraft.world.entity.player.Player;
 
-/**
- * Sets Thirst Was Taken state for tests. Only loaded when it is present.
- */
 public final class ThirstScenario {
 
     private ThirstScenario() {}

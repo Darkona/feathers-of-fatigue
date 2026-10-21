@@ -27,7 +27,6 @@ public final class FeathersDataMaps {
      */
     public static final DataMapType<EntityType<?>, MountStats> MOUNT_STATS = DataMapType
             .builder(id("mount_stats"), Registries.ENTITY_TYPE, MountStats.CODEC)
-            // Synced: the client decides whether a mount has feathers (HUD, jump prediction) from it too.
             .synced(MountStats.CODEC, false)
             .build();
 

@@ -3,14 +3,6 @@ package com.darkona.feathersoffatigue.mount;
 import com.darkona.feathersoffatigue.api.MountStats;
 import com.darkona.feathersoffatigue.config.FeathersServerConfig;
 
-/**
- * A creature type's {@link MountStats} with the config filling the gaps, as plain numbers the tick reads without
- * unwrapping optionals. {@code FeathersServiceImpl.mountTuning} keeps one per type until data maps or the config
- * change.
- *
- * @param minFeathers the lower end of the stamina range a creature is born with
- * @param maxFeathers the upper end of that range
- */
 public record MountTuning(double minFeathers, double maxFeathers, double regenPerSecond, double gallopFeathersPerSecond,
                           double gallopSpeed, double jumpFeathers) {
 

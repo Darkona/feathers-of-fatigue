@@ -6,10 +6,6 @@ import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-/**
- * Prevents exhausted horses, donkeys, and mules from jumping. The client checks this during ridden jump simulation.
- * {@link ServerGamePacketListenerImplMixin} performs the server-side check.
- */
 @Mixin(AbstractHorse.class)
 public abstract class AbstractHorseMixin {
 
