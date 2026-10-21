@@ -3,7 +3,7 @@ package com.darkona.feathersoffatigue.client.gui;
 import dev.darkona.jdlib.api.hud.HudSide;
 import dev.darkona.jdlib.api.hud.JDHudBars;
 import dev.darkona.jdlib.api.hud.VanillaLayer;
-import dev.darkona.jdlib.client.hud.StackMath;
+import dev.darkona.jdlib.api.hud.StackMath;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

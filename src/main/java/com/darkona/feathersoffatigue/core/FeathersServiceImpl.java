@@ -15,6 +15,7 @@ import com.darkona.feathersoffatigue.config.FeathersServerConfig;
 import com.darkona.feathersoffatigue.mount.MountTuning;
 import com.darkona.feathersoffatigue.network.FeathersNetwork;
 import com.darkona.feathersoffatigue.weight.ArmorWeights;
+import dev.darkona.jdlib.core.stat.SourcedPools;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,33 +27,19 @@ import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 
 
-/**
- * The server-side implementation behind the API. Client-side calls go to {@link ClientBridge}.
- */
 public final class FeathersServiceImpl implements FeathersService {
 
     public static final FeathersServiceImpl INSTANCE = new FeathersServiceImpl();
 
-    /**
-     * Supplies the local player's synchronized state for client-side API calls. The client installs this bridge.
-     */
     public interface ClientBridge {
         @SuppressWarnings("BooleanMethodIsAlwaysInverted")
         boolean isLocalPlayer(LivingEntity entity);
 
-        /**
-         * The client's feathers for the local player or its mount, or null for any other entity.
-         */
         @Nullable
         FeathersView clientView(LivingEntity entity);
 
         FeathersView localView();
 
-        /**
-         * Checks {@code cost}, already through the usage multiplier and the modifiers, on the local view like
-         * {@link #simulateAgainst} and pays it the way the server would, so the HUD reacts before the server's sync.
-         * EXEMPT until the first sync.
-         */
         SpendResult payPredicted(int cost, SpendOptions options);
     }
 
@@ -64,24 +51,13 @@ public final class FeathersServiceImpl implements FeathersService {
         clientBridge = bridge;
     }
 
-    /* Access */
-
-    /**
-     * Supports all players and configured mounts, including horses, donkeys, mules, and camels.
-     */
     @Override
     public boolean supports(LivingEntity entity) {
         return entity instanceof Player || isMount(entity);
     }
 
-    /**
-     * Horses and anything extending them, plus the entity types in the {@code feathers_of_fatigue:mounts} tag or the
-     * {@code feathers_of_fatigue:mount_stats} data map: modpacks can give feathers to any creature.
-     */
     public static boolean isMount(LivingEntity entity) {
         if (entity instanceof Player || !FeathersServerConfig.ENABLE_MOUNTS.get()) return false;
-        // Asked for every living entity every tick: the verdict is per type, worked out once and kept until tags,
-        // data maps or the config change (see invalidateMountTypes).
         int id = BuiltInRegistries.ENTITY_TYPE.getId(entity.getType());
         byte[] verdicts = mountTypes;
         if (verdicts.length == 0) {
@@ -110,15 +86,11 @@ public final class FeathersServiceImpl implements FeathersService {
         return mount && entity.getAttribute(FeathersAttributes.MAX_FEATHERS) != null;
     }
 
-    /** Tags, data maps or the config changed: every entity type's mount verdict and tuning is worked out again. */
     public static void invalidateMountTypes() {
         mountTypes = new byte[BuiltInRegistries.ENTITY_TYPE.size()];
         mountTunings = new MountTuning[0];
     }
 
-    /**
-     * The creature's mount stats from the data map, or {@link MountStats#DEFAULT} (the config) without an entry.
-     */
     public static MountStats mountStats(LivingEntity entity) {
         MountStats stats = BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entity.getType())
                 .getData(FeathersDataMaps.MOUNT_STATS);
@@ -127,10 +99,6 @@ public final class FeathersServiceImpl implements FeathersService {
 
     private static volatile MountTuning[] mountTunings = new MountTuning[0];
 
-    /**
-     * The creature's mount stats with the config filled in, worked out once per type (see invalidateMountTypes):
-     * a ridden mount reads them every tick.
-     */
     public static MountTuning mountTuning(LivingEntity entity) {
         int id = BuiltInRegistries.ENTITY_TYPE.getId(entity.getType());
         MountTuning[] tunings = mountTunings;
@@ -147,9 +115,6 @@ public final class FeathersServiceImpl implements FeathersService {
         return tuning;
     }
 
-    /**
-     * Checks whether a player bypasses the stamina system in Creative or Spectator mode.
-     */
     public static boolean isExempt(LivingEntity entity) {
         return entity instanceof Player player && (player.isCreative() || player.isSpectator());
     }
@@ -166,7 +131,6 @@ public final class FeathersServiceImpl implements FeathersService {
     public FeathersView view(LivingEntity entity) {
         if (!supports(entity)) return FeathersView.NONE;
         if (onClient(entity)) {
-            // The client only knows its own player's feathers.
             ClientBridge bridge = clientBridge;
             FeathersView known = bridge != null ? bridge.clientView(entity) : null;
             return known != null ? known : FeathersView.NONE;
@@ -176,10 +140,6 @@ public final class FeathersServiceImpl implements FeathersService {
         return data;
     }
 
-    /**
-     * Maximum stamina and weight come from attributes and equipment. The first access after joining or loading reads
-     * them, and a brand new entity starts full.
-     */
     static void ensureInitialized(LivingEntity entity, FeathersData data) {
         if (data.initialized) return;
         data.initialized = true;
@@ -189,12 +149,9 @@ public final class FeathersServiceImpl implements FeathersService {
             data.fresh = false;
         }
         data.weight = ArmorWeights.totalWeight(entity, data.weightSplit);
-        data.forceSync = true;
+        data.shown.resendNext();
     }
 
-    /**
-     * Reads the max feathers and max strain attributes, and clamps the stamina to the new maximum.
-     */
     static void refreshMaximums(LivingEntity entity, FeathersData data) {
         AttributeInstance maxFeathers = data.maxFeathersAttribute(entity);
         AttributeInstance maxStrain = data.maxStrainAttribute(entity);
@@ -206,23 +163,12 @@ public final class FeathersServiceImpl implements FeathersService {
         if (data.stamina > max) data.stamina = max;
     }
 
-    /* Costs */
-
-    /**
-     * A base cost after the usage multiplier and the stamina modifiers.
-     */
     static int effectiveCost(LivingEntity entity, FeathersData data, ResourceLocation source, double baseCost) {
         return effectiveCost(entity, data, data.usageAttribute(entity), source, baseCost);
     }
 
-    /**
-     * A base cost after the usage multiplier and the stamina modifiers, against any view of the entity's feathers.
-     * The client prices its predictions with it: the usage multiplier is a synced attribute, and modifiers are
-     * registered on both sides.
-     */
     public static int effectiveCost(LivingEntity entity, FeathersView feathers, @Nullable AttributeInstance usage,
                                     ResourceLocation source, double baseCost) {
-        // Clamped before narrowing: an "everything" cost times a multiplier would wrap negative and cost nothing.
         int cost = (int) Math.min(Integer.MAX_VALUE, Math.round(baseCost * (usage != null ? usage.getValue() : 1.0)));
         for (Extensions.ModifierEntry modifier : Extensions.modifiers()) {
             cost = modifier.modifier().modifyCost(entity, feathers, source, cost);
@@ -230,7 +176,6 @@ public final class FeathersServiceImpl implements FeathersService {
         return Math.max(0, cost);
     }
 
-    /** A cost priced on the client against its view of the local player's feathers. */
     private static int clientCost(LivingEntity entity, FeathersView feathers, ResourceLocation source, double baseCost) {
         return effectiveCost(entity, feathers, entity.getAttribute(FeathersAttributes.USAGE_MULTIPLIER), source, baseCost);
     }
@@ -254,7 +199,6 @@ public final class FeathersServiceImpl implements FeathersService {
 
         if (data.exhausted && !options.ignoreExhaustion()) return SpendResult.EXHAUSTED;
 
-        // A free action still pauses regeneration if it asks to.
         if (stamina <= 0) {
             if (!options.simulate()) applyRegenDelay(data, options);
             return SpendResult.OK;
@@ -288,28 +232,17 @@ public final class FeathersServiceImpl implements FeathersService {
         data.regenDelay = regenDelayAfter(data.regenDelay, options);
     }
 
-    /**
-     * A regeneration delay after a spend with {@code options}: the spend's delay (or the config's) added to
-     * {@code current}, up to max_cooldown. Added in long: a huge delay from the API would wrap negative.
-     */
     public static int regenDelayAfter(int current, SpendOptions options) {
         int delay = options.regenDelayTicks() < 0 ? FeathersServerConfig.DEFAULT_USAGE_COOLDOWN.get() : options.regenDelayTicks();
         return (int) Math.min((long) current + delay, FeathersServerConfig.MAX_COOLDOWN.get() * 20L);
     }
 
-    /**
-     * Checks {@code cost}, already priced, against a view: exhaustion, then stamina and bonus plus the strain room the
-     * spend may use. For views that are not the server's, such as the client's copy.
-     */
     public static SpendResult simulateAgainst(FeathersView view, int cost, boolean allowStrain, boolean ignoreExhaustion) {
         if (view.exhausted() && !ignoreExhaustion) return SpendResult.EXHAUSTED;
         int room = allowStrain && FeathersServerConfig.ENABLE_STRAIN.get() ? Math.max(0, view.maxStrain() - view.strain()) : 0;
         return cost <= view.availableStamina() + room ? SpendResult.OK : SpendResult.INSUFFICIENT;
     }
 
-    /**
-     * Pays a cost already checked with {@link FeathersData#canPay}, then fires strain and exhaustion transitions.
-     */
     static void payAndSettle(LivingEntity entity, FeathersData data, int cost, boolean strainEnabled) {
         boolean wasStrained = data.strain > 0;
         data.pay(cost);
@@ -323,8 +256,6 @@ public final class FeathersServiceImpl implements FeathersService {
             NeoForge.EVENT_BUS.post(new ExhaustionEvent.Exhausted(entity));
         }
     }
-
-    /* Drains */
 
     @Override
     public SpendResult startDrain(LivingEntity entity, ResourceLocation source, double staminaPerTick, DrainOptions options) {
@@ -340,20 +271,14 @@ public final class FeathersServiceImpl implements FeathersService {
         ensureInitialized(entity, data);
         long now = entity.level().getGameTime();
 
-        FeathersData.Drain drain = data.drain(source);
-        if (drain == null) {
+        boolean started = !data.drains.has(source);
+        if (started) {
             if (data.exhausted) return SpendResult.EXHAUSTED;
             int firstTick = effectiveCost(entity, data, source, Math.ceil(staminaPerTick));
             if (!data.canPay(firstTick, options.allowStrain(), FeathersServerConfig.ENABLE_STRAIN.get())) return SpendResult.INSUFFICIENT;
-            drain = new FeathersData.Drain(source);
-            data.drains.add(drain);
-            NeoForge.EVENT_BUS.post(new DrainEvent.Started(entity, source, staminaPerTick));
         }
-        drain.perTick = Math.max(0, staminaPerTick);
-        drain.allowStrain = options.allowStrain();
-        drain.blocksRegen = options.blocksRegen();
-        drain.timeoutTicks = options.timeoutTicks();
-        drain.lastRefresh = now;
+        data.drains.refresh(source, staminaPerTick, options.timeoutTicks(), options.allowStrain(), options.blocksRegen(), now);
+        if (started) NeoForge.EVENT_BUS.post(new DrainEvent.Started(entity, source, staminaPerTick));
         return SpendResult.OK;
     }
 
@@ -361,18 +286,14 @@ public final class FeathersServiceImpl implements FeathersService {
     public void stopDrain(LivingEntity entity, ResourceLocation source) {
         if (!supports(entity) || onClient(entity)) return;
         FeathersData data = data(entity);
-        int i = FeathersData.indexOf(data.drains, source);
-        if (i < 0) return;
-        data.drains.remove(i);
+        if (!data.drains.remove(source)) return;
         NeoForge.EVENT_BUS.post(new DrainEvent.Stopped(entity, source, DrainEvent.Stopped.Reason.STOPPED));
     }
 
     @Override
     public boolean isDraining(LivingEntity entity, ResourceLocation source) {
-        return supports(entity) && !onClient(entity) && data(entity).drain(source) != null;
+        return supports(entity) && !onClient(entity) && data(entity).drains.has(source);
     }
-
-    /* Giving and setting */
 
     @Override
     public int gain(LivingEntity entity, ResourceLocation source, int stamina) {
@@ -381,8 +302,6 @@ public final class FeathersServiceImpl implements FeathersService {
         ensureInitialized(entity, data);
         GainEvent event = NeoForge.EVENT_BUS.post(new GainEvent(entity, source, stamina));
         if (event.isCanceled()) return 0;
-        // Strain is stamina owed: paid back first, like regeneration does. Otherwise a gift while strained would leave
-        // stamina and strain side by side, which nothing else produces and the HUD can't draw.
         int recovered = Math.min(data.strain, event.getAmount());
         data.strain -= recovered;
         int gained = Math.clamp(data.maxStamina - data.stamina, 0, event.getAmount() - recovered);
@@ -398,7 +317,6 @@ public final class FeathersServiceImpl implements FeathersService {
         FeathersData data = data(entity);
         ensureInitialized(entity, data);
         data.stamina = Math.clamp(stamina, 0, data.maxStamina);
-        // Strain is owed from an empty bar: a bar set above zero owes nothing.
         if (data.stamina > 0 && data.strain > 0) {
             data.strain = 0;
             NeoForge.EVENT_BUS.post(new StrainEvent.Cleared(entity));
@@ -422,47 +340,43 @@ public final class FeathersServiceImpl implements FeathersService {
         }
     }
 
-    /* Bonuses, blocks, rest */
-
     private static long until(LivingEntity entity, int ticks) {
-        return ticks < 0 ? FeathersData.FOREVER : entity.level().getGameTime() + ticks;
+        return ticks < 0 ? SourcedPools.FOREVER : entity.level().getGameTime() + ticks;
     }
 
     @Override
     public void addBonusStamina(LivingEntity entity, ResourceLocation source, int stamina, int ticks) {
         if (!supports(entity) || onClient(entity)) return;
         FeathersData data = data(entity);
-        if (stamina <= 0) data.removeBonus(source);
-        else data.setBonus(source, stamina, until(entity, ticks));
+        if (stamina <= 0) data.bonuses.remove(source);
+        else data.bonuses.set(source, stamina, until(entity, ticks));
         FeathersTicker.checkRecovered(entity, data);
     }
 
     @Override
     public void removeBonusStamina(LivingEntity entity, ResourceLocation source) {
-        if (supports(entity) && !onClient(entity)) data(entity).removeBonus(source);
+        if (supports(entity) && !onClient(entity)) data(entity).bonuses.remove(source);
     }
 
     @Override
     public void blockRegen(LivingEntity entity, ResourceLocation source, int ticks) {
-        if (supports(entity) && !onClient(entity)) FeathersData.setTimed(data(entity).regenBlocks, source, 0, until(entity, ticks));
+        if (supports(entity) && !onClient(entity)) data(entity).regenBlocks.set(source, 0, until(entity, ticks));
     }
 
     @Override
     public void unblockRegen(LivingEntity entity, ResourceLocation source) {
-        if (supports(entity) && !onClient(entity)) FeathersData.removeTimed(data(entity).regenBlocks, source);
+        if (supports(entity) && !onClient(entity)) data(entity).regenBlocks.remove(source);
     }
 
     @Override
     public void setRestBonus(LivingEntity entity, ResourceLocation source, double multiplier, int ticks) {
-        if (supports(entity) && !onClient(entity)) FeathersData.setTimed(data(entity).restBonuses, source, multiplier, until(entity, ticks));
+        if (supports(entity) && !onClient(entity)) data(entity).restBonuses.set(source, multiplier, until(entity, ticks));
     }
 
     @Override
     public void removeRestBonus(LivingEntity entity, ResourceLocation source) {
-        if (supports(entity) && !onClient(entity)) FeathersData.removeTimed(data(entity).restBonuses, source);
+        if (supports(entity) && !onClient(entity)) data(entity).restBonuses.remove(source);
     }
-
-    /* Climate and weight */
 
     @Override
     public Climate getClimate(LivingEntity entity) {
@@ -486,8 +400,6 @@ public final class FeathersServiceImpl implements FeathersService {
         data.weight = ArmorWeights.totalWeight(entity, data.weightSplit);
     }
 
-    /* Extension points */
-
     @Override
     public void registerClimateProvider(ResourceLocation id, int priority, ClimateProvider provider) {
         Extensions.addClimate(id, priority, provider);
@@ -510,6 +422,6 @@ public final class FeathersServiceImpl implements FeathersService {
 
     @Override
     public void sync(LivingEntity entity) {
-        if (supports(entity) && !onClient(entity)) data(entity).forceSync = true;
+        if (supports(entity) && !onClient(entity)) data(entity).shown.resendNext();
     }
 }
