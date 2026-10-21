@@ -6,9 +6,6 @@ import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.WailaPlugin;
 
-/**
- * Jade: looking at a mount shows its stamina. Jade finds and loads this class itself, only when installed.
- */
 @WailaPlugin
 public class FeathersJadePlugin implements IWailaPlugin {
 

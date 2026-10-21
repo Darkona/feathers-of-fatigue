@@ -4,20 +4,17 @@ import com.darkona.feathersoffatigue.api.FeathersAPI;
 import com.darkona.feathersoffatigue.api.FeathersView;
 import com.darkona.feathersoffatigue.compatibility.ThirstRegen;
 import com.darkona.feathersoffatigue.config.FeathersCompatConfig;
+import dev.darkona.jdlib.api.compat.Bridges;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.fml.ModList;
 
 import static com.darkona.feathersoffatigue.api.registry.FeathersIds.id;
 
-/**
- * Thirst Was Taken compatibility, safe to load without it: calls into the mod go through {@link ThirstBridge}.
- */
 public final class ThirstCompat {
 
     private static final ThirstRegen.Keys THIRST_KEYS = ThirstRegen.Keys.of("thirst_was_taken");
 
-    public static final boolean LOADED = ModList.get().isLoaded("thirst");
+    public static final boolean LOADED = Bridges.isLoaded("thirst");
 
     private ThirstCompat() {}
 

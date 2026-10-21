@@ -5,9 +5,6 @@ import com.momosoftworks.coldsweat.core.init.ModEffects;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 
-/**
- * The only class that touches Cold Sweat. Loaded only through {@link ColdSweatCompat} when Cold Sweat is present.
- */
 final class ColdSweatBridge {
 
     private ColdSweatBridge() {}

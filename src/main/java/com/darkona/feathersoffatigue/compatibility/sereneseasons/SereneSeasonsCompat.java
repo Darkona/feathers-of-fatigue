@@ -3,22 +3,16 @@ package com.darkona.feathersoffatigue.compatibility.sereneseasons;
 import com.darkona.feathersoffatigue.api.Climate;
 import com.darkona.feathersoffatigue.api.FeathersAPI;
 import com.darkona.feathersoffatigue.config.FeathersCompatConfig;
+import dev.darkona.jdlib.api.compat.Bridges;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.neoforged.fml.ModList;
 
 import static com.darkona.feathersoffatigue.api.registry.FeathersIds.id;
 
-/**
- * Serene Seasons compatibility, safe to load without it: calls go through {@link SereneSeasonsBridge}. Winter
- * outdoors is cold; a summer day in the sun is hot in warmer biomes. Below the body-temperature mods (Cold Sweat,
- * Tough As Nails, Legendary Survival Overhaul), which already account for seasons; above the vanilla climate.
- * Anything it has no opinion on falls through to the vanilla climate.
- */
 public final class SereneSeasonsCompat {
 
-    public static final boolean LOADED = ModList.get().isLoaded("sereneseasons");
+    public static final boolean LOADED = Bridges.isLoaded("sereneseasons");
 
     public static final int CLIMATE_PRIORITY = 50;
 

@@ -4,12 +4,8 @@ import net.minecraft.world.entity.player.Player;
 import toughasnails.api.temperature.TemperatureHelper;
 import toughasnails.api.thirst.ThirstHelper;
 
-/**
- * The only class that touches Tough As Nails. Loaded only through {@link ToughAsNailsCompat} when it is present.
- */
 final class ToughAsNailsBridge {
 
-    /** Tough As Nails' levels, mirrored so the compat class never names TAN's own enum. */
     enum Level {ICY, COLD, NEUTRAL, WARM, HOT}
 
     private static final Level[] LEVELS = Level.values();

@@ -3,20 +3,15 @@ package com.darkona.feathersoffatigue.compatibility.coldsweat;
 import com.darkona.feathersoffatigue.api.Climate;
 import com.darkona.feathersoffatigue.api.FeathersAPI;
 import com.darkona.feathersoffatigue.config.FeathersCompatConfig;
+import dev.darkona.jdlib.api.compat.Bridges;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.fml.ModList;
 
 import static com.darkona.feathersoffatigue.api.registry.FeathersIds.id;
 
-/**
- * Cold Sweat compatibility, safe to load without Cold Sweat: every call into Cold Sweat goes through
- * {@link ColdSweatBridge}, which only loads when Cold Sweat is present.
- */
 public final class ColdSweatCompat {
 
-    public static final boolean LOADED = ModList.get().isLoaded("cold_sweat");
+    public static final boolean LOADED = Bridges.isLoaded("cold_sweat");
 
-    /** Above the vanilla climate (priority 0): body temperature is the better answer. */
     public static final int CLIMATE_PRIORITY = 100;
 
     private ColdSweatCompat() {}
