@@ -244,6 +244,8 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
+def apiJdlibVersion = jdlib_version
+
 publishing {
     publications {
         register('mavenJava', MavenPublication) {
@@ -257,7 +259,7 @@ publishing {
                 def dependency = asNode().appendNode('dependencies').appendNode('dependency')
                 dependency.appendNode('groupId', 'dev.darkona.jdlib')
                 dependency.appendNode('artifactId', 'JDLib')
-                dependency.appendNode('version', jdlib_version)
+                dependency.appendNode('version', apiJdlibVersion)
                 dependency.appendNode('scope', 'compile')
             }
         }
