@@ -7,9 +7,6 @@ import toughasnails.api.temperature.TemperatureLevel;
 import toughasnails.api.thirst.IThirst;
 import toughasnails.api.thirst.ThirstHelper;
 
-/**
- * Sets Tough As Nails state for tests. Only loaded when it is present.
- */
 public final class ToughAsNailsScenario {
 
     private ToughAsNailsScenario() {}

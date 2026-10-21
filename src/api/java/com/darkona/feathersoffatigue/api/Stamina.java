@@ -28,7 +28,6 @@ public final class Stamina {
      * @return the converted value, saturated to the {@code int} range
      */
     public static int ofFeathers(double feathers) {
-        // Math.round(double) already saturates to the long range and maps NaN to 0.
         return saturate(Math.round(feathers * PER_FEATHER));
     }
 
@@ -49,7 +48,6 @@ public final class Stamina {
      * @return the number of visible feathers
      */
     public static int toFeathersCeil(int stamina) {
-        // In long: -Integer.MIN_VALUE wraps in int.
         return (int) -Math.floorDiv(-(long) stamina, PER_FEATHER);
     }
 

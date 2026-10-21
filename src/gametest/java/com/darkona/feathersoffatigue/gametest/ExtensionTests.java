@@ -22,16 +22,11 @@ import static com.darkona.feathersoffatigue.gametest.TestSupport.player;
 import static com.darkona.feathersoffatigue.gametest.TestSupport.tick;
 
 
-/**
- * The extension points, used the way another mod would. Registrations are global and permanent, so each only
- * affects players carrying this test's tag.
- */
 @GameTestHolder(FeathersIds.MOD_ID)
 @PrefixGameTestTemplate(false)
 public class ExtensionTests {
 
     private static final String MARK = "feathers_of_fatigue_extension_test";
-    /** Separate from MARK: a cold player regenerates at half speed, which would skew the other tests. */
     private static final String COLD_MARK = "feathers_of_fatigue_extension_test_cold";
     private static final ResourceLocation FREE = id("test_free_action");
 
@@ -95,10 +90,6 @@ public class ExtensionTests {
         helper.succeed();
     }
 
-    /**
-     * A mod that charges player actions itself turns the basic exertion off. The take-over is global and permanent, so
-     * this is the only test that jumps: basic exertion stays off for the rest of the run.
-     */
     @GameTest(template = "empty")
     public static void takingOverPlayerActionsStopsBasicExertion(GameTestHelper helper) {
         ServerPlayer player = player(helper);

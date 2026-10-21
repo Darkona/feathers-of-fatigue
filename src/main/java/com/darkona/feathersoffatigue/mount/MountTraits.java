@@ -12,22 +12,13 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.BabyEntitySpawnEvent;
 
-/**
- * A mount's stamina is a hidden trait, like its speed or health: rolled once when it first appears, saved as the base
- * of its max feathers attribute, and passed on to foals as their parents' average with some variation.
- */
 @EventBusSubscriber(modid = FeathersIds.MOD_ID)
 public final class MountTraits {
 
-    /** Marks the trait as rolled, in the mount's saved feathers counters. */
     private static final String ROLLED = "mount.stamina_rolled";
 
     private MountTraits() {}
 
-    /**
-     * Rolls the mount's max feathers if it never had them. Near the middle of the configured range more often than
-     * at its ends: the average of three rolls.
-     */
     public static void ensureRolled(LivingEntity mount) {
         FeathersData data = FeathersServiceImpl.data(mount);
         if (data.getCounter(ROLLED) != 0) return;
@@ -36,9 +27,6 @@ public final class MountTraits {
         setTrait(mount, data, Mth.lerp(roll, min(mount), max(mount)));
     }
 
-    /**
-     * Foals get their parents' average, nudged by up to a sixth of the range either way.
-     */
     @SubscribeEvent
     public static void onBreed(BabyEntitySpawnEvent event) {
         if (!(event.getChild() instanceof LivingEntity foal) || foal.level().isClientSide() || !FeathersServiceImpl.isMount(foal)
@@ -62,7 +50,6 @@ public final class MountTraits {
         data.setCounter(ROLLED, 1);
     }
 
-    /** The creature's range: its mount stats data map entry, else the config. */
     private static double min(LivingEntity mount) {
         return FeathersServiceImpl.mountTuning(mount).minFeathers();
     }

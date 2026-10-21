@@ -17,20 +17,14 @@ import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * The local player's feathers (this view) and those of the mount it rides, as last synced, with local predictions
- * for the player until the next sync. Client thread only.
- */
 public final class ClientFeathersData extends SyncedFeathers implements ClientFeathersService, FeathersServiceImpl.ClientBridge {
 
     public static final ClientFeathersData INSTANCE = new ClientFeathersData();
 
-    /** How long a debug spend line stays on the overlay. */
     public static final int DEBUG_LINE_TICKS = 60;
 
     private final SyncedFeathers mount = new SyncedFeathers();
     private int mountId = -1;
-    /** The local player was seen riding {@link #mountId}. */
     private boolean mountSeated;
 
     private ResourceLocation lastSpendSource;
@@ -56,9 +50,6 @@ public final class ClientFeathersData extends SyncedFeathers implements ClientFe
         INSTANCE.lastSpendTicks = DEBUG_LINE_TICKS;
     }
 
-    /**
-     * Forgets everything on leaving a world.
-     */
     @Override
     void clear() {
         super.clear();
@@ -73,8 +64,6 @@ public final class ClientFeathersData extends SyncedFeathers implements ClientFe
         super.tick();
         mount.tick();
         if (lastSpendTicks > 0) lastSpendTicks--;
-        // The mount's feathers only mean something while riding it. The server can send them a moment before the
-        // client sees the rider seated. Clear it after the player dismounts a known mount or rides another entity.
         if (mountId == -1) return;
         LocalPlayer player = Minecraft.getInstance().player;
         Entity vehicle = player != null ? player.getVehicle() : null;
@@ -87,9 +76,6 @@ public final class ClientFeathersData extends SyncedFeathers implements ClientFe
         }
     }
 
-    /**
-     * The feathers of the mount the local player rides, or {@link FeathersView#NONE}.
-     */
     public FeathersView mount() {
         return mountSeated && mount.hasFeathers() ? mount : FeathersView.NONE;
     }
@@ -101,8 +87,6 @@ public final class ClientFeathersData extends SyncedFeathers implements ClientFe
     public int lastSpendCost() {
         return lastSpendCost;
     }
-
-    /* ClientFeathersService, and the common service's client bridge */
 
     @Override
     public FeathersView local() {
@@ -120,18 +104,12 @@ public final class ClientFeathersData extends SyncedFeathers implements ClientFe
         return entity == Minecraft.getInstance().player;
     }
 
-    /**
-     * Goes through the common service, which prices the cost for the local player and calls {@link #payPredicted}.
-     */
     @Override
     public SpendResult predictSpend(ResourceLocation source, int stamina, SpendOptions options) {
         LocalPlayer player = Minecraft.getInstance().player;
         return player != null ? FeathersServiceImpl.INSTANCE.spend(player, source, stamina, options) : SpendResult.EXEMPT;
     }
 
-    /**
-     * Pays locally the way the server would (bonus, stamina, then strain) so the HUD reacts at once.
-     */
     @Override
     public SpendResult payPredicted(int cost, SpendOptions options) {
         if (!synced) return SpendResult.EXEMPT;

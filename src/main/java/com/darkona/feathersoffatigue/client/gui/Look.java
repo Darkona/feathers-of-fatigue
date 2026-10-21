@@ -5,22 +5,16 @@ import com.darkona.feathersoffatigue.api.client.FeatherVariants;
 import com.darkona.feathersoffatigue.api.client.FeatherVariants.Sprites;
 import net.minecraft.resources.ResourceLocation;
 
-/**
- * A {@link FeatherStyle} resolved for drawing: its colors, where its variant's and overlay's cells are. Filled in place
- * (once per client tick, or per draw for texture-tinted feathers), never allocated while drawing.
- */
 final class Look {
 
     private static final Sprites FALLBACK = new Sprites(FeatherVariants.SHEET, 1);
 
     int body;
     int border;
-    /** The variant's texture, its size and cell row. */
     ResourceLocation sheet = FeatherVariants.SHEET;
     int sheetWidth = FeatherVariants.SHEET_WIDTH;
     int sheetHeight = FeatherVariants.SHEET_HEIGHT;
     int row = 1;
-    /** Where the empty slot's fill is (row 0), and that texture's size. */
     ResourceLocation slotSheet = FeatherVariants.SHEET;
     int slotWidth = FeatherVariants.SHEET_WIDTH;
     int slotHeight = FeatherVariants.SHEET_HEIGHT;
@@ -35,7 +29,6 @@ final class Look {
     Look set(FeatherStyle style) {
         body = style.body();
         border = style.border();
-        // A style's own sprites are laid out like the sheet, so they have its size.
         ResourceLocation override = style.sprites();
         Sprites variant = FeatherVariants.variant(style.variant());
         if (variant == null) variant = FeatherVariants.variant(FeatherVariants.FEATHER);
@@ -60,7 +53,6 @@ final class Look {
         return this;
     }
 
-    /** Colors only, keeping the sprites: for feathers tinted from a texture (mounts, armor pieces, weight sources). */
     Look colors(int body, int border) {
         this.body = body;
         this.border = border;

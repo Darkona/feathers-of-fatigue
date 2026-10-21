@@ -11,7 +11,6 @@ import java.util.List;
 
 public class FeatherRingItem extends Item {
 
-    /** Where the ring goes: a Curios ring slot, or the off hand. Built once, since a tooltip is rebuilt every frame. */
     private static final String TOOLTIP = "item.feathers_of_fatigue.feather_ring.tooltip." + (ModItems.CURIOS ? "ring" : "offhand");
 
     public FeatherRingItem(Properties properties) {

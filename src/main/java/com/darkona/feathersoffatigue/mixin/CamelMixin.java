@@ -6,9 +6,6 @@ import net.minecraft.world.entity.animal.camel.Camel;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-/**
- * Prevents an exhausted camel from using its dash, which replaces the horse jump.
- */
 @Mixin(Camel.class)
 public abstract class CamelMixin {
 

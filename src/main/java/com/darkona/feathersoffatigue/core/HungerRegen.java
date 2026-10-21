@@ -11,25 +11,16 @@ import net.minecraft.world.food.FoodData;
 
 import static com.darkona.feathersoffatigue.api.registry.FeathersIds.id;
 
-/**
- * Adds a hunger-based regeneration factor for players. Saturation improves regeneration, while low food reduces it.
- * Mounts are not affected because they do not use player food data.
- */
 public final class HungerRegen {
 
-    /** A player at or below this food level is hungry, matching the sprint requirement. */
     static final int HUNGRY_FOOD_LEVEL = 6;
 
     private HungerRegen() {}
 
-    /** Registers the built-in hunger factor during common setup. */
     public static void registerBuiltIn() {
         Extensions.addRegenFactor(id("hunger"), HungerRegen::regenFactor);
     }
 
-    /**
-     * Returns the configured bonus or penalty as a contribution to regeneration.
-     */
     private static double regenFactor(LivingEntity entity, FeathersView feathers) {
         if (!(entity instanceof Player player)) return 0.0;
 
@@ -47,7 +38,6 @@ public final class HungerRegen {
 
         AttributeInstance regen = player.getAttribute(FeathersAttributes.FEATHERS_PER_SECOND);
         double base = regen != null ? regen.getBaseValue() : 0.0;
-        // A negative base rate drains stamina. Scaling it would make saturation increase the drain.
         return base > 0 ? base * (multiplier - 1.0) : 0.0;
     }
 }

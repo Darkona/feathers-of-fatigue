@@ -29,10 +29,6 @@ import static com.darkona.feathersoffatigue.gametest.TestSupport.player;
 import static com.darkona.feathersoffatigue.gametest.TestSupport.saveAndLoad;
 import static com.darkona.feathersoffatigue.gametest.TestSupport.tick;
 
-/**
- * One-off spends: all or nothing, simulation, strain, exhaustion, bonus stamina, exemptions, multipliers.
- * Defaults: 20 max feathers, 6 max strain, strain and exhaustion on.
- */
 @GameTestHolder(FeathersIds.MOD_ID)
 @PrefixGameTestTemplate(false)
 public class SpendTests {
@@ -56,9 +52,6 @@ public class SpendTests {
         helper.succeed();
     }
 
-    /**
-     * Huge amounts saturate instead of wrapping into free negative spends. The command rejects values that do not fit.
-     */
     @GameTest(template = "empty")
     public static void hugeAmountsSaturate(GameTestHelper helper) {
         helper.assertValueEqual(Stamina.ofFeathers(3_000_000.0), Integer.MAX_VALUE, "huge feathers");
@@ -94,10 +87,6 @@ public class SpendTests {
         helper.succeed();
     }
 
-    /**
-     * A gift while strained pays the strain back first, as regeneration does: stamina and strain never sit side by
-     * side. Clearing the last of it posts the event, like the tick's own recovery.
-     */
     @GameTest(template = "empty")
     public static void gainsPayStrainBackFirst(GameTestHelper helper) {
         ServerPlayer player = player(helper);
@@ -122,10 +111,6 @@ public class SpendTests {
         helper.succeed();
     }
 
-    /**
-     * Setting the feathers of a strained player (the API, {@code /feathers set}) clears the strain, with its event:
-     * stamina and strain never sit side by side. Setting them to zero keeps it.
-     */
     @GameTest(template = "empty")
     public static void settingFeathersClearsStrain(GameTestHelper helper) {
         ServerPlayer player = player(helper);
@@ -150,10 +135,6 @@ public class SpendTests {
         helper.succeed();
     }
 
-    /**
-     * Strain turned off in the config while a player is strained: the strain goes on the next tick, with its event,
-     * and the strained effect is not put on the player on the way out.
-     */
     @GameTest(template = "empty")
     public static void strainTurnedOffClearsStrainWithItsEvent(GameTestHelper helper) {
         ServerPlayer player = player(helper);
@@ -238,10 +219,6 @@ public class SpendTests {
         helper.succeed();
     }
 
-    /**
-     * The client prices a predicted spend like the server: the usage multiplier (Heat doubles it) and the stamina
-     * modifiers, against the view it has.
-     */
     @GameTest(template = "empty")
     public static void clientPricingMatchesTheServer(GameTestHelper helper) {
         ServerPlayer player = player(helper);
@@ -253,7 +230,6 @@ public class SpendTests {
         helper.succeed();
     }
 
-    /** A view as the client or a mount's rider sees it: 3 feathers, 2 of strain room out of 4, exhausted or not. */
     private static FeathersView view(boolean exhausted) {
         return new FeathersView() {
             public boolean hasFeathers() { return true; }

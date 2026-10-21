@@ -22,23 +22,16 @@ public final class FeathersNetwork {
 
         registrar.playToServer(SpendRequestPayload.TYPE, SpendRequestPayload.STREAM_CODEC, SpendRequestPayload::handle);
 
-        // Lambdas, not method references: ClientFeathersData must only load on the client.
         registrar.playToClient(SyncPayload.TYPE, SyncPayload.STREAM_CODEC,
                 (payload, context) -> ClientFeathersData.accept(payload));
         registrar.playToClient(SpendDebugPayload.TYPE, SpendDebugPayload.STREAM_CODEC,
                 (payload, context) -> ClientFeathersData.acceptDebug(payload));
     }
 
-    /**
-     * Sends {@code entity}'s feathers (the player's own, or its mount's) to {@code player}.
-     */
     public static void sendSync(ServerPlayer player, LivingEntity entity, FeathersData data) {
         send(player, SyncPayload.of(entity.getId(), data));
     }
 
-    /**
-     * Tells {@code player} that {@code entity} (the creature it rides) has no feathers any more: the HUD drops its row.
-     */
     public static void sendNoFeathers(ServerPlayer player, LivingEntity entity) {
         send(player, SyncPayload.none(entity.getId()));
     }
@@ -47,9 +40,6 @@ public final class FeathersNetwork {
         if (entity instanceof ServerPlayer player) send(player, new SpendDebugPayload(source, cost));
     }
 
-    /**
-     * Fake players and connections without this channel cannot receive payloads.
-     */
     private static void send(ServerPlayer player, CustomPacketPayload payload) {
         if (player instanceof FakePlayer || player.connection == null || !player.connection.hasChannel(payload)) return;
         PacketDistributor.sendToPlayer(player, payload);

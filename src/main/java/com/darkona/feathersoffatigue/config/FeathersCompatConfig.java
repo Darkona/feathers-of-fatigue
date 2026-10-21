@@ -5,14 +5,10 @@ import net.neoforged.neoforge.common.ModConfigSpec.BooleanValue;
 import net.neoforged.neoforge.common.ModConfigSpec.DoubleValue;
 import net.neoforged.neoforge.common.ModConfigSpec.IntValue;
 
-/**
- * One section per supported mod. Each only does anything when its mod is installed, and can be turned off.
- */
 public final class FeathersCompatConfig {
 
     public static final ModConfigSpec SPEC;
 
-    /* Cold Sweat */
     public static final BooleanValue COLD_SWEAT;
     public static final BooleanValue COLD_SWEAT_COLD;
     public static final BooleanValue COLD_SWEAT_HEAT;
@@ -20,19 +16,16 @@ public final class FeathersCompatConfig {
     public static final IntValue COLD_SWEAT_HOT_THRESHOLD;
     public static final IntValue COLD_SWEAT_SEVERE_THRESHOLD;
 
-    /* Thirst Was Taken */
     public static final BooleanValue THIRST;
     public static final DoubleValue THIRST_REGEN_REDUCTION;
     public static final DoubleValue QUENCH_REGEN_BONUS;
     public static final DoubleValue THIRST_PER_FEATHER;
 
-    /* Droplets of Thirst */
     public static final BooleanValue DROPLETS_OF_THIRST;
     public static final DoubleValue DROPLETS_OF_THIRST_REGEN_REDUCTION;
     public static final DoubleValue DROPLETS_OF_THIRST_QUENCH_BONUS;
     public static final DoubleValue DROPLETS_OF_THIRST_THIRST_PER_FEATHER;
 
-    /* Tough As Nails */
     public static final BooleanValue TAN;
     public static final BooleanValue TAN_TEMPERATURE;
     public static final BooleanValue TAN_COLD_IS_COLD;
@@ -43,7 +36,6 @@ public final class FeathersCompatConfig {
     public static final DoubleValue TAN_HYDRATION_BONUS;
     public static final DoubleValue TAN_THIRST_EXHAUSTION;
 
-    /* Legendary Survival Overhaul */
     public static final BooleanValue LSO;
     public static final BooleanValue LSO_TEMPERATURE;
     public static final BooleanValue LSO_THIRST;
@@ -51,7 +43,6 @@ public final class FeathersCompatConfig {
     public static final DoubleValue LSO_HYDRATION_BONUS;
     public static final DoubleValue LSO_THIRST_EXHAUSTION;
 
-    /* Serene Seasons */
     public static final BooleanValue SEASONS;
     public static final BooleanValue SEASONS_WINTER_COLD;
     public static final DoubleValue SEASONS_WINTER_MAX_TEMPERATURE;

@@ -4,9 +4,6 @@ import net.minecraft.world.entity.player.Player;
 import sfiomn.legendarysurvivaloverhaul.api.temperature.TemperatureEnum;
 import sfiomn.legendarysurvivaloverhaul.common.attachments.ModAttachments;
 
-/**
- * Sets Legendary Survival Overhaul state for tests. Only loaded when it is present.
- */
 public final class LegendarySurvivalScenario {
 
     private LegendarySurvivalScenario() {}

@@ -12,7 +12,6 @@ public final class FeathersServerConfig {
 
     public static final ModConfigSpec SPEC;
 
-    /* General */
     public static final IntValue MAX_FEATHERS;
     public static final DoubleValue REGEN_FEATHERS_PER_SECOND;
     public static final BooleanValue SLEEPING_ALWAYS_RESTORES_FEATHERS;
@@ -23,13 +22,11 @@ public final class FeathersServerConfig {
     public static final DoubleValue SATURATION_REGEN_BONUS;
     public static final DoubleValue HUNGER_REGEN_PENALTY;
 
-    /* Exhaustion and strain */
     public static final BooleanValue ENABLE_STRAIN;
     public static final IntValue MAX_STRAIN;
     public static final BooleanValue ENABLE_EXHAUSTION;
     public static final DoubleValue EXHAUSTION_RECOVERY;
 
-    /* Effects */
     public static final BooleanValue ENABLE_COLD;
     public static final DoubleValue COLD_TEMPERATURE;
     public static final BooleanValue ENABLE_HEAT;
@@ -41,7 +38,6 @@ public final class FeathersServerConfig {
     public static final BooleanValue ENABLE_ENDURANCE;
     public static final BooleanValue ENABLE_MOMENTUM;
 
-    /* Resting */
     public static final BooleanValue ENABLE_REST;
     public static final IntValue REST_STILL_TICKS;
     public static final DoubleValue REST_STILL_MULTIPLIER;
@@ -49,18 +45,15 @@ public final class FeathersServerConfig {
     public static final DoubleValue REST_SITTING_MULTIPLIER;
     public static final BooleanValue REST_BOOSTS_REGEN;
 
-    /* Armor weights */
     public static final BooleanValue ENABLE_ARMOR_WEIGHTS;
     public static final ConfigValue<List<? extends String>> ARMOR_WEIGHTS;
     public static final DoubleValue UNLISTED_ARMOR_WEIGHT_PER_DEFENSE;
     public static final DoubleValue LIGHTWEIGHT_REDUCTION_PER_LEVEL;
 
-    /* Basic exertion */
     public static final BooleanValue ENABLE_BASIC_EXERTION;
     public static final DoubleValue SPRINT_FEATHERS_PER_SECOND;
     public static final DoubleValue JUMP_FEATHERS;
 
-    /* Mounts */
     public static final BooleanValue ENABLE_MOUNTS;
     public static final IntValue MOUNT_MIN_FEATHERS;
     public static final IntValue MOUNT_MAX_FEATHERS;
@@ -70,7 +63,6 @@ public final class FeathersServerConfig {
     public static final DoubleValue MOUNT_JUMP_FEATHERS;
     public static final DoubleValue MOUNT_EXHAUSTED_SLOWDOWN;
 
-    /* Debugging */
     public static final BooleanValue DEBUG_MODE;
 
     static {
@@ -241,7 +233,6 @@ public final class FeathersServerConfig {
                         "@minecraft:iron=2",
                         "@minecraft:diamond=3",
                         "@minecraft:netherite=4",
-                        // Horse armor: light, since nothing raises a mount's feathers yet.
                         "@minecraft:leather/body=1",
                         "@minecraft:gold/body=1",
                         "@minecraft:iron/body=2",

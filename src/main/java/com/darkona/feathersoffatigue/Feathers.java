@@ -48,7 +48,6 @@ public final class Feathers {
         modContainer.registerConfig(ModConfig.Type.SERVER, FeathersServerConfig.SPEC, "feathers_of_fatigue/FeathersOfFatigue-Server.toml");
         modContainer.registerConfig(ModConfig.Type.SERVER, FeathersCompatConfig.SPEC, "feathers_of_fatigue/FeathersOfFatigue-Compat.toml");
         modContainer.registerConfig(ModConfig.Type.CLIENT, FeathersClientConfig.SPEC, "feathers_of_fatigue/FeathersOfFatigue-Client.toml");
-        // JDLib builds the HUD layer from this at RegisterGuiLayersEvent, so it has to be registered here.
         if (FMLEnvironment.dist == Dist.CLIENT) ClientEvents.registerHud();
 
         ModAttributes.register(modEventBus);
@@ -66,7 +65,6 @@ public final class Feathers {
         });
         modEventBus.addListener(Feathers::commonSetup);
 
-        // Built-in extensions go through the same API as other mods' do.
         ClimateEffects.registerBuiltIn();
         HungerRegen.registerBuiltIn();
         BuiltInFeatherStyles.register();

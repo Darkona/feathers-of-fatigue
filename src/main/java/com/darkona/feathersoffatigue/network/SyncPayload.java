@@ -13,10 +13,6 @@ import org.jetbrains.annotations.NotNull;
 
 import static com.darkona.feathersoffatigue.api.registry.FeathersIds.id;
 
-/**
- * What the owning client shows: a snapshot of the server's feathers for the player itself or the mount it rides,
- * sent when any of it changes.
- */
 public record SyncPayload(int entityId, int stamina, int maxStamina, int strain, int maxStrain, int bonus, int weight, int regenDelay,
                           boolean exhausted, RestState rest, int[] weightSplit) implements CustomPacketPayload {
 
@@ -26,7 +22,6 @@ public record SyncPayload(int entityId, int stamina, int maxStamina, int strain,
     private static final StreamCodec<ByteBuf, RestState> REST_CODEC =
             ByteBufCodecs.idMapper(i -> REST_STATES[i], RestState::ordinal);
 
-    /** Written field by field with VarInt: ByteBufCodecs.VAR_INT would box every int on both ends. */
     public static final StreamCodec<ByteBuf, SyncPayload> STREAM_CODEC = new StreamCodec<>() {
         @Override
         public @NotNull SyncPayload decode(@NotNull ByteBuf buf) {
@@ -52,7 +47,6 @@ public record SyncPayload(int entityId, int stamina, int maxStamina, int strain,
         }
     };
 
-    /** The weight split, flattened (see WeightSplit#toArray): the parts, then a pair per colored source. */
     private static int[] readParts(ByteBuf buf) {
         int length = VarInt.read(buf);
         if (length < ArmorWeights.PARTS || length > ArmorWeights.PARTS + 2 * MAX_SOURCES || (length - ArmorWeights.PARTS) % 2 != 0) {
@@ -70,12 +64,10 @@ public record SyncPayload(int entityId, int stamina, int maxStamina, int strain,
                 data.weight(), data.regenDelay(), data.exhausted(), data.restState(), weightParts(data));
     }
 
-    /** An empty bar: what a creature that stopped being a mount shows. */
     public static SyncPayload none(int entityId) {
         return new SyncPayload(entityId, 0, 0, 0, 0, 0, 0, 0, false, RestState.NONE, new int[ArmorWeights.PARTS]);
     }
 
-    /** A copy: in singleplayer the payload reaches the client thread without being encoded. */
     private static int[] weightParts(FeathersData data) {
         return data.weightSplit().toArray();
     }

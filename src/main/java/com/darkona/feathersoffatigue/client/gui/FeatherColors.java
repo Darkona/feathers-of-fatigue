@@ -22,13 +22,8 @@ import net.neoforged.neoforge.client.model.data.ModelData;
 import java.io.InputStream;
 import java.util.Optional;
 
-/**
- * Derives feather colors from a mount texture or armor icon. It adjusts the dominant color to remain readable and
- * pairs it with a complementary outline. The client calculates and caches each texture or item once.
- */
 public final class FeatherColors {
 
-    /** Neutral leather used when the client cannot read a texture. */
     public static final int LEATHER = 0x9A6A3F;
 
     private static final long UNKNOWN = Long.MIN_VALUE;
@@ -46,7 +41,6 @@ public final class FeatherColors {
 
     private FeatherColors() {}
 
-    /** The body color packed in the high 32 bits of a pair, the outline color in the low ones. */
     public static int body(long pair) {
         return (int) (pair >>> 32);
     }
@@ -55,9 +49,6 @@ public final class FeatherColors {
         return (int) pair;
     }
 
-    /**
-     * Colors for a creature, from the texture its renderer draws.
-     */
     public static long of(LivingEntity entity) {
         ResourceLocation texture;
         try {
@@ -65,7 +56,6 @@ public final class FeatherColors {
         } catch (RuntimeException e) {
             texture = null;
         }
-        // Some modded renderers have no texture to give: neutral leather, cached like any other.
         if (texture == null) texture = MissingTextureAtlasSprite.getLocation();
         long cached = BY_TEXTURE.getLong(texture);
         if (cached != UNKNOWN) return cached;
@@ -74,9 +64,6 @@ public final class FeatherColors {
         return computed;
     }
 
-    /**
-     * Colors for an item: a dyed item's own dye (leather armor), else its icon's dominant color.
-     */
     public static long of(ItemStack stack) {
         DyedItemColor dye = stack.get(DataComponents.DYED_COLOR);
         if (dye != null) return ofColor(dye.rgb());
@@ -88,21 +75,15 @@ public final class FeatherColors {
         return computed;
     }
 
-    /** A body color and an outline color, packed. */
     public static long pair(int body, int outline) {
         return (long) body << 32 | (outline & 0xFFFFFFFFL);
     }
 
-    /**
-     * The color of the {@code layer}-th row layered over a row of {@code rgb} feathers: the same hue, each layer a
-     * step deeper, or a step lighter for colors already dark.
-     */
     public static int shade(int rgb, int layer) {
         int key = (rgb & 0xFFFFFF) | Math.min(layer, 127) << 24;
         int cached = SHADES.get(key);
         if (cached != -1) return cached;
         float[] hsl = hsl(rgb);
-        // Away from the base, and once that runs out of room, back past it to the other side, so layers never merge.
         float direction = hsl[2] >= 0.5f ? -1f : 1f;
         float lightness = hsl[2] + direction * 0.34f * layer;
         if (lightness < 0.19f || lightness > 0.87f) lightness = hsl[2] - direction * 0.25f * (layer - 1);
@@ -112,7 +93,6 @@ public final class FeatherColors {
         return shaded;
     }
 
-    /** Colors for a given color (a dye, a weight source's own): cached by color. */
     public static long ofColor(int rgb) {
         rgb &= 0xFFFFFF;
         long cached = BY_DYE.get(rgb);
@@ -123,13 +103,11 @@ public final class FeatherColors {
         return computed;
     }
 
-    /** Colors for an item without a stack at hand (a weight source's display item): its default stack's. */
     public static long of(Item item) {
         long cached = BY_ITEM.getLong(item);
         return cached != UNKNOWN ? cached : of(item.getDefaultInstance());
     }
 
-    /** Resource packs changed: textures may have too. */
     public static void clear() {
         BY_TEXTURE.clear();
         BY_ITEM.clear();
@@ -157,10 +135,6 @@ public final class FeatherColors {
         }
     }
 
-    /**
-     * The most common color, quantized to 4 bits per channel, averaged over the pixels that fall in it. Transparent
-     * and pure black pixels do not contribute. This keeps a black horse very dark gray instead of pure black.
-     */
     static int dominant(NativeImage image) {
         int[] counts = new int[4096];
         long[] red = new long[4096];
@@ -190,16 +164,11 @@ public final class FeatherColors {
         return (int) (red[best] / n) << 16 | (int) (green[best] / n) << 8 | (int) (blue[best] / n);
     }
 
-    /**
-     * A readable body color and its complementary outline.
-     */
     static long pair(int rgb) {
         float[] hsl = hsl(rgb);
         float lightness = Math.clamp(hsl[2], 0.42f, 0.74f);
-        // Apply a saturation floor only to clear colors. Near-grays from black or white horses remain gray.
         float saturation = hsl[1] > 0.2f ? Math.max(hsl[1], 0.28f) : hsl[1];
         int body = rgb(hsl[0], saturation, lightness);
-        // Opposite hue, and the opposite side of the lightness band, so the edge contrasts in both.
         int outline = rgb((hsl[0] + 0.5f) % 1f, Math.max(saturation, 0.45f), lightness > 0.58f ? 0.22f : 0.82f);
         return pair(body, outline);
     }

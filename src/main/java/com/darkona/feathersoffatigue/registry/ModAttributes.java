@@ -7,9 +7,6 @@ import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-/**
- * Registers the attributes whose holders live in the API's FeathersAttributes.
- */
 public final class ModAttributes {
 
     private static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(Registries.ATTRIBUTE, FeathersIds.MOD_ID);

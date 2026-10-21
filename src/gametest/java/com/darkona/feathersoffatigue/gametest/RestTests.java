@@ -24,9 +24,6 @@ import static com.darkona.feathersoffatigue.api.registry.FeathersIds.id;
 import static com.darkona.feathersoffatigue.gametest.TestSupport.player;
 import static com.darkona.feathersoffatigue.gametest.TestSupport.tick;
 
-/**
- * Resting speeds up paying strain back, and so do API rest bonuses. A night slept through restores everything.
- */
 @GameTestHolder(FeathersIds.MOD_ID)
 @PrefixGameTestTemplate(false)
 public class RestTests {
@@ -54,10 +51,6 @@ public class RestTests {
         helper.succeed();
     }
 
-    /**
-     * A player that slept long enough (the level wakes sleepers only then) and lies in bed: sleeping is what the
-     * wake-up event checks, not the bed.
-     */
     private static Player sleeper(GameTestHelper helper) {
         Player player = new Player(helper.getLevel(), BlockPos.ZERO, 0f, new GameProfile(UUID.randomUUID(), "feathers-sleeper")) {
             @Override
@@ -83,11 +76,6 @@ public class RestTests {
         NeoForge.EVENT_BUS.post(new PlayerWakeUpEvent(player, wakeImmediately, updateLevel));
     }
 
-    /**
-     * Only a night slept through restores the feathers: "Leave Bed" at night, after the five seconds the level counts
-     * as sleeping, does not (in multiplayer the other players may be up, and the night goes on). A sleep mod that skips
-     * the night itself and wakes the players with {@code stopSleeping()} does restore them, by day.
-     */
     @GameTest(template = "empty")
     public static void onlyANightSleptThroughRestoresFeathers(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();

@@ -9,9 +9,6 @@ import org.jetbrains.annotations.NotNull;
 
 import static com.darkona.feathersoffatigue.api.registry.FeathersIds.id;
 
-/**
- * Debug mode only: what the player just spent, and on what, for the debug overlay.
- */
 public record SpendDebugPayload(ResourceLocation source, int cost) implements CustomPacketPayload {
 
     public static final Type<SpendDebugPayload> TYPE = new Type<>(id("spend_debug"));

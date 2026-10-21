@@ -6,9 +6,6 @@ import com.darkona.feathersoffatigue.api.Stamina;
 import com.darkona.feathersoffatigue.network.SyncPayload;
 import com.darkona.feathersoffatigue.weight.WeightSplit;
 
-/**
- * One entity's feathers as the client last heard them from the server. Client thread only.
- */
 public class SyncedFeathers implements FeathersView {
 
     protected boolean synced;
@@ -31,15 +28,11 @@ public class SyncedFeathers implements FeathersView {
         weightSplit.readFrom(p.weightSplit());
     }
 
-    /**
-     * Feathers of weight from one part: head, chest, legs, feet, then other sources (see ArmorWeights).
-     */
     @SuppressWarnings("unused")
     public int weightPart(int part) {
         return weightSplit.part(part);
     }
 
-    /** The whole split, colored weight sources included. */
     public WeightSplit weightSplit() {
         return weightSplit;
     }

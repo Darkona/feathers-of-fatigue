@@ -26,17 +26,12 @@ public final class FeathersClientConfig {
     public static final IntValue LOW_FEATHERS;
     public static final EnumValue<StrainAnimation> STRAIN_ANIMATION;
 
-    /** The color of the player's own feathers. */
     public enum FeatherColor {
-        /** Feathers of Fatigue's green. */
         GREEN,
-        /** The blue of Elenai's original Feathers. */
         BLUE,
-        /** White, like a chicken's. */
         WHITE
     }
 
-    /** How the row moves while strained. */
     public enum StrainAnimation {
         NONE,
         SHAKE,
