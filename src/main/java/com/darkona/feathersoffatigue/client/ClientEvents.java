@@ -37,38 +37,30 @@ import static com.darkona.feathersoffatigue.api.registry.FeathersIds.id;
 public final class ClientEvents {
 
     private static final ResourceLocation FEATHER_FONT = id("feather_font");
-    /** The weight tooltip's icons, in the feather font: built once, since a tooltip is rebuilt every frame. */
     private static final Style FEATHER_ICONS = Style.EMPTY.withFont(FEATHER_FONT);
 
     private static boolean wasCold;
 
     private ClientEvents() {}
 
-    /* Mod bus */
-
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
         ClientFeathers.setService(ClientFeathersData.INSTANCE);
         FeathersServiceImpl.setClientBridge(ClientFeathersData.INSTANCE);
-        // Its triggers read the client config: registered here, not with the styles in common setup.
         BuiltInFeatherAnimations.register();
     }
 
-    /** Feather colors come from textures and resource packs' feather_styles.json: reread them when packs change. */
     @SubscribeEvent
     public static void onRegisterReloadListeners(RegisterClientReloadListenersEvent event) {
         event.registerReloadListener((ResourceManagerReloadListener) manager -> {
             FeatherColors.clear();
-            FeatherStylePack.load(manager);
+            FeatherStylePack.PATCHES.load(manager);
         });
     }
 
-    /** Called from the mod constructor, before JDLib closes its bar list at {@code RegisterGuiLayersEvent}. */
     public static void registerHud() {
         JDHudBars.register(FeathersHud.spec());
     }
-
-    /* Game bus */
 
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
@@ -84,7 +76,6 @@ public final class ClientEvents {
         }
         wasCold = cold;
 
-        // Sprinting is decided on the client, so the client is where running out has to stop it.
         if (BasicExertion.isActive() && player.isSprinting() && ClientFeathersData.INSTANCE.exhausted() && !player.getAbilities().instabuild) {
             player.setSprinting(false);
         }
@@ -96,7 +87,6 @@ public final class ClientEvents {
         FeathersHud.reset();
     }
 
-    /** Icon strings by weight in half icons: a tooltip is rebuilt every frame while hovered. */
     private static final String[] WEIGHT_ICONS = new String[41];
 
     private static String weightIcons(int halves) {
@@ -110,9 +100,6 @@ public final class ClientEvents {
         return built;
     }
 
-    /**
-     * Shows how much an armor piece weighs, counting its enchantments.
-     */
     @SubscribeEvent
     public static void onTooltip(ItemTooltipEvent event) {
         ItemStack stack = event.getItemStack();
@@ -123,7 +110,6 @@ public final class ClientEvents {
         if (weight <= 0) return;
 
         if (FeathersClientConfig.VISUAL_WEIGHTS.get()) {
-            // The feather font maps 'a' to a full feather icon and 'b' to a half one; a weight point is half an icon.
             int halves = Math.max(1, (int) Math.round(weight));
             event.getToolTip().add(Component.literal(weightIcons(halves)).withStyle(FEATHER_ICONS));
         } else {
