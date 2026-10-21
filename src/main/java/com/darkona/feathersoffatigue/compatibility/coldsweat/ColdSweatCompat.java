@@ -4,6 +4,7 @@ import com.darkona.feathersoffatigue.api.Climate;
 import com.darkona.feathersoffatigue.api.FeathersAPI;
 import com.darkona.feathersoffatigue.config.FeathersCompatConfig;
 import dev.darkona.jdlib.api.compat.Bridges;
+import dev.darkona.jdlib.api.compat.climate.BodyTemperature;
 import net.minecraft.world.entity.LivingEntity;
 
 import static com.darkona.feathersoffatigue.api.registry.FeathersIds.id;
@@ -27,7 +28,7 @@ public final class ColdSweatCompat {
 
     private static Climate climate(LivingEntity entity) {
         if (!isEnabled()) return null;
-        double body = ColdSweatBridge.bodyTemperature(entity);
+        double body = BodyTemperature.of(entity, 0.0);
         if (FeathersCompatConfig.COLD_SWEAT_HEAT.get()) {
             if (body >= FeathersCompatConfig.COLD_SWEAT_SEVERE_THRESHOLD.get()) return Climate.SCORCHING;
             if (body >= FeathersCompatConfig.COLD_SWEAT_HOT_THRESHOLD.get()) return Climate.HOT;
