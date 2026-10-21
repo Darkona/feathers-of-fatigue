@@ -5,21 +5,17 @@ import com.darkona.feathersoffatigue.api.FeathersAPI;
 import com.darkona.feathersoffatigue.api.FeathersView;
 import com.darkona.feathersoffatigue.compatibility.ThirstRegen;
 import com.darkona.feathersoffatigue.config.FeathersCompatConfig;
+import dev.darkona.jdlib.api.compat.Bridges;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.fml.ModList;
 
 import static com.darkona.feathersoffatigue.api.registry.FeathersIds.id;
 
-/**
- * Legendary Survival Overhaul compatibility, safe to load without it: calls go through
- * {@link LegendarySurvivalBridge}. Body temperature drives Cold, Heat and Fatigue; hydration drives regeneration.
- */
 public final class LegendarySurvivalCompat {
 
     private static final ThirstRegen.Keys LSO_KEYS = ThirstRegen.Keys.of("legendary_survival");
 
-    public static final boolean LOADED = ModList.get().isLoaded("legendarysurvivaloverhaul");
+    public static final boolean LOADED = Bridges.isLoaded("legendarysurvivaloverhaul");
 
     public static final int CLIMATE_PRIORITY = 80;
 

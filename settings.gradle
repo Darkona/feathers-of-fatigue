@@ -9,3 +9,10 @@ plugins {
 }
 
 rootProject.name = 'feathers-of-fatigue'
+
+// JDLib (shared HUD) next to this checkout in development: a sibling build replaces the published artifact.
+// -PjdlibDir=<path> points elsewhere. Without the directory the artifact comes from mavenLocal.
+def jdlibDir = file(providers.gradleProperty('jdlibDir').getOrElse('../JDLib'))
+if (jdlibDir.isDirectory()) {
+    includeBuild(jdlibDir)
+}

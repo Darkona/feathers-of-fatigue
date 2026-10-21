@@ -1,6 +1,7 @@
 package com.darkona.feathersoffatigue;
 
 import com.darkona.feathersoffatigue.api.FeathersAPI;
+import com.darkona.feathersoffatigue.client.ClientEvents;
 import com.darkona.feathersoffatigue.api.registry.FeathersDataMaps;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
 import com.darkona.feathersoffatigue.climate.ClimateEffects;
@@ -24,11 +25,13 @@ import com.darkona.feathersoffatigue.network.FeathersNetwork;
 import com.darkona.feathersoffatigue.registry.ModAttributes;
 import com.darkona.feathersoffatigue.registry.ModPotions;
 import com.darkona.feathersoffatigue.style.BuiltInFeatherStyles;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +48,8 @@ public final class Feathers {
         modContainer.registerConfig(ModConfig.Type.SERVER, FeathersServerConfig.SPEC, "feathers_of_fatigue/FeathersOfFatigue-Server.toml");
         modContainer.registerConfig(ModConfig.Type.SERVER, FeathersCompatConfig.SPEC, "feathers_of_fatigue/FeathersOfFatigue-Compat.toml");
         modContainer.registerConfig(ModConfig.Type.CLIENT, FeathersClientConfig.SPEC, "feathers_of_fatigue/FeathersOfFatigue-Client.toml");
+        // JDLib builds the HUD layer from this at RegisterGuiLayersEvent, so it has to be registered here.
+        if (FMLEnvironment.dist == Dist.CLIENT) ClientEvents.registerHud();
 
         ModAttributes.register(modEventBus);
         ModEffects.register(modEventBus);

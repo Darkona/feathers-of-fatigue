@@ -4,9 +4,6 @@ import dev.ghen.thirst.foundation.common.capability.IThirst;
 import dev.ghen.thirst.foundation.common.capability.ModAttachment;
 import net.minecraft.world.entity.player.Player;
 
-/**
- * The only class that touches Thirst Was Taken. Loaded only through {@link ThirstCompat} when the mod is present.
- */
 final class ThirstBridge {
 
     private ThirstBridge() {}

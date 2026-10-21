@@ -6,6 +6,12 @@ import com.darkona.feathersoffatigue.api.RestState;
 import com.darkona.feathersoffatigue.api.Stamina;
 import com.darkona.feathersoffatigue.api.registry.FeathersAttributes;
 import com.darkona.feathersoffatigue.weight.WeightSplit;
+import dev.darkona.jdlib.core.stat.FractionalCarry;
+import dev.darkona.jdlib.core.stat.LayeredPayment;
+import dev.darkona.jdlib.core.stat.ShownFields;
+import dev.darkona.jdlib.core.stat.SourcedDrains;
+import dev.darkona.jdlib.core.stat.SourcedPools;
+import dev.darkona.jdlib.core.stat.TimedSources;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
 import net.minecraft.core.HolderLookup;
@@ -19,89 +25,29 @@ import net.neoforged.neoforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-
-/**
- * Stores the server-authoritative state behind {@link FeathersView}. {@link FeathersTicker} updates it,
- * and {@link FeathersServiceImpl} changes it. Per-tick paths iterate small lists by index and allocate nothing.
- * <p>
- * Saved: stamina, strain, the regeneration delay, exhaustion, bonus pools and compat counters. Drains, regeneration
- * blocks and rest bonuses are transient. Their callers must refresh them while their causes remain active.
- */
 public final class FeathersData implements FeathersView, INBTSerializable<CompoundTag> {
 
-    public static final long FOREVER = Long.MAX_VALUE;
+    enum Shown { STAMINA, MAX_STAMINA, STRAIN, MAX_STRAIN, BONUS, WEIGHT, EXHAUSTED, DELAYED, REST }
 
-    /** An entry kept once per source: a bonus pool, a drain, a regeneration block or a rest bonus. */
-    abstract static class Sourced {
-        final ResourceLocation source;
-
-        Sourced(ResourceLocation source) {
-            this.source = source;
-        }
-    }
-
-    /** A pool of bonus stamina, spent before regular stamina. */
-    static final class Bonus extends Sourced {
-        int amount;
-        long expiresAt;
-
-        Bonus(ResourceLocation source, int amount, long expiresAt) {
-            super(source);
-            this.amount = amount;
-            this.expiresAt = expiresAt;
-        }
-    }
-
-    /** A continuous drain that carries fractional stamina between ticks. */
-    static final class Drain extends Sourced {
-        double perTick;
-        boolean allowStrain;
-        boolean blocksRegen;
-        int timeoutTicks;
-        long lastRefresh;
-        double carry;
-
-        Drain(ResourceLocation source) {
-            super(source);
-        }
-    }
-
-    /** A regeneration block or a rest bonus: a value that holds until a game time. */
-    static final class Timed extends Sourced {
-        double value;
-        long until;
-
-        Timed(ResourceLocation source) {
-            super(source);
-        }
-    }
-
-    /* Saved */
     int stamina;
     int strain;
     int regenDelay;
     boolean exhausted;
-    final ArrayList<Bonus> bonuses = new ArrayList<>(2);
+    final SourcedPools<ResourceLocation> bonuses = new SourcedPools<>();
     final Object2DoubleOpenHashMap<String> counters = new Object2DoubleOpenHashMap<>();
 
-    /* Derived from attributes and equipment */
     int maxStamina;
     int maxStrain;
     int weight;
-    /** The weight split by armor piece, head to feet, colored weight sources and the rest. */
     final WeightSplit weightSplit = new WeightSplit();
     double lastWeightMultiplier = Double.NaN;
     boolean initialized;
-    /** Never loaded from a save: starts with full feathers once the maximum is known. */
     boolean fresh = true;
 
-    /* Transient */
-    final ArrayList<Drain> drains = new ArrayList<>(2);
-    final ArrayList<Timed> regenBlocks = new ArrayList<>(2);
-    final ArrayList<Timed> restBonuses = new ArrayList<>(1);
-    double regenCarry;
-    /** Regeneration was paused on the last tick: the next one that regenerates fires RegenEvent. */
+    final SourcedDrains<ResourceLocation> drains = new SourcedDrains<>();
+    final TimedSources<ResourceLocation> regenBlocks = new TimedSources<>();
+    final TimedSources<ResourceLocation> restBonuses = new TimedSources<>();
+    final FractionalCarry regenCarry = new FractionalCarry();
     boolean regenPaused;
     int lastDelta;
     long totalRegenerated;
@@ -109,8 +55,6 @@ public final class FeathersData implements FeathersView, INBTSerializable<Compou
 
     SpendLog spendLog;
 
-    /* Attribute instances the tick reads. An entity keeps its instances for life, and vanilla's lookup allocates a
-       lambda on every call. */
     @Nullable AttributeInstance regenAttribute;
     @Nullable AttributeInstance usageAttribute;
     @Nullable AttributeInstance maxFeathersAttribute;
@@ -124,23 +68,10 @@ public final class FeathersData implements FeathersView, INBTSerializable<Compou
     double lastZ;
     int stillTicks;
 
-    /* What the client last received, to sync only on visible changes */
-    int syncedStamina = -1;
-    int syncedMax = -1;
-    int syncedStrain = -1;
-    int syncedMaxStrain = -1;
-    int syncedBonus = -1;
-    int syncedWeight = -1;
-    boolean syncedExhausted;
-    boolean syncedDelayed;
+    final ShownFields<Shown> shown = new ShownFields<>(Shown.class);
     final WeightSplit syncedWeightSplit = new WeightSplit();
-    RestState syncedRest = RestState.NONE;
-    boolean forceSync = true;
 
-    /** Whether the transient exhausted-mount slowdown is active. This value is not saved. */
     public boolean mountSlowed;
-
-    /* FeathersView */
 
     @Override
     public boolean hasFeathers() {
@@ -187,10 +118,7 @@ public final class FeathersData implements FeathersView, INBTSerializable<Compou
 
     @Override
     public int bonusStamina() {
-        int total = 0;
-        int size = bonuses.size();
-        for (int i = 0; i < size; i++) total += bonuses.get(i).amount;
-        return total;
+        return bonuses.total();
     }
 
     @Override
@@ -223,159 +151,48 @@ public final class FeathersData implements FeathersView, INBTSerializable<Compou
         return restMultiplier;
     }
 
-    /* Paying */
-
     int regularAvailable() {
         return Math.max(0, stamina - Stamina.ofFeathers(weight));
     }
 
-    /**
-     * Gets the remaining strain capacity. Returns zero when the spend or server disables strain.
-     */
     int strainRoom(boolean allowStrain, boolean strainEnabled) {
-        return allowStrain && strainEnabled ? Math.max(0, maxStrain - strain) : 0;
+        return LayeredPayment.overdrawRoom(strain, maxStrain, allowStrain && strainEnabled);
     }
 
-    /**
-     * Whether {@code cost} can be paid, all or nothing: bonus pools, then stamina, then strain.
-     */
     boolean canPay(int cost, boolean allowStrain, boolean strainEnabled) {
-        return (long) cost <= (long) bonusStamina() + regularAvailable() + strainRoom(allowStrain, strainEnabled);
+        return LayeredPayment.affordable(cost, bonuses.totalLong(), regularAvailable(), strainRoom(allowStrain, strainEnabled));
     }
 
-    /**
-     * Pays {@code cost}. Call {@link #canPay} first.
-     *
-     * @return the stamina that went into strain
-     */
     int pay(int cost) {
-        int left = cost;
-        int size = bonuses.size();
-        for (int i = 0; i < size && left > 0; i++) {
-            Bonus bonus = bonuses.get(i);
-            int take = Math.min(bonus.amount, left);
-            bonus.amount -= take;
-            left -= take;
-        }
-        removeEmptyBonuses();
-
+        int left = cost - bonuses.take(cost);
         int take = Math.min(regularAvailable(), left);
         stamina -= take;
         left -= take;
-
         strain += left;
         return left;
     }
 
-    private void removeEmptyBonuses() {
-        for (int i = bonuses.size() - 1; i >= 0; i--) {
-            if (bonuses.get(i).amount <= 0) bonuses.remove(i);
-        }
-    }
-
-    /**
-     * Whether nothing is left to spend: no stamina, no bonus, and no strain room for spends that allow it.
-     */
     boolean isSpent(boolean strainEnabled) {
         return availableStamina() <= 0 && strainRoom(true, strainEnabled) <= 0;
     }
 
-    /**
-     * Nothing to tick: full, no strain, bonus, drain, block, delay or exhaustion, and already initialized.
-     */
     public boolean isAtRest() {
         return initialized && stamina >= maxStamina && strain == 0 && regenDelay == 0 && !exhausted
                 && bonuses.isEmpty() && drains.isEmpty() && regenBlocks.isEmpty();
     }
 
-    /* Bonuses, drains, blocks */
-
-    /** Where {@code source}'s entry is in {@code list}, or -1. */
-    static int indexOf(ArrayList<? extends Sourced> list, ResourceLocation source) {
-        int size = list.size();
-        for (int i = 0; i < size; i++) {
-            if (list.get(i).source.equals(source)) return i;
-        }
-        return -1;
-    }
-
-    @Nullable
-    Bonus bonus(ResourceLocation source) {
-        int i = indexOf(bonuses, source);
-        return i < 0 ? null : bonuses.get(i);
-    }
-
-    void setBonus(ResourceLocation source, int amount, long expiresAt) {
-        Bonus bonus = bonus(source);
-        if (bonus == null) bonuses.add(new Bonus(source, amount, expiresAt));
-        else {
-            bonus.amount = amount;
-            bonus.expiresAt = expiresAt;
-        }
-    }
-
-    /** The stamina left in {@code source}'s bonus pool, 0 without one. */
     public int bonusStamina(ResourceLocation source) {
-        Bonus bonus = bonus(source);
-        return bonus != null ? bonus.amount : 0;
+        return bonuses.amount(source);
     }
 
-    boolean removeBonus(ResourceLocation source) {
-        int i = indexOf(bonuses, source);
-        if (i >= 0) bonuses.remove(i);
-        return i >= 0;
-    }
-
-    @Nullable
-    Drain drain(ResourceLocation source) {
-        int i = indexOf(drains, source);
-        return i < 0 ? null : drains.get(i);
-    }
-
-    @Nullable
-    static Timed timed(ArrayList<Timed> list, ResourceLocation source) {
-        int i = indexOf(list, source);
-        return i < 0 ? null : list.get(i);
-    }
-
-    static void setTimed(ArrayList<Timed> list, ResourceLocation source, double value, long until) {
-        Timed entry = timed(list, source);
-        if (entry == null) {
-            entry = new Timed(source);
-            list.add(entry);
-        }
-        entry.value = value;
-        entry.until = until;
-    }
-
-    static void removeTimed(ArrayList<Timed> list, ResourceLocation source) {
-        int i = indexOf(list, source);
-        if (i >= 0) list.remove(i);
-    }
-
-    /**
-     * Drops entries whose time has passed.
-     */
     void expire(long now) {
-        for (int i = bonuses.size() - 1; i >= 0; i--) {
-            if (bonuses.get(i).expiresAt <= now) bonuses.remove(i);
-        }
-        for (int i = regenBlocks.size() - 1; i >= 0; i--) {
-            if (regenBlocks.get(i).until <= now) regenBlocks.remove(i);
-        }
-        for (int i = restBonuses.size() - 1; i >= 0; i--) {
-            if (restBonuses.get(i).until <= now) restBonuses.remove(i);
-        }
+        bonuses.expire(now);
+        regenBlocks.expire(now);
+        restBonuses.expire(now);
     }
 
     boolean isRegenBlocked() {
-        if (regenDelay > 0 || !regenBlocks.isEmpty()) return true;
-        int size = drains.size();
-        for (int i = 0; i < size; i++) {
-            Drain drain = drains.get(i);
-            if (drain.blocksRegen) return true;
-        }
-        return false;
+        return regenDelay > 0 || !regenBlocks.isEmpty() || drains.anyBlocksRegen();
     }
 
     void logSpend(ResourceLocation source, int amount, long gameTime) {
@@ -383,14 +200,9 @@ public final class FeathersData implements FeathersView, INBTSerializable<Compou
         spendLog.record(source, amount, gameTime);
     }
 
-    /**
-     * Recent spends by source, or null if nothing was spent since the entity joined.
-     */
     public @Nullable SpendLog spendLog() {
         return spendLog;
     }
-
-    /* Attributes */
 
     @Nullable AttributeInstance regenAttribute(LivingEntity entity) {
         if (regenAttribute == null) regenAttribute = entity.getAttribute(FeathersAttributes.FEATHERS_PER_SECOND);
@@ -417,8 +229,6 @@ public final class FeathersData implements FeathersView, INBTSerializable<Compou
         return weightMultiplierAttribute;
     }
 
-    /* Compat counters */
-
     public double getCounter(String name) {
         return counters.getDouble(name);
     }
@@ -426,8 +236,6 @@ public final class FeathersData implements FeathersView, INBTSerializable<Compou
     public void setCounter(String name, double value) {
         counters.put(name, value);
     }
-
-    /* Saving */
 
     @Override
     public @NotNull CompoundTag serializeNBT(HolderLookup.@NotNull Provider provider) {
@@ -438,11 +246,11 @@ public final class FeathersData implements FeathersView, INBTSerializable<Compou
         tag.putBoolean("exhausted", exhausted);
 
         ListTag bonusList = new ListTag();
-        for (Bonus bonus : bonuses) {
+        for (int i = 0; i < bonuses.size(); i++) {
             CompoundTag entry = new CompoundTag();
-            entry.putString("source", bonus.source.toString());
-            entry.putInt("amount", bonus.amount);
-            entry.putLong("expires_at", bonus.expiresAt);
+            entry.putString("source", bonuses.source(i).toString());
+            entry.putInt("amount", bonuses.amountAt(i));
+            entry.putLong("expires_at", bonuses.expiryAt(i));
             bonusList.add(entry);
         }
         tag.put("bonuses", bonusList);
@@ -466,7 +274,7 @@ public final class FeathersData implements FeathersView, INBTSerializable<Compou
         for (Tag t : tag.getList("bonuses", Tag.TAG_COMPOUND)) {
             CompoundTag entry = (CompoundTag) t;
             ResourceLocation source = ResourceLocation.tryParse(entry.getString("source"));
-            if (source != null) bonuses.add(new Bonus(source, entry.getInt("amount"), entry.getLong("expires_at")));
+            if (source != null) bonuses.set(source, entry.getInt("amount"), entry.getLong("expires_at"));
         }
 
         counters.clear();
@@ -474,9 +282,8 @@ public final class FeathersData implements FeathersView, INBTSerializable<Compou
         for (String key : counterTag.getAllKeys()) {
             counters.put(key, counterTag.getDouble(key));
         }
-        // Max stamina and weight come from attributes and equipment on the first tick.
         initialized = false;
         fresh = false;
-        forceSync = true;
+        shown.resendNext();
     }
 }

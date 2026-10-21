@@ -2,6 +2,7 @@ package com.darkona.feathersoffatigue.item;
 
 import com.darkona.feathersoffatigue.api.registry.FeathersAttributes;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
+import dev.darkona.jdlib.api.compat.Bridges;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -9,7 +10,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -22,13 +22,8 @@ public final class ModItems {
 
     public static final double FEATHER_RING_WEIGHT_MULTIPLIER = -0.5;
 
-    /** With Curios the Feather Ring is worn in a ring slot, without it held in the off hand. */
-    public static final boolean CURIOS = ModList.get().isLoaded("curios");
+    public static final boolean CURIOS = Bridges.isLoaded("curios");
 
-    /**
-     * Halves armor weight. Worn in a Curios ring slot when Curios is installed, otherwise held in the off hand. It
-     * does nothing special in code: an attribute modifier on armor_weight_multiplier, what any mod's item can do.
-     */
     public static final DeferredItem<Item> FEATHER_RING = ITEMS.registerItem("feather_ring", FeatherRingItem::new, featherRingProperties());
 
     private static Item.Properties featherRingProperties() {

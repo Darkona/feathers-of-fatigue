@@ -1,45 +1,23 @@
 package com.darkona.feathersoffatigue.effect;
 
 import com.darkona.feathersoffatigue.api.registry.FeathersMobEffects;
-import net.minecraft.world.effect.MobEffect;
+import dev.darkona.jdlib.api.effect.HookedMobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import org.jetbrains.annotations.Nullable;
 
-/**
- * Base of the feathers effects. {@link #canApply} is binding: {@link EffectEvents} refuses the effect otherwise.
- */
-public class FeathersMobEffect extends MobEffect {
+public class FeathersMobEffect extends HookedMobEffect {
 
     public FeathersMobEffect(MobEffectCategory category, int color) {
         super(category, color);
     }
 
-    /**
-     * Whether the entity may have this effect now. Creative and invulnerable players take none.
-     */
+    @Override
     public boolean canApply(LivingEntity entity) {
         return !(entity instanceof Player player && (player.isCreative() || player.getAbilities().invulnerable));
     }
 
-    /**
-     * The effect was added to an entity that {@link #canApply} accepted.
-     *
-     * @param previous the instance it replaces (a refresh or a stronger level), or null for a new effect
-     */
-    public void onApplied(LivingEntity entity, MobEffectInstance instance, @Nullable MobEffectInstance previous) {}
-
-    /**
-     * The effect was removed or expired.
-     */
-    public void onEnded(LivingEntity entity, MobEffectInstance instance) {}
-
-    /**
-     * Fire Resistance and Cooling protect from every heat effect.
-     */
     public static boolean isProtectedFromHeat(LivingEntity entity) {
         return entity.hasEffect(MobEffects.FIRE_RESISTANCE) || entity.hasEffect(FeathersMobEffects.COOLING);
     }

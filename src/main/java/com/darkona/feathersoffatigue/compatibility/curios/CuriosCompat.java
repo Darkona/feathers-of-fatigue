@@ -13,9 +13,6 @@ import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
-/**
- * Curios compatibility: the Feather Ring goes in a ring slot. Only loaded when Curios is present.
- */
 public final class CuriosCompat {
 
     private CuriosCompat() {}
@@ -24,7 +21,6 @@ public final class CuriosCompat {
         CuriosApi.registerCurio(ModItems.FEATHER_RING.get(), new ICurioItem() {
             @Override
             public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext slotContext, ResourceLocation id, ItemStack stack) {
-                // Curios hands out an id per slot, so two rings halve twice: 1 - 0.5 - 0.5 = weightless.
                 return ImmutableMultimap.of(FeathersAttributes.ARMOR_WEIGHT_MULTIPLIER,
                         new AttributeModifier(id, ModItems.FEATHER_RING_WEIGHT_MULTIPLIER, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
             }

@@ -4,13 +4,8 @@ import net.minecraft.world.entity.player.Player;
 import sfiomn.legendarysurvivaloverhaul.api.thirst.ThirstUtil;
 import sfiomn.legendarysurvivaloverhaul.common.attachments.ModAttachments;
 
-/**
- * The only class that touches Legendary Survival Overhaul. It keeps player state in attachments without a stable
- * reading API, so this reads them directly. Loaded only through {@link LegendarySurvivalCompat}.
- */
 final class LegendarySurvivalBridge {
 
-    /** LSO's temperature levels, mirrored so the compat class never names LSO's own enum. */
     enum Level {FROSTBITE, COLD, NORMAL, HOT, HEAT_STROKE}
 
     private static final Level[] LEVELS = Level.values();

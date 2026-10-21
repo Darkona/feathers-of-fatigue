@@ -5,20 +5,17 @@ import com.darkona.feathersoffatigue.api.FeathersAPI;
 import com.darkona.feathersoffatigue.api.FeathersView;
 import com.darkona.feathersoffatigue.compatibility.ThirstRegen;
 import com.darkona.feathersoffatigue.config.FeathersCompatConfig;
+import dev.darkona.jdlib.api.compat.Bridges;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.fml.ModList;
 
 import static com.darkona.feathersoffatigue.api.registry.FeathersIds.id;
 
-/**
- * Droplets of Thirst compatibility, safe to load without it: calls into the mod go through {@link DropletsOfThirstBridge}.
- */
 public final class DropletsOfThirstCompat {
 
     private static final ThirstRegen.Keys KEYS = ThirstRegen.Keys.of("droplets_of_thirst");
 
-    public static final boolean LOADED = ModList.get().isLoaded("droplets_of_thirst");
+    public static final boolean LOADED = Bridges.isLoaded("droplets_of_thirst");
 
     private DropletsOfThirstCompat() {}
 

@@ -5,23 +5,18 @@ import com.darkona.feathersoffatigue.api.FeathersAPI;
 import com.darkona.feathersoffatigue.api.FeathersView;
 import com.darkona.feathersoffatigue.compatibility.ThirstRegen;
 import com.darkona.feathersoffatigue.config.FeathersCompatConfig;
+import dev.darkona.jdlib.api.compat.Bridges;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.fml.ModList;
 
 import static com.darkona.feathersoffatigue.api.registry.FeathersIds.id;
 
-/**
- * Tough As Nails compatibility, safe to load without it: calls into the mod go through {@link ToughAsNailsBridge}.
- * Its temperature drives Cold, Heat and Fatigue; its thirst slows or speeds regeneration.
- */
 public final class ToughAsNailsCompat {
 
     private static final ThirstRegen.Keys TAN_KEYS = ThirstRegen.Keys.of("tough_as_nails");
 
-    public static final boolean LOADED = ModList.get().isLoaded("toughasnails");
+    public static final boolean LOADED = Bridges.isLoaded("toughasnails");
 
-    /** Below Cold Sweat, above Legendary Survival Overhaul, Serene Seasons and the vanilla climate. */
     public static final int CLIMATE_PRIORITY = 90;
 
     private ToughAsNailsCompat() {}

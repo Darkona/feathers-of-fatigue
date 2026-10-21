@@ -15,9 +15,6 @@ import snownee.jade.api.config.IPluginConfig;
 
 import static com.darkona.feathersoffatigue.api.registry.FeathersIds.id;
 
-/**
- * "Stamina: 13/20 feathers" on a mount. The server sends the current value: clients only know the mount they ride.
- */
 enum MountStaminaProvider implements IEntityComponentProvider, IServerDataProvider<EntityAccessor> {
     INSTANCE;
 
