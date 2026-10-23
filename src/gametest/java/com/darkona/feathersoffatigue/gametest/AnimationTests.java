@@ -8,7 +8,7 @@ import com.darkona.feathersoffatigue.api.client.FeatherAnimations;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
 import com.darkona.feathersoffatigue.api.registry.FeathersMobEffects;
 import com.darkona.feathersoffatigue.config.FeathersClientConfig.StrainAnimation;
-import com.darkona.feathersoffatigue.style.BuiltInFeatherAnimations;
+import com.darkona.feathersoffatigue.style.BuiltInFeatherStyles;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerPlayer;
@@ -72,7 +72,7 @@ public class AnimationTests {
 
         player.addEffect(new MobEffectInstance(FeathersMobEffects.ENERGIZED, 200));
         helper.assertValueEqual(pick(player, FeathersAPI.get(player)), FeatherAnimation.WAVE, "a wave while energized");
-        helper.assertTrue(BuiltInFeatherAnimations.pick(player, FeathersAPI.get(player), StrainAnimation.PULSE, true, 2, false) == null, "the wave can be turned off");
+        helper.assertTrue(BuiltInFeatherStyles.pick(player, FeathersAPI.get(player), StrainAnimation.PULSE, true, 2, false) == null, "the wave can be turned off");
 
         FeathersAPI.setStamina(player, Stamina.ofFeathers(2));
         helper.assertValueEqual(pick(player, FeathersAPI.get(player)), FeatherAnimation.SHAKE, "two feathers left: a shake, over the wave");
@@ -83,16 +83,16 @@ public class AnimationTests {
         FeathersAPI.spend(player, id("test_strain"), Stamina.ofFeathers(2));
         helper.assertTrue(FeathersAPI.get(player).strained(), "strained");
         helper.assertValueEqual(pick(player, FeathersAPI.get(player)), FeatherAnimation.PULSE, "strain first, as set");
-        helper.assertValueEqual(Objects.requireNonNull(BuiltInFeatherAnimations.pick(player, FeathersAPI.get(player),
+        helper.assertValueEqual(Objects.requireNonNull(BuiltInFeatherStyles.pick(player, FeathersAPI.get(player),
                         StrainAnimation.SHAKE, true, 2, true)), FeatherAnimation.SHAKE,
                 "or a shake");
-        helper.assertValueEqual(Objects.requireNonNull(BuiltInFeatherAnimations.pick(player, FeathersAPI.get(player),
+        helper.assertValueEqual(Objects.requireNonNull(BuiltInFeatherStyles.pick(player, FeathersAPI.get(player),
                         StrainAnimation.NONE, false, 2, true)), FeatherAnimation.WAVE,
                 "strain and low off: the wave is left");
         helper.succeed();
     }
 
     private static FeatherAnimation pick(ServerPlayer player, FeathersView feathers) {
-        return BuiltInFeatherAnimations.pick(player, feathers, StrainAnimation.PULSE, true, 2, true);
+        return BuiltInFeatherStyles.pick(player, feathers, StrainAnimation.PULSE, true, 2, true);
     }
 }

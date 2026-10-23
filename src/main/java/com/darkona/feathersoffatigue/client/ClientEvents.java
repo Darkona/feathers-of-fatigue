@@ -11,7 +11,7 @@ import com.darkona.feathersoffatigue.client.gui.FeathersHud;
 import com.darkona.feathersoffatigue.config.FeathersClientConfig;
 import com.darkona.feathersoffatigue.config.FeathersServerConfig;
 import com.darkona.feathersoffatigue.core.FeathersServiceImpl;
-import com.darkona.feathersoffatigue.style.BuiltInFeatherAnimations;
+import com.darkona.feathersoffatigue.style.BuiltInFeatherStyles;
 import dev.darkona.jdlib.api.hud.JDDebugOverlay;
 import dev.darkona.jdlib.api.hud.JDHudBars;
 import net.minecraft.ChatFormatting;
@@ -50,7 +50,7 @@ public final class ClientEvents {
     public static void onClientSetup(FMLClientSetupEvent event) {
         ClientFeathers.setService(ClientFeathersData.INSTANCE);
         FeathersServiceImpl.setClientBridge(ClientFeathersData.INSTANCE);
-        BuiltInFeatherAnimations.register();
+        BuiltInFeatherStyles.registerAnimations();
     }
 
     @SubscribeEvent
