@@ -4,7 +4,7 @@ import com.darkona.feathersoffatigue.api.FeathersAPI;
 import com.darkona.feathersoffatigue.api.client.ClientFeathers;
 import com.darkona.feathersoffatigue.api.client.FeatherStylePack;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
-import com.darkona.feathersoffatigue.basic.BasicExertion;
+import com.darkona.feathersoffatigue.core.BasicExertion;
 import com.darkona.feathersoffatigue.client.gui.FeatherColors;
 import com.darkona.feathersoffatigue.client.gui.FeathersDebugOverlay;
 import com.darkona.feathersoffatigue.client.gui.FeathersHud;

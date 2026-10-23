@@ -1,10 +1,9 @@
-package com.darkona.feathersoffatigue.command;
+package com.darkona.feathersoffatigue.core;
 
 import com.darkona.feathersoffatigue.api.FeathersAPI;
 import com.darkona.feathersoffatigue.api.FeathersView;
 import com.darkona.feathersoffatigue.api.Stamina;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
-import com.darkona.feathersoffatigue.core.FeathersServiceImpl;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;

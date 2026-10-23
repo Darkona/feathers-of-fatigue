@@ -12,7 +12,6 @@ import com.darkona.feathersoffatigue.api.event.StrainEvent;
 import com.darkona.feathersoffatigue.api.registry.FeathersAttributes;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
 import com.darkona.feathersoffatigue.api.registry.FeathersMobEffects;
-import com.darkona.feathersoffatigue.climate.ClimateEffects;
 import com.darkona.feathersoffatigue.config.FeathersServerConfig;
 import com.darkona.feathersoffatigue.registry.ModEffects;
 import com.darkona.feathersoffatigue.mount.MountExertion;

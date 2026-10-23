@@ -1,4 +1,4 @@
-package com.darkona.feathersoffatigue.basic;
+package com.darkona.feathersoffatigue.core;
 
 import com.darkona.feathersoffatigue.api.FeathersAPI;
 import com.darkona.feathersoffatigue.api.SpendResult;

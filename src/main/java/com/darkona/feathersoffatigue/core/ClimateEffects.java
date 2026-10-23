@@ -1,18 +1,19 @@
-package com.darkona.feathersoffatigue.climate;
+package com.darkona.feathersoffatigue.core;
 
 import com.darkona.feathersoffatigue.api.Climate;
 import com.darkona.feathersoffatigue.api.ClimateProvider;
 import com.darkona.feathersoffatigue.api.registry.FeathersMobEffects;
 import com.darkona.feathersoffatigue.config.FeathersServerConfig;
-import com.darkona.feathersoffatigue.core.Extensions;
 import com.darkona.feathersoffatigue.registry.ModEffects.FeathersMobEffect;
 import dev.darkona.jdlib.core.registry.PriorityList;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
 import static com.darkona.feathersoffatigue.api.registry.FeathersIds.id;
 
 public final class ClimateEffects {
@@ -22,7 +23,7 @@ public final class ClimateEffects {
     private ClimateEffects() {}
 
     public static void registerBuiltIn() {
-        Extensions.addClimate(id("vanilla"), 0, VanillaClimate::climate);
+        Extensions.addClimate(id("vanilla"), 0, ClimateEffects::vanilla);
     }
 
     public static Climate evaluate(LivingEntity entity) {
@@ -71,5 +72,27 @@ public final class ClimateEffects {
 
     private static boolean canApply(LivingEntity entity, Holder<MobEffect> effect) {
         return !(effect.value() instanceof FeathersMobEffect feathersEffect) || feathersEffect.canApply(entity);
+    }
+
+    private static Climate vanilla(LivingEntity entity) {
+        Level level = entity.level();
+        BlockPos pos = entity.blockPosition();
+
+        if (entity.isFreezing() || isColdWeather(level, pos)) return Climate.COLD;
+
+        if (entity.wasOnFire || entity.isOnFire() || entity.isInLava()) return Climate.HOT;
+        if (level.dimension() == Level.NETHER) return Climate.HOT;
+        if (entity.isInPowderSnow || entity.isInWaterOrRain()) return Climate.NEUTRAL;
+        if (!level.isDay() || !level.canSeeSky(pos)) return Climate.NEUTRAL;
+
+        return level.getBiome(pos).value().getModifiedClimateSettings().temperature() >= FeathersServerConfig.HOT_TEMPERATURE.get()
+                ? Climate.HOT : Climate.NEUTRAL;
+    }
+
+    private static boolean isColdWeather(Level level, BlockPos pos) {
+        if (!level.isRaining() || !level.canSeeSky(pos)) return false;
+        Biome biome = level.getBiome(pos).value();
+        if (biome.getPrecipitationAt(pos) == Biome.Precipitation.NONE) return false;
+        return biome.coldEnoughToSnow(pos) || biome.getModifiedClimateSettings().temperature() < FeathersServerConfig.COLD_TEMPERATURE.get();
     }
 }

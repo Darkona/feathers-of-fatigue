@@ -4,7 +4,7 @@ import com.darkona.feathersoffatigue.api.Climate;
 import com.darkona.feathersoffatigue.api.FeathersAPI;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
 import com.darkona.feathersoffatigue.api.registry.FeathersMobEffects;
-import com.darkona.feathersoffatigue.climate.ClimateEffects;
+import com.darkona.feathersoffatigue.core.ClimateEffects;
 import com.darkona.feathersoffatigue.compatibility.dropletsofthirst.DropletsOfThirstCompat;
 import com.darkona.feathersoffatigue.compatibility.coldsweat.ColdSweatCompat;
 import com.darkona.feathersoffatigue.compatibility.lso.LegendarySurvivalCompat;
