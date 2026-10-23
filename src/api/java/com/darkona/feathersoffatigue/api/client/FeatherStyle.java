@@ -3,7 +3,7 @@ package com.darkona.feathersoffatigue.api.client;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.darkona.jdlib.core.CssColors;
+import dev.darkona.jdlib.core.color.CssColors;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 

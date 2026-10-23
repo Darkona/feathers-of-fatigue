@@ -7,7 +7,7 @@ import com.darkona.feathersoffatigue.api.registry.FeathersMobEffects;
 import com.darkona.feathersoffatigue.compatibility.coldsweat.ColdSweatCompat;
 import com.darkona.feathersoffatigue.config.FeathersServerConfig;
 import com.darkona.feathersoffatigue.core.FeathersServiceImpl;
-import dev.darkona.jdlib.api.effect.HookedMobEffect;
+import dev.darkona.jdlib.api.attribute.HookedMobEffect;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;

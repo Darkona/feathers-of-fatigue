@@ -2,7 +2,7 @@ package com.darkona.feathersoffatigue.client.gui;
 
 import com.darkona.feathersoffatigue.Feathers;
 import com.mojang.blaze3d.platform.NativeImage;
-import dev.darkona.jdlib.core.Colors;
+import dev.darkona.jdlib.core.color.Colors;
 import dev.darkona.jdlib.core.color.PixelColors;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2LongOpenHashMap;
