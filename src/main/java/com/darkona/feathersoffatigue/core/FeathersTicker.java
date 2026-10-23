@@ -18,6 +18,7 @@ import com.darkona.feathersoffatigue.mount.MountExertion;
 import com.darkona.feathersoffatigue.mount.MountTraits;
 import com.darkona.feathersoffatigue.network.FeathersNetwork;
 import com.darkona.feathersoffatigue.weight.ArmorWeights;
+import dev.darkona.jdlib.api.attribute.JDModifiers;
 import dev.darkona.jdlib.core.stat.ShownFields;
 import dev.darkona.jdlib.core.stat.SourcedDrains;
 import net.minecraft.core.Holder;
@@ -231,19 +232,11 @@ public final class FeathersTicker {
 
     private static void applyRegenFactors(LivingEntity entity, FeathersData data) {
         PriorityList.Snapshot<ResourceLocation, RegenFactor> factors = Extensions.regenFactors();
-        AttributeInstance regen = data.regenAttribute(entity);
-        if (regen == null) return;
-
         double sum = 0;
         for (int i = 0; i < factors.size(); i++) {
             sum += factors.value(i).feathersPerSecond(entity, data);
         }
-        AttributeModifier current = regen.getModifier(REGEN_FACTORS);
-        if (sum == 0) {
-            if (current != null) regen.removeModifier(REGEN_FACTORS);
-        } else if (current == null || current.amount() != sum) {
-            regen.addOrUpdateTransientModifier(new AttributeModifier(REGEN_FACTORS, sum, AttributeModifier.Operation.ADD_VALUE));
-        }
+        JDModifiers.toggle(entity, FeathersAttributes.FEATHERS_PER_SECOND, REGEN_FACTORS, sum != 0, sum, AttributeModifier.Operation.ADD_VALUE);
     }
 
     private static void updateRest(LivingEntity entity, FeathersData data) {
