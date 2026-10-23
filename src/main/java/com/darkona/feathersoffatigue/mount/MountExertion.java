@@ -10,6 +10,7 @@ import com.darkona.feathersoffatigue.core.FeathersAttachments;
 import com.darkona.feathersoffatigue.core.FeathersData;
 import com.darkona.feathersoffatigue.core.FeathersServiceImpl;
 import com.darkona.feathersoffatigue.core.FeathersTicker;
+import dev.darkona.jdlib.api.attribute.JDModifiers;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -104,22 +105,15 @@ public final class MountExertion {
 
     private static void updateSlowdown(LivingEntity mount, FeathersData data) {
         boolean exhausted = data.exhausted();
-        if (exhausted == data.mountSlowed) return;
+        if (!exhausted && !data.mountSlowed) return;
         data.mountSlowed = exhausted;
-        AttributeInstance speed = mount.getAttribute(Attributes.MOVEMENT_SPEED);
-        if (speed == null || exhausted == speed.hasModifier(EXHAUSTED_SLOWDOWN)) return;
-        if (exhausted) {
-            speed.addTransientModifier(new AttributeModifier(EXHAUSTED_SLOWDOWN,
-                    -FeathersServerConfig.MOUNT_EXHAUSTED_SLOWDOWN.get(), AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
-        } else {
-            speed.removeModifier(EXHAUSTED_SLOWDOWN);
-        }
+        JDModifiers.toggle(mount, Attributes.MOVEMENT_SPEED, EXHAUSTED_SLOWDOWN, exhausted, -FeathersServerConfig.MOUNT_EXHAUSTED_SLOWDOWN.get(),
+                AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
     }
 
     public static void release(LivingEntity entity) {
         if (!entity.hasData(FeathersAttachments.FEATHERS)) return;
-        AttributeInstance speed = entity.getAttribute(Attributes.MOVEMENT_SPEED);
-        if (speed != null && speed.hasModifier(EXHAUSTED_SLOWDOWN)) speed.removeModifier(EXHAUSTED_SLOWDOWN);
+        JDModifiers.toggle(entity, Attributes.MOVEMENT_SPEED, EXHAUSTED_SLOWDOWN, false, 0, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
         FeathersTicker.releaseExMount(entity);
     }
 }
