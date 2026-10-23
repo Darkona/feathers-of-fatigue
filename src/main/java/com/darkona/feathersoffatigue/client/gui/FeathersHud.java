@@ -39,7 +39,6 @@ import java.util.function.BooleanSupplier;
 import java.util.function.IntSupplier;
 
 import static com.darkona.feathersoffatigue.api.registry.FeathersIds.id;
-import static com.darkona.feathersoffatigue.client.gui.Icons.*;
 
 public final class FeathersHud {
 
@@ -50,6 +49,16 @@ public final class FeathersHud {
     private static final int ROW_HEIGHT = 10;
     private static final int UNSTACKED_BASE = 49;
     private static final int ICON_SIZE = 9;
+    private static final int EMPTY_U = 0;
+    private static final int REGEN_OVERLAY_U = 9;
+    private static final int BODY_FULL_U = 0;
+    private static final int BODY_HALF_U = 9;
+    private static final int BORDER_FULL_U = 18;
+    private static final int BORDER_HALF_U = 27;
+    private static final int SHINE_FULL_U = 36;
+    private static final int SHINE_HALF_U = 45;
+    private static final int OVERLAY_U = 0;
+    private static final int OVERLAY_ACCENT_U = 9;
 
     private static final ClientFeathersData DATA = ClientFeathersData.INSTANCE;
 
@@ -266,7 +275,7 @@ public final class FeathersHud {
         ResourceLocation sheet = sprites.sheet;
         int width = sprites.sheetWidth;
         int height = sprites.sheetHeight;
-        int v = sprites.row * SIZE;
+        int v = sprites.row * ICON_SIZE;
         int halfIcon = halfLast ? to - 1 : -1;
         setColor(graphics, MOTION.brighten(body));
         for (int i = from; i < to; i++) draw(graphics, sheet, width, height, x, y, i, i == halfIcon ? BODY_HALF_U : BODY_FULL_U, v);
@@ -284,13 +293,13 @@ public final class FeathersHud {
         for (int i = 0; i < icons; i++) draw(graphics, look.slotSheet, look.slotWidth, look.slotHeight, x, y, i, EMPTY_U, 0);
         if ((look.border >>> 24) != 0) {
             setColor(graphics, look.border);
-            for (int i = 0; i < icons; i++) draw(graphics, look.sheet, look.sheetWidth, look.sheetHeight, x, y, i, BORDER_FULL_U, look.row * SIZE);
+            for (int i = 0; i < icons; i++) draw(graphics, look.sheet, look.sheetWidth, look.sheetHeight, x, y, i, BORDER_FULL_U, look.row * ICON_SIZE);
         }
         graphics.setColor(1f, 1f, 1f, FADE.alpha());
     }
 
     private static void drawOverlay(GuiGraphics graphics, int x, int y, int icons, Look look) {
-        int v = look.overlayRow * SIZE;
+        int v = look.overlayRow * ICON_SIZE;
         setColor(graphics, look.overlayColor);
         for (int i = 0; i < icons; i++) draw(graphics, look.overlaySheet, look.overlayWidth, look.overlayHeight, x, y, i, OVERLAY_U, v);
         setColor(graphics, look.overlayAccent);
@@ -304,7 +313,7 @@ public final class FeathersHud {
     }
 
     private static void draw(GuiGraphics graphics, ResourceLocation sheet, int width, int height, int x, int y, int index, int u, int v) {
-        graphics.blit(sheet, x - index * 8, y + MOTION.offset(index), u, v, SIZE, SIZE, width, height);
+        graphics.blit(sheet, x - index * 8, y + MOTION.offset(index), u, v, ICON_SIZE, ICON_SIZE, width, height);
     }
 
     private static void drawRowCount(GuiGraphics graphics, int x, int y, int layers) {
