@@ -3,6 +3,7 @@ package com.darkona.feathersoffatigue.api.client;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.darkona.jdlib.core.CssColors;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
@@ -144,14 +145,8 @@ public record FeatherStyle(int body, int border, ResourceLocation variant, @Null
      * @return a successful ARGB value, or a codec error for invalid text
      */
     public static DataResult<Integer> parseColor(String text) {
-        String hex = text.startsWith("#") ? text.substring(1) : "";
-        if (hex.length() != 6 && hex.length() != 8) return DataResult.error(() -> "Not a #RRGGBB or #AARRGGBB color: " + text);
-        try {
-            int value = Integer.parseUnsignedInt(hex, 16);
-            return DataResult.success(hex.length() == 6 ? 0xFF000000 | value : value);
-        } catch (NumberFormatException e) {
-            return DataResult.error(() -> "Not a #RRGGBB or #AARRGGBB color: " + text);
-        }
+        if (!CssColors.validArgb(text)) return DataResult.error(() -> "Not a #RRGGBB or #AARRGGBB color: " + text);
+        return DataResult.success(CssColors.parseArgb(text, 0));
     }
 
     /**
@@ -161,6 +156,6 @@ public record FeatherStyle(int body, int border, ResourceLocation variant, @Null
      * @return the formatted color text
      */
     public static String formatColor(int argb) {
-        return (argb >>> 24) == 0xFF ? "#%06X".formatted(argb & 0xFFFFFF) : "#%08X".formatted(argb);
+        return CssColors.formatArgb(argb);
     }
 }
