@@ -19,6 +19,7 @@ import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jetbrains.annotations.NotNull;
+
 import static com.darkona.feathersoffatigue.api.registry.FeathersIds.id;
 
 public final class ModItems {

@@ -14,6 +14,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+
 import static com.darkona.feathersoffatigue.api.registry.FeathersIds.id;
 
 public final class ClimateEffects {

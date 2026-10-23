@@ -19,6 +19,7 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jetbrains.annotations.Nullable;
+
 import static com.darkona.feathersoffatigue.api.registry.FeathersAttributes.FEATHERS_PER_SECOND;
 import static com.darkona.feathersoffatigue.api.registry.FeathersAttributes.MAX_FEATHERS;
 import static com.darkona.feathersoffatigue.api.registry.FeathersAttributes.USAGE_MULTIPLIER;
