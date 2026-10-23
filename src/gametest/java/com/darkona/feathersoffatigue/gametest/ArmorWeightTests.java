@@ -7,7 +7,7 @@ import com.darkona.feathersoffatigue.api.registry.FeathersIds;
 import com.darkona.feathersoffatigue.config.FeathersServerConfig;
 import com.darkona.feathersoffatigue.core.FeathersData;
 import com.darkona.feathersoffatigue.core.FeathersServiceImpl;
-import com.darkona.feathersoffatigue.item.ModItems;
+import com.darkona.feathersoffatigue.registry.ModItems;
 import com.darkona.feathersoffatigue.network.SyncPayload;
 import com.darkona.feathersoffatigue.weight.ArmorWeights;
 import io.netty.buffer.ByteBuf;

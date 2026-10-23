@@ -1,19 +1,18 @@
 package com.darkona.feathersoffatigue.climate;
 
-import com.darkona.feathersoffatigue.api.ClimateProvider;
-import net.minecraft.resources.ResourceLocation;
-import dev.darkona.jdlib.core.registry.PriorityList;
 import com.darkona.feathersoffatigue.api.Climate;
+import com.darkona.feathersoffatigue.api.ClimateProvider;
 import com.darkona.feathersoffatigue.api.registry.FeathersMobEffects;
 import com.darkona.feathersoffatigue.config.FeathersServerConfig;
 import com.darkona.feathersoffatigue.core.Extensions;
-import com.darkona.feathersoffatigue.effect.FeathersMobEffect;
+import com.darkona.feathersoffatigue.registry.ModEffects.FeathersMobEffect;
+import dev.darkona.jdlib.core.registry.PriorityList;
 import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-
 import static com.darkona.feathersoffatigue.api.registry.FeathersIds.id;
 
 public final class ClimateEffects {

@@ -1,7 +1,7 @@
 package com.darkona.feathersoffatigue.compatibility.curios;
 
 import com.darkona.feathersoffatigue.api.registry.FeathersAttributes;
-import com.darkona.feathersoffatigue.item.ModItems;
+import com.darkona.feathersoffatigue.registry.ModItems;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.core.Holder;

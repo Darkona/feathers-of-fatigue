@@ -1,4 +1,4 @@
-package com.darkona.feathersoffatigue.effect;
+package com.darkona.feathersoffatigue.registry;
 
 import com.darkona.feathersoffatigue.api.FeathersAPI;
 import com.darkona.feathersoffatigue.api.Stamina;
@@ -7,23 +7,24 @@ import com.darkona.feathersoffatigue.api.registry.FeathersMobEffects;
 import com.darkona.feathersoffatigue.compatibility.coldsweat.ColdSweatCompat;
 import com.darkona.feathersoffatigue.config.FeathersServerConfig;
 import com.darkona.feathersoffatigue.core.FeathersServiceImpl;
+import dev.darkona.jdlib.api.effect.HookedMobEffect;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jetbrains.annotations.Nullable;
-
 import static com.darkona.feathersoffatigue.api.registry.FeathersAttributes.FEATHERS_PER_SECOND;
 import static com.darkona.feathersoffatigue.api.registry.FeathersAttributes.MAX_FEATHERS;
 import static com.darkona.feathersoffatigue.api.registry.FeathersAttributes.USAGE_MULTIPLIER;
 import static com.darkona.feathersoffatigue.api.registry.FeathersIds.id;
 import static net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL;
 import static net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE;
-
 
 public final class ModEffects {
 
@@ -108,4 +109,20 @@ public final class ModEffects {
     }
 
     private ModEffects() {}
+
+    public static class FeathersMobEffect extends HookedMobEffect {
+
+        public FeathersMobEffect(MobEffectCategory category, int color) {
+            super(category, color);
+        }
+
+        @Override
+        public boolean canApply(LivingEntity entity) {
+            return !(entity instanceof Player player && (player.isCreative() || player.getAbilities().invulnerable));
+        }
+
+        public static boolean isProtectedFromHeat(LivingEntity entity) {
+            return entity.hasEffect(MobEffects.FIRE_RESISTANCE) || entity.hasEffect(FeathersMobEffects.COOLING);
+        }
+    }
 }
