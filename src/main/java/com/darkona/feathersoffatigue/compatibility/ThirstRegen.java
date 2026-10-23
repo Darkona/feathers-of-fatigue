@@ -21,10 +21,7 @@ public final class ThirstRegen {
         double since = regeneratedSinceLastCall(data, feathers, key);
         if (costPerFeather <= 0 || since <= 0) return 0;
 
-        double owed = data.getCounter(key.owed()) + since / Stamina.PER_FEATHER * costPerFeather;
-        int whole = (int) owed;
-        data.setCounter(key.owed(), owed - whole);
-        return whole;
+        return data.carry(key.owed()).add(since / Stamina.PER_FEATHER * costPerFeather);
     }
 
     public static float exhaustionSinceLastCall(Player player, FeathersView feathers, Keys key, double exhaustionPerFeather) {

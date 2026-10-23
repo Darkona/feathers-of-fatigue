@@ -15,6 +15,7 @@ import dev.darkona.jdlib.core.stat.SourcedPools;
 import dev.darkona.jdlib.core.stat.TimedSources;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -52,6 +53,7 @@ public final class FeathersData implements FeathersView, INBTSerializable<Compou
     final TimedSources<ResourceLocation> regenBlocks = new TimedSources<>();
     final TimedSources<ResourceLocation> restBonuses = new TimedSources<>();
     final FractionalCarry regenCarry = new FractionalCarry();
+    private final Object2ObjectOpenHashMap<String, FractionalCarry> carries = new Object2ObjectOpenHashMap<>();
     boolean regenPaused;
     int lastDelta;
     long totalRegenerated;
@@ -231,6 +233,12 @@ public final class FeathersData implements FeathersView, INBTSerializable<Compou
     @Nullable AttributeInstance weightMultiplierAttribute(LivingEntity entity) {
         if (weightMultiplierAttribute == null) weightMultiplierAttribute = entity.getAttribute(FeathersAttributes.ARMOR_WEIGHT_MULTIPLIER);
         return weightMultiplierAttribute;
+    }
+
+    public FractionalCarry carry(String name) {
+        FractionalCarry carry = carries.get(name);
+        if (carry == null) carries.put(name, carry = new FractionalCarry());
+        return carry;
     }
 
     public double getCounter(String name) {
