@@ -7,7 +7,7 @@ import com.darkona.feathersoffatigue.api.client.FeatherAnimation;
 import com.darkona.feathersoffatigue.api.client.FeatherAnimations;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
 import com.darkona.feathersoffatigue.api.registry.FeathersMobEffects;
-import com.darkona.feathersoffatigue.config.FeathersClientConfig.StrainAnimation;
+import com.darkona.feathersoffatigue.config.ClientConfig.StrainAnimation;
 import com.darkona.feathersoffatigue.content.feathers.BuiltInFeatherStyles;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;

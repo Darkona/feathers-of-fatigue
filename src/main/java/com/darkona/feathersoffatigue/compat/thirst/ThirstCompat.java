@@ -3,7 +3,7 @@ package com.darkona.feathersoffatigue.compat.thirst;
 import com.darkona.feathersoffatigue.api.FeathersAPI;
 import com.darkona.feathersoffatigue.api.FeathersView;
 import com.darkona.feathersoffatigue.compat.ThirstRegen;
-import com.darkona.feathersoffatigue.config.FeathersCompatConfig;
+import com.darkona.feathersoffatigue.config.CompatConfig;
 import dev.darkona.jdlib.api.compat.Bridges;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -23,12 +23,12 @@ public final class ThirstCompat {
     }
 
     private static double regenFactor(LivingEntity entity, FeathersView feathers) {
-        if (!FeathersCompatConfig.THIRST.get() || !(entity instanceof Player player)) return 0.0;
+        if (!CompatConfig.THIRST.get() || !(entity instanceof Player player)) return 0.0;
 
-        int owed = ThirstRegen.owedSinceLastCall(player, feathers, THIRST_KEYS, FeathersCompatConfig.THIRST_PER_FEATHER.get());
+        int owed = ThirstRegen.owedSinceLastCall(player, feathers, THIRST_KEYS, CompatConfig.THIRST_PER_FEATHER.get());
         if (owed > 0) ThirstBridge.drain(player, owed);
 
         return ThirstRegen.factor(ThirstBridge.thirst(player), ThirstBridge.quench(player),
-                FeathersCompatConfig.THIRST_REGEN_REDUCTION.get(), FeathersCompatConfig.QUENCH_REGEN_BONUS.get());
+                CompatConfig.THIRST_REGEN_REDUCTION.get(), CompatConfig.QUENCH_REGEN_BONUS.get());
     }
 }

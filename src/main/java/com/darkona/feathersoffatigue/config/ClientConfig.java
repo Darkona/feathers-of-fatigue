@@ -1,11 +1,12 @@
 package com.darkona.feathersoffatigue.config;
 
+import com.darkona.feathersoffatigue.config.ClientConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.ModConfigSpec.BooleanValue;
 import net.neoforged.neoforge.common.ModConfigSpec.EnumValue;
 import net.neoforged.neoforge.common.ModConfigSpec.IntValue;
 
-public final class FeathersClientConfig {
+public final class ClientConfig {
 
     public static final ModConfigSpec SPEC;
 
@@ -106,5 +107,5 @@ public final class FeathersClientConfig {
         SPEC = builder.build();
     }
 
-    private FeathersClientConfig() {}
+    private ClientConfig() {}
 }

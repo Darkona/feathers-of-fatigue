@@ -2,7 +2,7 @@ package com.darkona.feathersoffatigue.gametest;
 
 import com.darkona.feathersoffatigue.api.FeathersAPI;
 import com.darkona.feathersoffatigue.api.FeathersView;
-import com.darkona.feathersoffatigue.config.FeathersCompatConfig;
+import com.darkona.feathersoffatigue.config.CompatConfig;
 import com.darkona.feathersoffatigue.content.feathers.FeathersData;
 import com.darkona.feathersoffatigue.content.feathers.FeathersServiceImpl;
 import com.darkona.feathersoffatigue.content.feathers.FeathersTicker;
@@ -19,8 +19,8 @@ final class TestSupport {
 
     private TestSupport() {}
 
-    private static final List<ModConfigSpec.BooleanValue> COMPATS = List.of(FeathersCompatConfig.COLD_SWEAT, FeathersCompatConfig.THIRST,
-            FeathersCompatConfig.DROPLETS_OF_THIRST, FeathersCompatConfig.TAN, FeathersCompatConfig.LSO, FeathersCompatConfig.SEASONS);
+    private static final List<ModConfigSpec.BooleanValue> COMPATS = List.of(CompatConfig.COLD_SWEAT, CompatConfig.THIRST,
+            CompatConfig.DROPLETS_OF_THIRST, CompatConfig.TAN, CompatConfig.LSO, CompatConfig.SEASONS);
 
     static {
         COMPATS.forEach(value -> value.set(false));

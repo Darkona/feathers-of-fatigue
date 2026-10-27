@@ -11,7 +11,7 @@ import com.darkona.feathersoffatigue.compat.lso.LegendarySurvivalCompat;
 import com.darkona.feathersoffatigue.compat.sereneseasons.SereneSeasonsCompat;
 import com.darkona.feathersoffatigue.compat.thirst.ThirstCompat;
 import com.darkona.feathersoffatigue.compat.toughasnails.ToughAsNailsCompat;
-import com.darkona.feathersoffatigue.config.FeathersCompatConfig;
+import com.darkona.feathersoffatigue.config.CompatConfig;
 import com.darkona.feathersoffatigue.gametest.scenario.DropletsOfThirstScenario;
 import com.darkona.feathersoffatigue.gametest.scenario.ColdSweatScenario;
 import com.darkona.feathersoffatigue.gametest.scenario.LegendarySurvivalScenario;
@@ -95,7 +95,7 @@ public class SurvivalCompatTests {
     @GameTest(template = "empty")
     public static void dropletsOfThirstRegenerationCostsThirst(GameTestHelper helper) {
         if (DropletsOfThirstCompat.LOADED) withCompat(() -> {
-            FeathersCompatConfig.DROPLETS_OF_THIRST_THIRST_PER_FEATHER.set(1.0);
+            CompatConfig.DROPLETS_OF_THIRST_THIRST_PER_FEATHER.set(1.0);
             try {
                 ServerPlayer player = player(helper);
                 DropletsOfThirstScenario.thirst(player, 20, 0);
@@ -104,7 +104,7 @@ public class SurvivalCompatTests {
                 int thirst = DropletsOfThirstScenario.thirst(player);
                 helper.assertTrue(thirst <= 18, "one thirst point per regenerated feather: thirst should drop, was " + thirst);
             } finally {
-                FeathersCompatConfig.DROPLETS_OF_THIRST_THIRST_PER_FEATHER.set(0.0);
+                CompatConfig.DROPLETS_OF_THIRST_THIRST_PER_FEATHER.set(0.0);
             }
         });
         helper.succeed();

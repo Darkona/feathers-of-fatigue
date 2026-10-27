@@ -7,7 +7,7 @@ import com.darkona.feathersoffatigue.api.event.ArmorWeightEvent;
 import com.darkona.feathersoffatigue.api.registry.FeathersAttributes;
 import com.darkona.feathersoffatigue.api.registry.FeathersDataMaps;
 import com.darkona.feathersoffatigue.api.registry.FeathersEnchantments;
-import com.darkona.feathersoffatigue.config.FeathersServerConfig;
+import com.darkona.feathersoffatigue.config.ServerConfig;
 import com.darkona.feathersoffatigue.content.feathers.Extensions;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -69,7 +69,7 @@ public final class ArmorWeights {
         materialPieceRules.clear();
         materialRules.clear();
 
-        for (String rule : FeathersServerConfig.ARMOR_WEIGHTS.get()) {
+        for (String rule : ServerConfig.ARMOR_WEIGHTS.get()) {
             int eq = rule.lastIndexOf('=');
             if (eq <= 0) {
                 Feathers.LOGGER.warn("Armor weight rule '{}' has no '=weight' part, ignored.", rule);
@@ -145,7 +145,7 @@ public final class ArmorWeights {
                 weight = materialRules.getInt(material);
                 if (weight != UNRESOLVED) return weight;
             }
-            return (int) Math.round(armor.getDefense() * FeathersServerConfig.UNLISTED_ARMOR_WEIGHT_PER_DEFENSE.get());
+            return (int) Math.round(armor.getDefense() * ServerConfig.UNLISTED_ARMOR_WEIGHT_PER_DEFENSE.get());
         }
         return 0;
     }
@@ -154,7 +154,7 @@ public final class ArmorWeights {
         int base = baseWeight(stack);
         if (base == 0) return 0;
         EnchantmentLevels levels = enchantmentLevels(stack.getTagEnchantments());
-        double lightness = Math.max(0.0, 1.0 - levels.lightweight() * FeathersServerConfig.LIGHTWEIGHT_REDUCTION_PER_LEVEL.get());
+        double lightness = Math.max(0.0, 1.0 - levels.lightweight() * ServerConfig.LIGHTWEIGHT_REDUCTION_PER_LEVEL.get());
         return base * lightness * (1 + levels.heavy());
     }
 
@@ -192,7 +192,7 @@ public final class ArmorWeights {
 
     public static int totalWeight(LivingEntity entity, @Nullable WeightSplit split) {
         if (split != null) split.clear();
-        if (!FeathersServerConfig.ENABLE_ARMOR_WEIGHTS.get()) return 0;
+        if (!ServerConfig.ENABLE_ARMOR_WEIGHTS.get()) return 0;
 
         double head = pieceWeight(entity.getItemBySlot(EquipmentSlot.HEAD));
         double chest = pieceWeight(entity.getItemBySlot(EquipmentSlot.CHEST));

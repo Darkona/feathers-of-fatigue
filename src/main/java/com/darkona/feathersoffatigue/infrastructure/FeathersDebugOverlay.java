@@ -2,7 +2,7 @@ package com.darkona.feathersoffatigue.infrastructure;
 
 import com.darkona.feathersoffatigue.api.FeathersAPI;
 import com.darkona.feathersoffatigue.content.feathers.ClientFeathersData;
-import com.darkona.feathersoffatigue.config.FeathersServerConfig;
+import com.darkona.feathersoffatigue.config.ServerConfig;
 import dev.darkona.jdlib.api.debug.DebugLines;
 import dev.darkona.jdlib.api.debug.JDDebugFeed;
 import dev.darkona.jdlib.api.hud.JDDebugOverlay;
@@ -16,7 +16,7 @@ public final class FeathersDebugOverlay {
     private static final long LAST_SPEND_MILLIS = 3000;
 
     public static final JDDebugOverlay.Spec SPEC = new JDDebugOverlay.Spec(JDDebugOverlay.Side.LEFT, LEFT_TOP, null,
-            FeathersServerConfig.DEBUG_MODE::get, FeathersDebugOverlay::describe);
+            ServerConfig.DEBUG_MODE::get, FeathersDebugOverlay::describe);
 
     private FeathersDebugOverlay() {}
 

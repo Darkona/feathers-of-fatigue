@@ -7,8 +7,8 @@ import com.darkona.feathersoffatigue.api.client.FeatherAnimation;
 import com.darkona.feathersoffatigue.api.client.FeatherAnimations;
 import com.darkona.feathersoffatigue.api.client.FeatherStyle;
 import com.darkona.feathersoffatigue.api.registry.FeathersMobEffects;
-import com.darkona.feathersoffatigue.config.FeathersClientConfig;
-import com.darkona.feathersoffatigue.config.FeathersClientConfig.StrainAnimation;
+import com.darkona.feathersoffatigue.config.ClientConfig;
+import com.darkona.feathersoffatigue.config.ClientConfig.StrainAnimation;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -58,8 +58,8 @@ public final class BuiltInFeatherStyles {
 
     public static void registerAnimations() {
         FeatherAnimations.registerProvider(STATUS_PROVIDER, FeatherAnimations.STATUS_PRIORITY, (entity, feathers) -> pick(entity, feathers,
-                FeathersClientConfig.STRAIN_ANIMATION.get(), FeathersClientConfig.SHAKE_WHEN_LOW.get(), FeathersClientConfig.LOW_FEATHERS.get(),
-                FeathersClientConfig.WAVE_WHEN_ENERGIZED.get()));
+                ClientConfig.STRAIN_ANIMATION.get(), ClientConfig.SHAKE_WHEN_LOW.get(), ClientConfig.LOW_FEATHERS.get(),
+                ClientConfig.WAVE_WHEN_ENERGIZED.get()));
     }
 
     public static @Nullable FeatherAnimation pick(LivingEntity entity, FeathersView feathers, StrainAnimation strain, boolean shakeWhenLow,

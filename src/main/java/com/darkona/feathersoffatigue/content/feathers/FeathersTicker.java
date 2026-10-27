@@ -12,7 +12,7 @@ import com.darkona.feathersoffatigue.api.event.StrainEvent;
 import com.darkona.feathersoffatigue.api.registry.FeathersAttributes;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
 import com.darkona.feathersoffatigue.api.registry.FeathersMobEffects;
-import com.darkona.feathersoffatigue.config.FeathersServerConfig;
+import com.darkona.feathersoffatigue.config.ServerConfig;
 import com.darkona.feathersoffatigue.content.mount.MountExertion;
 import com.darkona.feathersoffatigue.content.mount.MountTraits;
 import com.darkona.feathersoffatigue.network.FeathersNetwork;
@@ -70,7 +70,7 @@ public final class FeathersTicker {
     }
 
     public static void onConfigChanged(ModConfigEvent event) {
-        if (event.getConfig().getSpec() != FeathersServerConfig.SPEC || event instanceof ModConfigEvent.Unloading) return;
+        if (event.getConfig().getSpec() != ServerConfig.SPEC || event instanceof ModConfigEvent.Unloading) return;
         ArmorWeights.invalidate();
         FeathersServiceImpl.invalidateMountTypes();
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
@@ -118,7 +118,7 @@ public final class FeathersTicker {
     @SubscribeEvent
     public static void onWakeUp(PlayerWakeUpEvent event) {
         Player player = event.getEntity();
-        if (player.level().isClientSide() || !FeathersServerConfig.SLEEPING_ALWAYS_RESTORES_FEATHERS.get()) return;
+        if (player.level().isClientSide() || !ServerConfig.SLEEPING_ALWAYS_RESTORES_FEATHERS.get()) return;
         if (!player.isSleepingLongEnough()) return;
         if (event.updateLevel() ? !player.level().isDay() : event.wakeImmediately()) return;
         FeathersServiceImpl.INSTANCE.reset(player);
@@ -148,10 +148,10 @@ public final class FeathersTicker {
     static void refreshFromConfig(LivingEntity entity) {
         boolean player = entity instanceof Player;
         FeathersData data = FeathersServiceImpl.data(entity);
-        if (player) configBase(entity, data, FeathersAttributes.MAX_FEATHERS, BASE_MAX, FeathersServerConfig.MAX_FEATHERS.get());
+        if (player) configBase(entity, data, FeathersAttributes.MAX_FEATHERS, BASE_MAX, ServerConfig.MAX_FEATHERS.get());
         else MountTraits.ensureRolled(entity);
-        configBase(entity, data, FeathersAttributes.MAX_STRAIN, BASE_STRAIN, FeathersServerConfig.MAX_STRAIN.get());
-        configBase(entity, data, FeathersAttributes.FEATHERS_PER_SECOND, BASE_REGEN, player ? FeathersServerConfig.REGEN_FEATHERS_PER_SECOND.get()
+        configBase(entity, data, FeathersAttributes.MAX_STRAIN, BASE_STRAIN, ServerConfig.MAX_STRAIN.get());
+        configBase(entity, data, FeathersAttributes.FEATHERS_PER_SECOND, BASE_REGEN, player ? ServerConfig.REGEN_FEATHERS_PER_SECOND.get()
                 : FeathersServiceImpl.mountTuning(entity).regenPerSecond());
         FeathersServiceImpl.ensureInitialized(entity, data);
         FeathersServiceImpl.refreshMaximums(entity, data);
@@ -185,7 +185,7 @@ public final class FeathersTicker {
 
         if (!FeathersServiceImpl.isExempt(entity)) {
             long now = entity.level().getGameTime();
-            boolean strainEnabled = FeathersServerConfig.ENABLE_STRAIN.get();
+            boolean strainEnabled = ServerConfig.ENABLE_STRAIN.get();
             int staminaBefore = data.stamina;
             boolean strainedBefore = data.strain > 0;
 
@@ -249,7 +249,7 @@ public final class FeathersTicker {
         data.lastY = y;
         data.lastZ = z;
 
-        if (!FeathersServerConfig.ENABLE_REST.get()) {
+        if (!ServerConfig.ENABLE_REST.get()) {
             data.restState = RestState.NONE;
             data.restMultiplier = 1.0;
             return;
@@ -261,11 +261,11 @@ public final class FeathersTicker {
         double multiplier;
         if (entity.isPassenger()) {
             data.restState = RestState.SITTING;
-            multiplier = FeathersServerConfig.REST_SITTING_MULTIPLIER.get();
-        } else if (data.stillTicks >= FeathersServerConfig.REST_STILL_TICKS.get()) {
+            multiplier = ServerConfig.REST_SITTING_MULTIPLIER.get();
+        } else if (data.stillTicks >= ServerConfig.REST_STILL_TICKS.get()) {
             boolean crouching = entity.isCrouching();
             data.restState = crouching ? RestState.CROUCHING : RestState.STILL;
-            multiplier = crouching ? FeathersServerConfig.REST_CROUCHING_MULTIPLIER.get() : FeathersServerConfig.REST_STILL_MULTIPLIER.get();
+            multiplier = crouching ? ServerConfig.REST_CROUCHING_MULTIPLIER.get() : ServerConfig.REST_STILL_MULTIPLIER.get();
         } else {
             data.restState = RestState.NONE;
             multiplier = 1.0;
@@ -313,7 +313,7 @@ public final class FeathersTicker {
         double perTick = attribute != null ? Stamina.perTick(attribute.getValue()) : 0.0;
 
         if (perTick > 0) {
-            boolean hungry = entity instanceof Player player && FeathersServerConfig.REGEN_USES_HUNGER.get()
+            boolean hungry = entity instanceof Player player && ServerConfig.REGEN_USES_HUNGER.get()
                     && player.getFoodData().getFoodLevel() <= HungerRegen.HUNGRY_FOOD_LEVEL;
             if (blocked || hungry) {
                 data.regenCarry.reset();
@@ -324,7 +324,7 @@ public final class FeathersTicker {
                 if (NeoForge.EVENT_BUS.post(new RegenEvent(entity)).isCanceled()) return;
                 data.regenPaused = false;
             }
-            if (FeathersServerConfig.REST_BOOSTS_REGEN.get()) perTick *= data.restMultiplier;
+            if (ServerConfig.REST_BOOSTS_REGEN.get()) perTick *= data.restMultiplier;
         }
 
         int regen = data.regenCarry.add(perTick);
@@ -342,7 +342,7 @@ public final class FeathersTicker {
 
         int recovered = 0;
         if (data.strain > 0) {
-            double rest = FeathersServerConfig.REST_BOOSTS_REGEN.get() ? 1.0 : data.restMultiplier;
+            double rest = ServerConfig.REST_BOOSTS_REGEN.get() ? 1.0 : data.restMultiplier;
             int recovery = (int) Math.round(regen * rest);
             recovered = Math.min(data.strain, recovery);
             data.strain -= recovered;
@@ -353,8 +353,8 @@ public final class FeathersTicker {
         data.stamina += gained;
         data.totalRegenerated += gained + recovered;
 
-        if (entity instanceof Player player && FeathersServerConfig.REGEN_USES_HUNGER.get() && gained + recovered > 0) {
-            player.causeFoodExhaustion((float) ((gained + recovered) / (double) Stamina.PER_FEATHER * FeathersServerConfig.HUNGER_PER_FEATHER.get()));
+        if (entity instanceof Player player && ServerConfig.REGEN_USES_HUNGER.get() && gained + recovered > 0) {
+            player.causeFoodExhaustion((float) ((gained + recovered) / (double) Stamina.PER_FEATHER * ServerConfig.HUNGER_PER_FEATHER.get()));
         }
     }
 
@@ -364,8 +364,8 @@ public final class FeathersTicker {
             return;
         }
         if (!data.exhausted) return;
-        boolean recovered = !FeathersServerConfig.ENABLE_EXHAUSTION.get()
-                || data.strain == 0 && data.availableStamina() >= usableMax(data) * FeathersServerConfig.EXHAUSTION_RECOVERY.get();
+        boolean recovered = !ServerConfig.ENABLE_EXHAUSTION.get()
+                || data.strain == 0 && data.availableStamina() >= usableMax(data) * ServerConfig.EXHAUSTION_RECOVERY.get();
         if (recovered) {
             data.exhausted = false;
             NeoForge.EVENT_BUS.post(new ExhaustionEvent.Recovered(entity));
@@ -415,7 +415,7 @@ public final class FeathersTicker {
                 : MountExertion.riderOf(entity) instanceof ServerPlayer rider ? rider : null;
         if (player == null) return;
 
-        int shownStamina = FeathersServerConfig.DEBUG_MODE.get() ? data.stamina : Stamina.toFeathers(data.stamina);
+        int shownStamina = ServerConfig.DEBUG_MODE.get() ? data.stamina : Stamina.toFeathers(data.stamina);
         int shownStrain = Stamina.toFeathersCeil(data.strain);
         int shownBonus = Stamina.toFeathersCeil(data.bonusStamina());
         boolean delayed = data.regenDelay > 0;

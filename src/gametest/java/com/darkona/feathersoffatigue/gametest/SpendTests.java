@@ -9,7 +9,7 @@ import com.darkona.feathersoffatigue.api.event.StrainEvent;
 import com.darkona.feathersoffatigue.api.registry.FeathersAttributes;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
 import com.darkona.feathersoffatigue.api.registry.FeathersMobEffects;
-import com.darkona.feathersoffatigue.config.FeathersServerConfig;
+import com.darkona.feathersoffatigue.config.ServerConfig;
 import com.darkona.feathersoffatigue.content.feathers.FeathersServiceImpl;
 import net.minecraft.commands.Commands;
 import net.minecraft.gametest.framework.GameTest;
@@ -142,15 +142,15 @@ public class SpendTests {
         boolean[] cleared = {false};
         Consumer<StrainEvent.Cleared> listener = event -> cleared[0] |= event.getEntity() == player;
         NeoForge.EVENT_BUS.addListener(StrainEvent.Cleared.class, listener);
-        boolean strain = FeathersServerConfig.ENABLE_STRAIN.get();
+        boolean strain = ServerConfig.ENABLE_STRAIN.get();
         try {
-            FeathersServerConfig.ENABLE_STRAIN.set(false);
+            ServerConfig.ENABLE_STRAIN.set(false);
             tick(player, 1);
             helper.assertValueEqual(FeathersAPI.get(player).strain(), 0, "strain with strain turned off");
             helper.assertTrue(cleared[0], "dropping the strain posts its event");
             helper.assertFalse(player.hasEffect(FeathersMobEffects.STRAINED), "no strained effect without strain");
         } finally {
-            FeathersServerConfig.ENABLE_STRAIN.set(strain);
+            ServerConfig.ENABLE_STRAIN.set(strain);
             NeoForge.EVENT_BUS.unregister(listener);
         }
         helper.succeed();
@@ -244,18 +244,18 @@ public class SpendTests {
 
     @GameTest(template = "empty")
     public static void viewChecksFollowTheOptions(GameTestHelper helper) {
-        boolean strain = FeathersServerConfig.ENABLE_STRAIN.get();
+        boolean strain = ServerConfig.ENABLE_STRAIN.get();
         try {
-            FeathersServerConfig.ENABLE_STRAIN.set(true);
+            ServerConfig.ENABLE_STRAIN.set(true);
             helper.assertValueEqual(FeathersServiceImpl.simulateAgainst(view(false), Stamina.ofFeathers(5), true, false), SpendResult.OK, "stamina plus strain room");
             helper.assertValueEqual(FeathersServiceImpl.simulateAgainst(view(false), Stamina.ofFeathers(6), true, false), SpendResult.INSUFFICIENT, "past the strain room");
             helper.assertValueEqual(FeathersServiceImpl.simulateAgainst(view(false), Stamina.ofFeathers(4), false, false), SpendResult.INSUFFICIENT, "no strain for this spend");
             helper.assertValueEqual(FeathersServiceImpl.simulateAgainst(view(true), Stamina.ofFeathers(1), true, false), SpendResult.EXHAUSTED, "exhausted");
             helper.assertValueEqual(FeathersServiceImpl.simulateAgainst(view(true), Stamina.ofFeathers(1), true, true), SpendResult.OK, "exhaustion ignored");
-            FeathersServerConfig.ENABLE_STRAIN.set(false);
+            ServerConfig.ENABLE_STRAIN.set(false);
             helper.assertValueEqual(FeathersServiceImpl.simulateAgainst(view(false), Stamina.ofFeathers(4), true, false), SpendResult.INSUFFICIENT, "strain off on the server");
         } finally {
-            FeathersServerConfig.ENABLE_STRAIN.set(strain);
+            ServerConfig.ENABLE_STRAIN.set(strain);
         }
         helper.succeed();
     }

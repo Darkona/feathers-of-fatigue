@@ -2,7 +2,7 @@ package com.darkona.feathersoffatigue.content.feathers;
 
 import com.darkona.feathersoffatigue.api.FeathersView;
 import com.darkona.feathersoffatigue.api.registry.FeathersAttributes;
-import com.darkona.feathersoffatigue.config.FeathersServerConfig;
+import com.darkona.feathersoffatigue.config.ServerConfig;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.player.Player;
@@ -28,9 +28,9 @@ public final class HungerRegen {
         int level = food.getFoodLevel();
         double multiplier;
         if (level >= FoodConstants.MAX_FOOD && food.getSaturationLevel() > 0) {
-            multiplier = FeathersServerConfig.SATURATION_REGEN_BONUS.get();
+            multiplier = ServerConfig.SATURATION_REGEN_BONUS.get();
         } else if (level <= HUNGRY_FOOD_LEVEL) {
-            multiplier = FeathersServerConfig.HUNGER_REGEN_PENALTY.get();
+            multiplier = ServerConfig.HUNGER_REGEN_PENALTY.get();
         } else {
             return 0.0;
         }

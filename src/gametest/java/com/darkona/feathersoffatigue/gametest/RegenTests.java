@@ -6,7 +6,7 @@ import com.darkona.feathersoffatigue.api.SpendOptions;
 import com.darkona.feathersoffatigue.api.Stamina;
 import com.darkona.feathersoffatigue.api.registry.FeathersAttributes;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
-import com.darkona.feathersoffatigue.config.FeathersServerConfig;
+import com.darkona.feathersoffatigue.config.ServerConfig;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceLocation;
@@ -75,7 +75,7 @@ public class RegenTests {
         FeathersAPI.setStamina(player, 5000);
         FeathersAPI.spend(player, TEST, 1000);
         FeathersAPI.spend(player, TEST, 1000, SpendOptions.DEFAULT.withRegenDelay(Integer.MAX_VALUE));
-        helper.assertValueEqual(FeathersAPI.get(player).regenDelay(), FeathersServerConfig.MAX_COOLDOWN.get() * 20, "the delay stops at max_cooldown");
+        helper.assertValueEqual(FeathersAPI.get(player).regenDelay(), ServerConfig.MAX_COOLDOWN.get() * 20, "the delay stops at max_cooldown");
         helper.succeed();
     }
 

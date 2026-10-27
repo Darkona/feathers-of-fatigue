@@ -12,7 +12,7 @@ import com.darkona.feathersoffatigue.api.registry.FeathersAttributes;
 import com.darkona.feathersoffatigue.api.registry.FeathersDataMaps;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
 import com.darkona.feathersoffatigue.api.spi.FeathersService;
-import com.darkona.feathersoffatigue.config.FeathersServerConfig;
+import com.darkona.feathersoffatigue.config.ServerConfig;
 import com.darkona.feathersoffatigue.content.mount.MountTuning;
 import com.darkona.feathersoffatigue.network.FeathersNetwork;
 import com.darkona.feathersoffatigue.content.weight.ArmorWeights;
@@ -58,7 +58,7 @@ public final class FeathersServiceImpl implements FeathersService {
     }
 
     public static boolean isMount(LivingEntity entity) {
-        if (entity instanceof Player || !FeathersServerConfig.ENABLE_MOUNTS.get()) return false;
+        if (entity instanceof Player || !ServerConfig.ENABLE_MOUNTS.get()) return false;
         int id = BuiltInRegistries.ENTITY_TYPE.getId(entity.getType());
         byte[] verdicts = mountTypes;
         if (verdicts.length == 0) {
@@ -197,7 +197,7 @@ public final class FeathersServiceImpl implements FeathersService {
 
         FeathersData data = data(entity);
         ensureInitialized(entity, data);
-        boolean strainEnabled = FeathersServerConfig.ENABLE_STRAIN.get();
+        boolean strainEnabled = ServerConfig.ENABLE_STRAIN.get();
 
         if (data.exhausted && !options.ignoreExhaustion()) return SpendResult.EXHAUSTED;
 
@@ -223,7 +223,7 @@ public final class FeathersServiceImpl implements FeathersService {
         applyRegenDelay(data, options);
 
         NeoForge.EVENT_BUS.post(new SpendEvent.Post(entity, source, cost, SpendResult.OK));
-        if (FeathersServerConfig.DEBUG_MODE.get()) {
+        if (ServerConfig.DEBUG_MODE.get()) {
             Feathers.LOGGER.info("{} spent {} stamina on {}", entity.getName().getString(), cost, source);
             FeathersNetwork.sendSpendDebug(entity, source, cost);
         }
@@ -235,13 +235,13 @@ public final class FeathersServiceImpl implements FeathersService {
     }
 
     public static int regenDelayAfter(int current, SpendOptions options) {
-        int delay = options.regenDelayTicks() < 0 ? FeathersServerConfig.DEFAULT_USAGE_COOLDOWN.get() : options.regenDelayTicks();
-        return (int) Math.min((long) current + delay, FeathersServerConfig.MAX_COOLDOWN.get() * 20L);
+        int delay = options.regenDelayTicks() < 0 ? ServerConfig.DEFAULT_USAGE_COOLDOWN.get() : options.regenDelayTicks();
+        return (int) Math.min((long) current + delay, ServerConfig.MAX_COOLDOWN.get() * 20L);
     }
 
     public static SpendResult simulateAgainst(FeathersView view, int cost, boolean allowStrain, boolean ignoreExhaustion) {
         if (view.exhausted() && !ignoreExhaustion) return SpendResult.EXHAUSTED;
-        int room = allowStrain && FeathersServerConfig.ENABLE_STRAIN.get() ? Math.max(0, view.maxStrain() - view.strain()) : 0;
+        int room = allowStrain && ServerConfig.ENABLE_STRAIN.get() ? Math.max(0, view.maxStrain() - view.strain()) : 0;
         return cost <= view.availableStamina() + room ? SpendResult.OK : SpendResult.INSUFFICIENT;
     }
 
@@ -253,7 +253,7 @@ public final class FeathersServiceImpl implements FeathersService {
     }
 
     static void checkExhausted(LivingEntity entity, FeathersData data, boolean strainEnabled) {
-        if (!data.exhausted && data.maxStamina > 0 && FeathersServerConfig.ENABLE_EXHAUSTION.get() && data.isSpent(strainEnabled)) {
+        if (!data.exhausted && data.maxStamina > 0 && ServerConfig.ENABLE_EXHAUSTION.get() && data.isSpent(strainEnabled)) {
             data.exhausted = true;
             NeoForge.EVENT_BUS.post(new ExhaustionEvent.Exhausted(entity));
         }
@@ -277,7 +277,7 @@ public final class FeathersServiceImpl implements FeathersService {
         if (started) {
             if (data.exhausted) return SpendResult.EXHAUSTED;
             int firstTick = effectiveCost(entity, data, source, Math.ceil(staminaPerTick));
-            if (!data.canPay(firstTick, options.allowStrain(), FeathersServerConfig.ENABLE_STRAIN.get())) return SpendResult.INSUFFICIENT;
+            if (!data.canPay(firstTick, options.allowStrain(), ServerConfig.ENABLE_STRAIN.get())) return SpendResult.INSUFFICIENT;
         }
         data.drains.refresh(source, staminaPerTick, options.timeoutTicks(), options.allowStrain(), options.blocksRegen(), now);
         if (started) NeoForge.EVENT_BUS.post(new DrainEvent.Started(entity, source, staminaPerTick));

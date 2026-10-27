@@ -8,7 +8,7 @@ import com.darkona.feathersoffatigue.api.StaminaModifier;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
 import com.darkona.feathersoffatigue.content.feathers.BasicExertion;
 import com.darkona.feathersoffatigue.content.feathers.ClimateEffects;
-import com.darkona.feathersoffatigue.config.FeathersServerConfig;
+import com.darkona.feathersoffatigue.config.ServerConfig;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceLocation;
@@ -78,14 +78,14 @@ public class ExtensionTests {
 
     @GameTest(template = "empty")
     public static void weightSourcesAddToArmor(GameTestHelper helper) {
-        boolean before = FeathersServerConfig.ENABLE_ARMOR_WEIGHTS.get();
-        FeathersServerConfig.ENABLE_ARMOR_WEIGHTS.set(true);
+        boolean before = ServerConfig.ENABLE_ARMOR_WEIGHTS.get();
+        ServerConfig.ENABLE_ARMOR_WEIGHTS.set(true);
         try {
             ServerPlayer player = marked(helper);
             FeathersAPI.recalculateWeight(player);
             helper.assertValueEqual(FeathersAPI.get(player).weight(), 3, "backpack weight with no armor");
         } finally {
-            FeathersServerConfig.ENABLE_ARMOR_WEIGHTS.set(before);
+            ServerConfig.ENABLE_ARMOR_WEIGHTS.set(before);
         }
         helper.succeed();
     }

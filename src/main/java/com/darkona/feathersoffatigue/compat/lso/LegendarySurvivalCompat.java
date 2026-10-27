@@ -4,7 +4,7 @@ import com.darkona.feathersoffatigue.api.Climate;
 import com.darkona.feathersoffatigue.api.FeathersAPI;
 import com.darkona.feathersoffatigue.api.FeathersView;
 import com.darkona.feathersoffatigue.compat.ThirstRegen;
-import com.darkona.feathersoffatigue.config.FeathersCompatConfig;
+import com.darkona.feathersoffatigue.config.CompatConfig;
 import dev.darkona.jdlib.api.compat.Bridges;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -28,7 +28,7 @@ public final class LegendarySurvivalCompat {
     }
 
     private static Climate climate(LivingEntity entity) {
-        if (!FeathersCompatConfig.LSO.get() || !FeathersCompatConfig.LSO_TEMPERATURE.get() || !(entity instanceof Player player)) return null;
+        if (!CompatConfig.LSO.get() || !CompatConfig.LSO_TEMPERATURE.get() || !(entity instanceof Player player)) return null;
         return switch (LegendarySurvivalBridge.temperature(player)) {
             case FROSTBITE, COLD -> Climate.COLD;
             case HOT -> Climate.HOT;
@@ -38,12 +38,12 @@ public final class LegendarySurvivalCompat {
     }
 
     private static double regenFactor(LivingEntity entity, FeathersView feathers) {
-        if (!FeathersCompatConfig.LSO.get() || !FeathersCompatConfig.LSO_THIRST.get() || !(entity instanceof Player player)) return 0.0;
+        if (!CompatConfig.LSO.get() || !CompatConfig.LSO_THIRST.get() || !(entity instanceof Player player)) return 0.0;
 
-        float exhaustion = ThirstRegen.exhaustionSinceLastCall(player, feathers, LSO_KEYS, FeathersCompatConfig.LSO_THIRST_EXHAUSTION.get());
+        float exhaustion = ThirstRegen.exhaustionSinceLastCall(player, feathers, LSO_KEYS, CompatConfig.LSO_THIRST_EXHAUSTION.get());
         if (exhaustion > 0) LegendarySurvivalBridge.addThirstExhaustion(player, exhaustion);
 
         return ThirstRegen.factor(LegendarySurvivalBridge.hydration(player), LegendarySurvivalBridge.saturation(player),
-                FeathersCompatConfig.LSO_THIRST_REDUCTION.get(), FeathersCompatConfig.LSO_HYDRATION_BONUS.get());
+                CompatConfig.LSO_THIRST_REDUCTION.get(), CompatConfig.LSO_HYDRATION_BONUS.get());
     }
 }

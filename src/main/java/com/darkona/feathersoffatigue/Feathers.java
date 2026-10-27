@@ -12,9 +12,7 @@ import com.darkona.feathersoffatigue.compat.lso.LegendarySurvivalCompat;
 import com.darkona.feathersoffatigue.compat.sereneseasons.SereneSeasonsCompat;
 import com.darkona.feathersoffatigue.compat.thirst.ThirstCompat;
 import com.darkona.feathersoffatigue.compat.toughasnails.ToughAsNailsCompat;
-import com.darkona.feathersoffatigue.config.FeathersClientConfig;
-import com.darkona.feathersoffatigue.config.FeathersCompatConfig;
-import com.darkona.feathersoffatigue.config.FeathersServerConfig;
+import com.darkona.feathersoffatigue.config.FeathersConfig;
 import com.darkona.feathersoffatigue.content.feathers.FeathersAttachments;
 import com.darkona.feathersoffatigue.content.feathers.FeathersServiceImpl;
 import com.darkona.feathersoffatigue.content.feathers.FeathersTicker;
@@ -29,7 +27,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
@@ -45,9 +42,7 @@ public final class Feathers {
     public Feathers(IEventBus modEventBus, ModContainer modContainer) {
         FeathersAPI.setService(FeathersServiceImpl.INSTANCE);
 
-        modContainer.registerConfig(ModConfig.Type.SERVER, FeathersServerConfig.SPEC, "feathers_of_fatigue/FeathersOfFatigue-Server.toml");
-        modContainer.registerConfig(ModConfig.Type.SERVER, FeathersCompatConfig.SPEC, "feathers_of_fatigue/FeathersOfFatigue-Compat.toml");
-        modContainer.registerConfig(ModConfig.Type.CLIENT, FeathersClientConfig.SPEC, "feathers_of_fatigue/FeathersOfFatigue-Client.toml");
+        FeathersConfig.register(modContainer);
         if (FMLEnvironment.dist == Dist.CLIENT) ClientEvents.registerHud();
 
         ModAttributes.register(modEventBus);

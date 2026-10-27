@@ -2,7 +2,7 @@ package com.darkona.feathersoffatigue.compat.coldsweat;
 
 import com.darkona.feathersoffatigue.api.Climate;
 import com.darkona.feathersoffatigue.api.FeathersAPI;
-import com.darkona.feathersoffatigue.config.FeathersCompatConfig;
+import com.darkona.feathersoffatigue.config.CompatConfig;
 import dev.darkona.jdlib.api.compat.Bridges;
 import dev.darkona.jdlib.api.compat.climate.BodyTemperature;
 import net.minecraft.world.entity.LivingEntity;
@@ -18,7 +18,7 @@ public final class ColdSweatCompat {
     private ColdSweatCompat() {}
 
     public static boolean isEnabled() {
-        return LOADED && FeathersCompatConfig.COLD_SWEAT.get();
+        return LOADED && CompatConfig.COLD_SWEAT.get();
     }
 
     public static void init() {
@@ -29,11 +29,11 @@ public final class ColdSweatCompat {
     private static Climate climate(LivingEntity entity) {
         if (!isEnabled()) return null;
         double body = BodyTemperature.of(entity, 0.0);
-        if (FeathersCompatConfig.COLD_SWEAT_HEAT.get()) {
-            if (body >= FeathersCompatConfig.COLD_SWEAT_SEVERE_THRESHOLD.get()) return Climate.SCORCHING;
-            if (body >= FeathersCompatConfig.COLD_SWEAT_HOT_THRESHOLD.get()) return Climate.HOT;
+        if (CompatConfig.COLD_SWEAT_HEAT.get()) {
+            if (body >= CompatConfig.COLD_SWEAT_SEVERE_THRESHOLD.get()) return Climate.SCORCHING;
+            if (body >= CompatConfig.COLD_SWEAT_HOT_THRESHOLD.get()) return Climate.HOT;
         }
-        if (FeathersCompatConfig.COLD_SWEAT_COLD.get() && body <= FeathersCompatConfig.COLD_SWEAT_COLD_THRESHOLD.get()) {
+        if (CompatConfig.COLD_SWEAT_COLD.get() && body <= CompatConfig.COLD_SWEAT_COLD_THRESHOLD.get()) {
             return Climate.COLD;
         }
         return Climate.NEUTRAL;

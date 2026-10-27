@@ -3,7 +3,7 @@ package com.darkona.feathersoffatigue.content.feathers;
 import com.darkona.feathersoffatigue.api.Climate;
 import com.darkona.feathersoffatigue.api.ClimateProvider;
 import com.darkona.feathersoffatigue.api.registry.FeathersMobEffects;
-import com.darkona.feathersoffatigue.config.FeathersServerConfig;
+import com.darkona.feathersoffatigue.config.ServerConfig;
 import com.darkona.feathersoffatigue.content.feathers.ModEffects.FeathersMobEffect;
 import dev.darkona.jdlib.core.registry.PriorityList;
 import net.minecraft.core.BlockPos;
@@ -28,8 +28,8 @@ public final class ClimateEffects {
     }
 
     public static Climate evaluate(LivingEntity entity) {
-        if (FeathersServerConfig.FATIGUE_FROM_BURNING.get() && (entity.isOnFire() || entity.isInLava())) return Climate.SCORCHING;
-        if (FeathersServerConfig.FATIGUE_FROM_NETHER.get() && entity.level().dimension() == Level.NETHER) return Climate.SCORCHING;
+        if (ServerConfig.FATIGUE_FROM_BURNING.get() && (entity.isOnFire() || entity.isInLava())) return Climate.SCORCHING;
+        if (ServerConfig.FATIGUE_FROM_NETHER.get() && entity.level().dimension() == Level.NETHER) return Climate.SCORCHING;
 
         PriorityList.Snapshot<ResourceLocation, ClimateProvider> providers = Extensions.climates();
         for (int i = 0; i < providers.size(); i++) {
@@ -47,9 +47,9 @@ public final class ClimateEffects {
         if (climate != Climate.COLD && climate != Climate.NEUTRAL) entity.removeEffect(FeathersMobEffects.COLD);
         if (climate == Climate.COLD) entity.removeEffect(FeathersMobEffects.HOT);
 
-        if (FeathersServerConfig.ENABLE_COLD.get()) update(entity, FeathersMobEffects.COLD, climate == Climate.COLD);
-        if (FeathersServerConfig.ENABLE_HEAT.get()) update(entity, FeathersMobEffects.HOT, climate.isHot());
-        if (FeathersServerConfig.ENABLE_FATIGUE.get()) update(entity, FeathersMobEffects.FATIGUE, climate == Climate.SCORCHING);
+        if (ServerConfig.ENABLE_COLD.get()) update(entity, FeathersMobEffects.COLD, climate == Climate.COLD);
+        if (ServerConfig.ENABLE_HEAT.get()) update(entity, FeathersMobEffects.HOT, climate.isHot());
+        if (ServerConfig.ENABLE_FATIGUE.get()) update(entity, FeathersMobEffects.FATIGUE, climate == Climate.SCORCHING);
     }
 
     private static void update(LivingEntity entity, Holder<MobEffect> effect, boolean active) {
@@ -62,7 +62,7 @@ public final class ClimateEffects {
             }
         } else if (permanent) {
             entity.removeEffect(effect);
-            int linger = FeathersServerConfig.EFFECT_LINGER.get();
+            int linger = ServerConfig.EFFECT_LINGER.get();
             if (linger > 0) entity.addEffect(new MobEffectInstance(effect, linger, 0, false, true));
         }
     }
@@ -86,7 +86,7 @@ public final class ClimateEffects {
         if (entity.isInPowderSnow || entity.isInWaterOrRain()) return Climate.NEUTRAL;
         if (!level.isDay() || !level.canSeeSky(pos)) return Climate.NEUTRAL;
 
-        return level.getBiome(pos).value().getModifiedClimateSettings().temperature() >= FeathersServerConfig.HOT_TEMPERATURE.get()
+        return level.getBiome(pos).value().getModifiedClimateSettings().temperature() >= ServerConfig.HOT_TEMPERATURE.get()
                 ? Climate.HOT : Climate.NEUTRAL;
     }
 
@@ -94,6 +94,6 @@ public final class ClimateEffects {
         if (!level.isRaining() || !level.canSeeSky(pos)) return false;
         Biome biome = level.getBiome(pos).value();
         if (biome.getPrecipitationAt(pos) == Biome.Precipitation.NONE) return false;
-        return biome.coldEnoughToSnow(pos) || biome.getModifiedClimateSettings().temperature() < FeathersServerConfig.COLD_TEMPERATURE.get();
+        return biome.coldEnoughToSnow(pos) || biome.getModifiedClimateSettings().temperature() < ServerConfig.COLD_TEMPERATURE.get();
     }
 }

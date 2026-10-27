@@ -9,7 +9,7 @@ import com.darkona.feathersoffatigue.api.client.FeatherAnimations;
 import com.darkona.feathersoffatigue.api.client.FeatherStyle;
 import com.darkona.feathersoffatigue.api.client.FeatherStyles;
 import com.darkona.feathersoffatigue.api.client.FeatherVariants;
-import com.darkona.feathersoffatigue.config.FeathersClientConfig;
+import com.darkona.feathersoffatigue.config.ClientConfig;
 import com.darkona.feathersoffatigue.content.weight.ArmorWeights;
 import com.darkona.feathersoffatigue.content.weight.WeightSplit;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -85,7 +85,7 @@ public final class FeathersHud {
     }
 
     public static void tickAnimations() {
-        FLASH.tick(DATA.feathers(), DATA.hasFeathers(), FeathersClientConfig.REGEN_EFFECT.get());
+        FLASH.tick(DATA.feathers(), DATA.hasFeathers(), ClientConfig.REGEN_EFFECT.get());
 
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null) {
@@ -96,8 +96,8 @@ public final class FeathersHud {
         }
 
         boolean full = DATA.stamina() >= DATA.maxStamina() && DATA.bonusStamina() == 0 && DATA.strain() == 0;
-        FADE.tick(full, FeathersClientConfig.FADE_WHEN_FULL.get(), FeathersClientConfig.FADE_COOLDOWN.get(),
-                FeathersClientConfig.FADE_OUT_DURATION.get(), FeathersClientConfig.FADE_IN_DURATION.get());
+        FADE.tick(full, ClientConfig.FADE_WHEN_FULL.get(), ClientConfig.FADE_COOLDOWN.get(),
+                ClientConfig.FADE_OUT_DURATION.get(), ClientConfig.FADE_IN_DURATION.get());
     }
 
     private static void animate(FeatherAnimation animation) {
@@ -120,7 +120,7 @@ public final class FeathersHud {
     }
 
     public static JDHudBars.Spec spec() {
-        return spec(FeathersClientConfig.AFFECTED_BY_RIGHT_HEIGHT::get, FeathersClientConfig.X_OFFSET::get, FeathersClientConfig.Y_OFFSET::get);
+        return spec(ClientConfig.AFFECTED_BY_RIGHT_HEIGHT::get, ClientConfig.X_OFFSET::get, ClientConfig.Y_OFFSET::get);
     }
 
     static int reservedHeight(int bonusRows) {
@@ -322,7 +322,7 @@ public final class FeathersHud {
     private static void refreshStyles(LocalPlayer player) {
         ResourceLocation chosen = FeatherStyles.select(player, DATA);
         FeatherStyle style = chosen != null ? FeatherStyles.resolve(chosen) : null;
-        OWN.set(style != null ? style : style(switch (FeathersClientConfig.FEATHER_COLOR.get()) {
+        OWN.set(style != null ? style : style(switch (ClientConfig.FEATHER_COLOR.get()) {
             case GREEN -> FeatherStyles.GREEN;
             case BLUE -> FeatherStyles.BLUE;
             case WHITE -> FeatherStyles.WHITE;

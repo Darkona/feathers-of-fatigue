@@ -1,11 +1,12 @@
 package com.darkona.feathersoffatigue.config;
 
+import com.darkona.feathersoffatigue.config.CompatConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.ModConfigSpec.BooleanValue;
 import net.neoforged.neoforge.common.ModConfigSpec.DoubleValue;
 import net.neoforged.neoforge.common.ModConfigSpec.IntValue;
 
-public final class FeathersCompatConfig {
+public final class CompatConfig {
 
     public static final ModConfigSpec SPEC;
 
@@ -145,5 +146,5 @@ public final class FeathersCompatConfig {
         SPEC = builder.build();
     }
 
-    private FeathersCompatConfig() {}
+    private CompatConfig() {}
 }

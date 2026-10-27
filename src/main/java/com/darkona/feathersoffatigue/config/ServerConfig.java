@@ -1,5 +1,6 @@
 package com.darkona.feathersoffatigue.config;
 
+import com.darkona.feathersoffatigue.config.ServerConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.ModConfigSpec.BooleanValue;
 import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
@@ -8,7 +9,7 @@ import net.neoforged.neoforge.common.ModConfigSpec.IntValue;
 
 import java.util.List;
 
-public final class FeathersServerConfig {
+public final class ServerConfig {
 
     public static final ModConfigSpec SPEC;
 
@@ -315,5 +316,5 @@ public final class FeathersServerConfig {
         SPEC = builder.build();
     }
 
-    private FeathersServerConfig() {}
+    private ServerConfig() {}
 }

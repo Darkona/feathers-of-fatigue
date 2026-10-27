@@ -5,7 +5,7 @@ import com.darkona.feathersoffatigue.api.FeathersView;
 import com.darkona.feathersoffatigue.api.SpendResult;
 import com.darkona.feathersoffatigue.api.Stamina;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
-import com.darkona.feathersoffatigue.config.FeathersServerConfig;
+import com.darkona.feathersoffatigue.config.ServerConfig;
 import com.darkona.feathersoffatigue.content.feathers.FeathersAttachments;
 import com.darkona.feathersoffatigue.content.feathers.FeathersData;
 import com.darkona.feathersoffatigue.content.feathers.FeathersServiceImpl;
@@ -107,7 +107,7 @@ public final class MountExertion {
         boolean exhausted = data.exhausted();
         if (!exhausted && !data.mountSlowed) return;
         data.mountSlowed = exhausted;
-        JDModifiers.toggle(mount, Attributes.MOVEMENT_SPEED, EXHAUSTED_SLOWDOWN, exhausted, -FeathersServerConfig.MOUNT_EXHAUSTED_SLOWDOWN.get(),
+        JDModifiers.toggle(mount, Attributes.MOVEMENT_SPEED, EXHAUSTED_SLOWDOWN, exhausted, -ServerConfig.MOUNT_EXHAUSTED_SLOWDOWN.get(),
                 AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
     }
 

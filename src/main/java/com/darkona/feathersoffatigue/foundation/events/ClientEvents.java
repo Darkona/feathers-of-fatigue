@@ -9,8 +9,8 @@ import com.darkona.feathersoffatigue.content.feathers.BasicExertion;
 import com.darkona.feathersoffatigue.content.feathers.FeatherColors;
 import com.darkona.feathersoffatigue.infrastructure.FeathersDebugOverlay;
 import com.darkona.feathersoffatigue.content.feathers.FeathersHud;
-import com.darkona.feathersoffatigue.config.FeathersClientConfig;
-import com.darkona.feathersoffatigue.config.FeathersServerConfig;
+import com.darkona.feathersoffatigue.config.ClientConfig;
+import com.darkona.feathersoffatigue.config.ServerConfig;
 import com.darkona.feathersoffatigue.content.feathers.FeathersServiceImpl;
 import com.darkona.feathersoffatigue.content.feathers.BuiltInFeatherStyles;
 import dev.darkona.jdlib.api.hud.JDDebugOverlay;
@@ -80,7 +80,7 @@ public final class ClientEvents {
         FeathersHud.tickAnimations();
 
         boolean cold = FeathersAPI.isCold(player);
-        if (cold && !wasCold && FeathersClientConfig.FROST_SOUND.get()) {
+        if (cold && !wasCold && ClientConfig.FROST_SOUND.get()) {
             player.playSound(SoundEvents.PLAYER_HURT_FREEZE, 0.6f, 1.2f);
         }
         wasCold = cold;
@@ -112,13 +112,13 @@ public final class ClientEvents {
     @SubscribeEvent
     public static void onTooltip(ItemTooltipEvent event) {
         ItemStack stack = event.getItemStack();
-        if (!(stack.getItem() instanceof ArmorItem) || !FeathersClientConfig.DISPLAY_WEIGHTS.get()
-                || !FeathersServerConfig.ENABLE_ARMOR_WEIGHTS.get()) return;
+        if (!(stack.getItem() instanceof ArmorItem) || !ClientConfig.DISPLAY_WEIGHTS.get()
+                || !ServerConfig.ENABLE_ARMOR_WEIGHTS.get()) return;
 
         double weight = FeathersAPI.getPieceWeight(stack);
         if (weight <= 0) return;
 
-        if (FeathersClientConfig.VISUAL_WEIGHTS.get()) {
+        if (ClientConfig.VISUAL_WEIGHTS.get()) {
             int halves = Math.max(1, (int) Math.round(weight));
             event.getToolTip().add(Component.literal(weightIcons(halves)).withStyle(FEATHER_ICONS));
         } else {

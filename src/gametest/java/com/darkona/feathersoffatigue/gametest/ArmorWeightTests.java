@@ -4,7 +4,7 @@ import com.darkona.feathersoffatigue.api.FeathersAPI;
 import com.darkona.feathersoffatigue.api.registry.FeathersAttributes;
 import com.darkona.feathersoffatigue.api.registry.FeathersEnchantments;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
-import com.darkona.feathersoffatigue.config.FeathersServerConfig;
+import com.darkona.feathersoffatigue.config.ServerConfig;
 import com.darkona.feathersoffatigue.content.feathers.FeathersData;
 import com.darkona.feathersoffatigue.content.feathers.FeathersServiceImpl;
 import com.darkona.feathersoffatigue.content.feathers.ModItems;
@@ -60,12 +60,12 @@ public class ArmorWeightTests {
     }
 
     private static void withWeights(GameTestHelper helper, Runnable test) {
-        boolean before = FeathersServerConfig.ENABLE_ARMOR_WEIGHTS.get();
-        FeathersServerConfig.ENABLE_ARMOR_WEIGHTS.set(true);
+        boolean before = ServerConfig.ENABLE_ARMOR_WEIGHTS.get();
+        ServerConfig.ENABLE_ARMOR_WEIGHTS.set(true);
         try {
             test.run();
         } finally {
-            FeathersServerConfig.ENABLE_ARMOR_WEIGHTS.set(before);
+            ServerConfig.ENABLE_ARMOR_WEIGHTS.set(before);
         }
         helper.succeed();
     }

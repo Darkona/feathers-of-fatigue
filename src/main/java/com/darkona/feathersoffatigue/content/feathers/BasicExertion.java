@@ -4,7 +4,7 @@ import com.darkona.feathersoffatigue.api.FeathersAPI;
 import com.darkona.feathersoffatigue.api.SpendResult;
 import com.darkona.feathersoffatigue.api.Stamina;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
-import com.darkona.feathersoffatigue.config.FeathersServerConfig;
+import com.darkona.feathersoffatigue.config.ServerConfig;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -23,7 +23,7 @@ public final class BasicExertion {
     private BasicExertion() {}
 
     public static boolean isActive() {
-        return !FeathersAPI.arePlayerActionsTakenOver() && FeathersServerConfig.ENABLE_BASIC_EXERTION.get();
+        return !FeathersAPI.arePlayerActionsTakenOver() && ServerConfig.ENABLE_BASIC_EXERTION.get();
     }
 
     @SubscribeEvent
@@ -31,7 +31,7 @@ public final class BasicExertion {
         Player player = event.getEntity();
         if (player.level().isClientSide() || !isActive() || !player.isSprinting() || player.isPassenger()) return;
 
-        double perSecond = FeathersServerConfig.SPRINT_FEATHERS_PER_SECOND.get();
+        double perSecond = ServerConfig.SPRINT_FEATHERS_PER_SECOND.get();
         if (perSecond <= 0) return;
 
         SpendResult result = FeathersAPI.startDrain(player, SPRINT, Stamina.perTick(perSecond));
@@ -41,7 +41,7 @@ public final class BasicExertion {
     @SubscribeEvent
     public static void onJump(LivingEvent.LivingJumpEvent event) {
         if (!(event.getEntity() instanceof Player player) || player.level().isClientSide() || !isActive()) return;
-        double feathers = FeathersServerConfig.JUMP_FEATHERS.get();
+        double feathers = ServerConfig.JUMP_FEATHERS.get();
         if (feathers > 0) FeathersAPI.spend(player, JUMP, Stamina.ofFeathers(feathers));
     }
 }
