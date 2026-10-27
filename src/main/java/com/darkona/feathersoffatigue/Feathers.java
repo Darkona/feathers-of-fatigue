@@ -24,7 +24,7 @@ import com.darkona.feathersoffatigue.registry.ModItems;
 import com.darkona.feathersoffatigue.network.FeathersNetwork;
 import com.darkona.feathersoffatigue.registry.ModAttributes;
 import com.darkona.feathersoffatigue.registry.ModPotions;
-import com.darkona.feathersoffatigue.style.BuiltInFeatherStyles;
+import com.darkona.feathersoffatigue.client.gui.BuiltInFeatherStyles;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
