@@ -1,4 +1,4 @@
-package com.darkona.feathersoffatigue.content.feathers;
+package com.darkona.feathersoffatigue.index;
 
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
 import net.minecraft.core.Holder;
@@ -17,7 +17,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import static com.darkona.feathersoffatigue.api.registry.FeathersMobEffects.*;
 
-public final class ModPotions {
+public final class FeathersPotions {
 
     private static final DeferredRegister<Potion> POTIONS = DeferredRegister.create(Registries.POTION, FeathersIds.MOD_ID);
 
@@ -48,7 +48,7 @@ public final class ModPotions {
 
     public static void register(IEventBus modEventBus) {
         POTIONS.register(modEventBus);
-        NeoForge.EVENT_BUS.addListener(ModPotions::registerBrewingRecipes);
+        NeoForge.EVENT_BUS.addListener(FeathersPotions::registerBrewingRecipes);
     }
 
     private static void registerBrewingRecipes(RegisterBrewingRecipesEvent event) {
@@ -76,5 +76,5 @@ public final class ModPotions {
         builder.addMix(ENERGIZED_POTION, Items.GLOWSTONE_DUST, STRONG_ENERGIZED_POTION);
     }
 
-    private ModPotions() {}
+    private FeathersPotions() {}
 }

@@ -7,7 +7,7 @@ import com.darkona.feathersoffatigue.api.registry.FeathersIds;
 import com.darkona.feathersoffatigue.config.ServerConfig;
 import com.darkona.feathersoffatigue.content.feathers.FeathersData;
 import com.darkona.feathersoffatigue.content.feathers.FeathersServiceImpl;
-import com.darkona.feathersoffatigue.content.feathers.ModItems;
+import com.darkona.feathersoffatigue.index.FeathersItems;
 import com.darkona.feathersoffatigue.network.SyncPayload;
 import com.darkona.feathersoffatigue.content.weight.ArmorWeights;
 import io.netty.buffer.ByteBuf;
@@ -143,7 +143,7 @@ public class ArmorWeightTests {
     @GameTest(template = "empty")
     public static void featherRingTooltipNamesItsSlot(GameTestHelper helper) {
         List<Component> tooltip = new ArrayList<>();
-        ItemStack ring = new ItemStack(ModItems.FEATHER_RING.get());
+        ItemStack ring = new ItemStack(FeathersItems.FEATHER_RING.get());
         ring.getItem().appendHoverText(ring, Item.TooltipContext.EMPTY, tooltip, TooltipFlag.NORMAL);
         String where = ModList.get().isLoaded("curios") ? "ring" : "offhand";
         helper.assertTrue(tooltip.size() == 1 && tooltip.getFirst().getContents() instanceof TranslatableContents contents

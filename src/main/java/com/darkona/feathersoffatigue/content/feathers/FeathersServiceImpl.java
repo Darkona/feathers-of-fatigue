@@ -1,5 +1,6 @@
 package com.darkona.feathersoffatigue.content.feathers;
 
+import com.darkona.feathersoffatigue.index.FeathersAttachmentTypes;
 import com.darkona.feathersoffatigue.network.SyncPayload;
 import dev.darkona.jdlib.core.registry.PriorityList;
 import com.darkona.feathersoffatigue.Feathers;
@@ -129,7 +130,7 @@ public final class FeathersServiceImpl implements FeathersService {
     }
 
     public static FeathersData data(LivingEntity entity) {
-        return entity.getData(FeathersAttachments.FEATHERS);
+        return entity.getData(FeathersAttachmentTypes.FEATHERS);
     }
 
     private static boolean onClient(LivingEntity entity) {
