@@ -2,37 +2,25 @@ package com.darkona.feathersoffatigue.foundation.events;
 
 import com.darkona.feathersoffatigue.content.feathers.ClientFeathersData;
 import com.darkona.feathersoffatigue.api.FeathersAPI;
-import com.darkona.feathersoffatigue.api.client.ClientFeathers;
-import com.darkona.feathersoffatigue.api.client.FeatherStylePack;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
 import com.darkona.feathersoffatigue.content.feathers.BasicExertion;
-import com.darkona.feathersoffatigue.content.feathers.FeatherColors;
-import com.darkona.feathersoffatigue.infrastructure.FeathersDebugOverlay;
 import com.darkona.feathersoffatigue.content.feathers.FeathersHud;
 import com.darkona.feathersoffatigue.config.ClientConfig;
 import com.darkona.feathersoffatigue.config.ServerConfig;
-import com.darkona.feathersoffatigue.content.feathers.FeathersServiceImpl;
-import com.darkona.feathersoffatigue.content.feathers.BuiltInFeatherStyles;
-import dev.darkona.jdlib.api.hud.JDDebugOverlay;
-import dev.darkona.jdlib.api.hud.JDHudBars;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
-import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
 import static com.darkona.feathersoffatigue.api.registry.FeathersIds.id;
@@ -46,30 +34,6 @@ public final class ClientEvents {
     private static boolean wasCold;
 
     private ClientEvents() {}
-
-    @SubscribeEvent
-    public static void onClientSetup(FMLClientSetupEvent event) {
-        ClientFeathers.setService(ClientFeathersData.INSTANCE);
-        FeathersServiceImpl.setClientBridge(ClientFeathersData.INSTANCE);
-        BuiltInFeatherStyles.registerAnimations();
-    }
-
-    @SubscribeEvent
-    public static void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
-        JDDebugOverlay.register(event, id("debug"), FeathersDebugOverlay.SPEC);
-    }
-
-    @SubscribeEvent
-    public static void onRegisterReloadListeners(RegisterClientReloadListenersEvent event) {
-        event.registerReloadListener((ResourceManagerReloadListener) manager -> {
-            FeatherColors.clear();
-            FeatherStylePack.PATCHES.load(manager);
-        });
-    }
-
-    public static void registerHud() {
-        JDHudBars.register(FeathersHud.spec());
-    }
 
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {

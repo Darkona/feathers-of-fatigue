@@ -1,7 +1,6 @@
 package com.darkona.feathersoffatigue;
 
 import com.darkona.feathersoffatigue.api.FeathersAPI;
-import com.darkona.feathersoffatigue.foundation.events.ClientEvents;
 import com.darkona.feathersoffatigue.api.registry.FeathersDataMaps;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
 import com.darkona.feathersoffatigue.content.feathers.ClimateEffects;
@@ -23,12 +22,10 @@ import com.darkona.feathersoffatigue.network.FeathersPackets;
 import com.darkona.feathersoffatigue.content.feathers.ModAttributes;
 import com.darkona.feathersoffatigue.content.feathers.ModPotions;
 import com.darkona.feathersoffatigue.content.feathers.BuiltInFeatherStyles;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +40,6 @@ public final class Feathers {
         FeathersAPI.setService(FeathersServiceImpl.INSTANCE);
 
         FeathersConfig.register(modContainer);
-        if (FMLEnvironment.dist == Dist.CLIENT) ClientEvents.registerHud();
 
         ModAttributes.register(modEventBus);
         ModEffects.register(modEventBus);
