@@ -1,4 +1,4 @@
-package com.darkona.feathersoffatigue.mixin;
+package com.darkona.feathersoffatigue.mount.mixin;
 
 import com.darkona.feathersoffatigue.mount.MountExertion;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
