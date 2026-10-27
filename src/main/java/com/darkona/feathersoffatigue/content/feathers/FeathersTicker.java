@@ -1,6 +1,6 @@
 package com.darkona.feathersoffatigue.content.feathers;
 
-import com.darkona.feathersoffatigue.index.FeathersAttachmentTypes;
+import com.darkona.feathersoffatigue.index.FeathersAttachmentRegistry;
 import com.darkona.feathersoffatigue.api.StaminaModifier;
 import com.darkona.feathersoffatigue.api.RegenFactor;
 import dev.darkona.jdlib.core.registry.PriorityList;
@@ -93,7 +93,7 @@ public final class FeathersTicker {
     @SubscribeEvent
     public static void onClone(PlayerEvent.Clone event) {
         FeathersData data = FeathersServiceImpl.data(event.getEntity());
-        if (event.isWasDeath() && event.getOriginal().hasData(FeathersAttachmentTypes.FEATHERS)) {
+        if (event.isWasDeath() && event.getOriginal().hasData(FeathersAttachmentRegistry.FEATHERS)) {
             FeathersData original = FeathersServiceImpl.data(event.getOriginal());
             copyCounter(original, data, BASE_MAX);
             copyCounter(original, data, BASE_STRAIN);
@@ -387,7 +387,7 @@ public final class FeathersTicker {
     }
 
     public static void releaseExMount(LivingEntity entity) {
-        if (!entity.hasData(FeathersAttachmentTypes.FEATHERS)) return;
+        if (!entity.hasData(FeathersAttachmentRegistry.FEATHERS)) return;
         FeathersData data = FeathersServiceImpl.data(entity);
         MobEffectInstance effect = entity.getEffect(FeathersMobEffects.STRAINED);
         boolean ownEffect = effect != null && effect.isInfiniteDuration() && !effect.isVisible();

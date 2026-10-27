@@ -11,16 +11,16 @@ import com.darkona.feathersoffatigue.compat.sereneseasons.SereneSeasonsCompat;
 import com.darkona.feathersoffatigue.compat.thirst.ThirstCompat;
 import com.darkona.feathersoffatigue.compat.toughasnails.ToughAsNailsCompat;
 import com.darkona.feathersoffatigue.config.FeathersConfig;
-import com.darkona.feathersoffatigue.index.FeathersAttachmentTypes;
-import com.darkona.feathersoffatigue.index.FeathersDataMaps;
+import com.darkona.feathersoffatigue.index.FeathersAttachmentRegistry;
+import com.darkona.feathersoffatigue.index.FeathersDataMapRegistry;
 import com.darkona.feathersoffatigue.content.feathers.FeathersServiceImpl;
 import com.darkona.feathersoffatigue.content.feathers.FeathersTicker;
 import com.darkona.feathersoffatigue.content.feathers.HungerRegen;
-import com.darkona.feathersoffatigue.index.FeathersMobEffects;
-import com.darkona.feathersoffatigue.index.FeathersItems;
+import com.darkona.feathersoffatigue.index.FeathersEffectRegistry;
+import com.darkona.feathersoffatigue.index.FeathersItemRegistry;
 import com.darkona.feathersoffatigue.network.FeathersPackets;
-import com.darkona.feathersoffatigue.index.FeathersAttributes;
-import com.darkona.feathersoffatigue.index.FeathersPotions;
+import com.darkona.feathersoffatigue.index.FeathersAttributeRegistry;
+import com.darkona.feathersoffatigue.index.FeathersPotionRegistry;
 import com.darkona.feathersoffatigue.content.feathers.BuiltInFeatherStyles;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -40,12 +40,12 @@ public final class Feathers {
 
         FeathersConfig.register(modContainer);
 
-        FeathersAttributes.register(modEventBus);
-        FeathersMobEffects.register(modEventBus);
-        FeathersPotions.register(modEventBus);
-        FeathersItems.register(modEventBus);
-        FeathersAttachmentTypes.register(modEventBus);
-        FeathersDataMaps.register(modEventBus);
+        FeathersAttributeRegistry.register(modEventBus);
+        FeathersEffectRegistry.register(modEventBus);
+        FeathersPotionRegistry.register(modEventBus);
+        FeathersItemRegistry.register(modEventBus);
+        FeathersAttachmentRegistry.register(modEventBus);
+        FeathersDataMapRegistry.register(modEventBus);
 
         modEventBus.addListener(FeathersTicker::addAttributes);
         modEventBus.addListener(FeathersTicker::onConfigChanged);
@@ -64,6 +64,6 @@ public final class Feathers {
     }
 
     private static void commonSetup(FMLCommonSetupEvent event) {
-        if (FeathersItems.CURIOS) event.enqueueWork(CuriosCompat::init);
+        if (FeathersItemRegistry.CURIOS) event.enqueueWork(CuriosCompat::init);
     }
 }

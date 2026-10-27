@@ -1,5 +1,6 @@
 package com.darkona.feathersoffatigue.index;
 
+import com.darkona.feathersoffatigue.index.FeathersItemRegistry;
 import com.darkona.feathersoffatigue.content.feathers.FeatherRingItem;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
 import dev.darkona.jdlib.api.compat.Bridges;
@@ -17,7 +18,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import static com.darkona.feathersoffatigue.api.registry.FeathersAttributes.ARMOR_WEIGHT_MULTIPLIER;
 import static com.darkona.feathersoffatigue.api.registry.FeathersIds.id;
 
-public final class FeathersItems {
+public final class FeathersItemRegistry {
 
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(FeathersIds.MOD_ID);
 
@@ -41,7 +42,7 @@ public final class FeathersItems {
 
     public static void register(IEventBus modEventBus) {
         ITEMS.register(modEventBus);
-        modEventBus.addListener(FeathersItems::addToCreativeTabs);
+        modEventBus.addListener(FeathersItemRegistry::addToCreativeTabs);
     }
 
     private static void addToCreativeTabs(BuildCreativeModeTabContentsEvent event) {
@@ -50,5 +51,5 @@ public final class FeathersItems {
         }
     }
 
-    private FeathersItems() {}
+    private FeathersItemRegistry() {}
 }

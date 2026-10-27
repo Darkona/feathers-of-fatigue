@@ -1,6 +1,6 @@
 package com.darkona.feathersoffatigue.content.feathers;
 
-import com.darkona.feathersoffatigue.index.FeathersItems;
+import com.darkona.feathersoffatigue.index.FeathersItemRegistry;
 import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class FeatherRingItem extends Item {
 
-    private static final String TOOLTIP = "item.feathers_of_fatigue.feather_ring.tooltip." + (FeathersItems.CURIOS ? "ring" : "offhand");
+    private static final String TOOLTIP = "item.feathers_of_fatigue.feather_ring.tooltip." + (FeathersItemRegistry.CURIOS ? "ring" : "offhand");
 
     public FeatherRingItem(Properties properties) {
         super(properties);

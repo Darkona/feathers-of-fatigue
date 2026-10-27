@@ -1,5 +1,6 @@
 package com.darkona.feathersoffatigue.index;
 
+import com.darkona.feathersoffatigue.index.FeathersAttachmentRegistry;
 import com.darkona.feathersoffatigue.content.feathers.FeathersData;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
 import net.neoforged.bus.api.IEventBus;
@@ -8,7 +9,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
-public final class FeathersAttachmentTypes {
+public final class FeathersAttachmentRegistry {
 
     private static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES =
             DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, FeathersIds.MOD_ID);
@@ -20,5 +21,5 @@ public final class FeathersAttachmentTypes {
         ATTACHMENT_TYPES.register(modEventBus);
     }
 
-    private FeathersAttachmentTypes() {}
+    private FeathersAttachmentRegistry() {}
 }

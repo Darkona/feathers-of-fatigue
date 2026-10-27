@@ -1,7 +1,7 @@
 package com.darkona.feathersoffatigue.compat.curios;
 
 import com.darkona.feathersoffatigue.api.registry.FeathersAttributes;
-import com.darkona.feathersoffatigue.index.FeathersItems;
+import com.darkona.feathersoffatigue.index.FeathersItemRegistry;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.core.Holder;
@@ -18,11 +18,11 @@ public final class CuriosCompat {
     private CuriosCompat() {}
 
     public static void init() {
-        CuriosApi.registerCurio(FeathersItems.FEATHER_RING.get(), new ICurioItem() {
+        CuriosApi.registerCurio(FeathersItemRegistry.FEATHER_RING.get(), new ICurioItem() {
             @Override
             public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext slotContext, ResourceLocation id, ItemStack stack) {
                 return ImmutableMultimap.of(FeathersAttributes.ARMOR_WEIGHT_MULTIPLIER,
-                        new AttributeModifier(id, FeathersItems.FEATHER_RING_WEIGHT_MULTIPLIER, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
+                        new AttributeModifier(id, FeathersItemRegistry.FEATHER_RING_WEIGHT_MULTIPLIER, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
             }
         });
     }

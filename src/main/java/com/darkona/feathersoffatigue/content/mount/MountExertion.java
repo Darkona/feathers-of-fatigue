@@ -6,7 +6,7 @@ import com.darkona.feathersoffatigue.api.SpendResult;
 import com.darkona.feathersoffatigue.api.Stamina;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
 import com.darkona.feathersoffatigue.config.ServerConfig;
-import com.darkona.feathersoffatigue.index.FeathersAttachmentTypes;
+import com.darkona.feathersoffatigue.index.FeathersAttachmentRegistry;
 import com.darkona.feathersoffatigue.content.feathers.FeathersData;
 import com.darkona.feathersoffatigue.content.feathers.FeathersServiceImpl;
 import com.darkona.feathersoffatigue.content.feathers.FeathersTicker;
@@ -112,7 +112,7 @@ public final class MountExertion {
     }
 
     public static void release(LivingEntity entity) {
-        if (!entity.hasData(FeathersAttachmentTypes.FEATHERS)) return;
+        if (!entity.hasData(FeathersAttachmentRegistry.FEATHERS)) return;
         JDModifiers.toggle(entity, Attributes.MOVEMENT_SPEED, EXHAUSTED_SLOWDOWN, false, 0, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
         FeathersTicker.releaseExMount(entity);
     }

@@ -1,5 +1,6 @@
 package com.darkona.feathersoffatigue.index;
 
+import com.darkona.feathersoffatigue.index.FeathersEffectRegistry;
 import com.darkona.feathersoffatigue.content.feathers.FeathersMobEffect;
 import com.darkona.feathersoffatigue.content.feathers.EnduranceEffect;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
@@ -23,7 +24,7 @@ import static com.darkona.feathersoffatigue.api.registry.FeathersMobEffects.MOME
 import static net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL;
 import static net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE;
 
-public final class FeathersMobEffects {
+public final class FeathersEffectRegistry {
 
     private static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(Registries.MOB_EFFECT, FeathersIds.MOD_ID);
 
@@ -79,5 +80,5 @@ public final class FeathersMobEffects {
         EFFECTS.register(modEventBus);
     }
 
-    private FeathersMobEffects() {}
+    private FeathersEffectRegistry() {}
 }

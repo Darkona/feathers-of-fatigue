@@ -1,5 +1,6 @@
 package com.darkona.feathersoffatigue.index;
 
+import com.darkona.feathersoffatigue.index.FeathersAttributeRegistry;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -7,7 +8,7 @@ import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-public final class FeathersAttributes {
+public final class FeathersAttributeRegistry {
 
     private static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(Registries.ATTRIBUTE, FeathersIds.MOD_ID);
 
@@ -27,5 +28,5 @@ public final class FeathersAttributes {
         ATTRIBUTES.register(modEventBus);
     }
 
-    private FeathersAttributes() {}
+    private FeathersAttributeRegistry() {}
 }
