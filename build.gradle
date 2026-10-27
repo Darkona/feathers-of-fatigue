@@ -158,10 +158,16 @@ dependencies {
     gametestImplementation 'dev.darkona.jdlib:jdlib-testkit'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation('com.tngtech.archunit:archunit-junit5:1.5.1') {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
 }
 
-tasks.named('test') {
+tasks.named('test', Test) {
     useJUnitPlatform()
+    dependsOn 'compileGametestJava'
+    systemProperty 'feathers.classes', sourceSets.main.java.destinationDirectory.get().asFile.absolutePath
+    systemProperty 'feathers.gametestClasses', sourceSets.gametest.java.destinationDirectory.get().asFile.absolutePath
 }
 
 // Compat mods on the dev runtime, for boot checks and GameTests with them loaded:
