@@ -1,7 +1,7 @@
 package com.darkona.feathersoffatigue.network;
 
-import com.darkona.feathersoffatigue.client.ClientFeathersData;
-import com.darkona.feathersoffatigue.core.FeathersData;
+import com.darkona.feathersoffatigue.content.feathers.ClientFeathersData;
+import com.darkona.feathersoffatigue.content.feathers.FeathersData;
 import dev.darkona.jdlib.api.debug.JDDebugFeed;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;

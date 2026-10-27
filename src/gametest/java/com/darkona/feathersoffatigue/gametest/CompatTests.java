@@ -3,7 +3,7 @@ package com.darkona.feathersoffatigue.gametest;
 import com.darkona.feathersoffatigue.api.Climate;
 import com.darkona.feathersoffatigue.api.FeathersAPI;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
-import com.darkona.feathersoffatigue.core.Extensions;
+import com.darkona.feathersoffatigue.content.feathers.Extensions;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerPlayer;

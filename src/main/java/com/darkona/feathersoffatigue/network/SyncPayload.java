@@ -1,8 +1,8 @@
 package com.darkona.feathersoffatigue.network;
 
 import com.darkona.feathersoffatigue.api.RestState;
-import com.darkona.feathersoffatigue.core.FeathersData;
-import com.darkona.feathersoffatigue.weight.ArmorWeights;
+import com.darkona.feathersoffatigue.content.feathers.FeathersData;
+import com.darkona.feathersoffatigue.content.weight.ArmorWeights;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.DecoderException;
 import net.minecraft.network.VarInt;
