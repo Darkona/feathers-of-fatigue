@@ -1,5 +1,6 @@
 package com.darkona.feathersoffatigue.content.feathers;
 
+import com.darkona.feathersoffatigue.network.SyncPayload;
 import dev.darkona.jdlib.core.registry.PriorityList;
 import com.darkona.feathersoffatigue.Feathers;
 import com.darkona.feathersoffatigue.api.*;
@@ -14,7 +15,7 @@ import com.darkona.feathersoffatigue.api.registry.FeathersIds;
 import com.darkona.feathersoffatigue.api.spi.FeathersService;
 import com.darkona.feathersoffatigue.config.ServerConfig;
 import com.darkona.feathersoffatigue.content.mount.MountTuning;
-import com.darkona.feathersoffatigue.network.FeathersNetwork;
+import com.darkona.feathersoffatigue.network.FeathersPackets;
 import com.darkona.feathersoffatigue.content.weight.ArmorWeights;
 import dev.darkona.jdlib.core.stat.SourcedPools;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -42,6 +43,8 @@ public final class FeathersServiceImpl implements FeathersService {
         FeathersView localView();
 
         SpendResult payPredicted(int cost, SpendOptions options);
+
+        void accept(SyncPayload payload);
     }
 
     private static volatile ClientBridge clientBridge;
@@ -50,6 +53,11 @@ public final class FeathersServiceImpl implements FeathersService {
 
     public static void setClientBridge(ClientBridge bridge) {
         clientBridge = bridge;
+    }
+
+    public static void acceptOnClient(SyncPayload payload) {
+        ClientBridge bridge = clientBridge;
+        if (bridge != null) bridge.accept(payload);
     }
 
     @Override
@@ -225,7 +233,7 @@ public final class FeathersServiceImpl implements FeathersService {
         NeoForge.EVENT_BUS.post(new SpendEvent.Post(entity, source, cost, SpendResult.OK));
         if (ServerConfig.DEBUG_MODE.get()) {
             Feathers.LOGGER.info("{} spent {} stamina on {}", entity.getName().getString(), cost, source);
-            FeathersNetwork.sendSpendDebug(entity, source, cost);
+            FeathersPackets.sendSpendDebug(entity, source, cost);
         }
         return SpendResult.OK;
     }

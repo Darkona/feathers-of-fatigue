@@ -15,7 +15,7 @@ import com.darkona.feathersoffatigue.api.registry.FeathersMobEffects;
 import com.darkona.feathersoffatigue.config.ServerConfig;
 import com.darkona.feathersoffatigue.content.mount.MountExertion;
 import com.darkona.feathersoffatigue.content.mount.MountTraits;
-import com.darkona.feathersoffatigue.network.FeathersNetwork;
+import com.darkona.feathersoffatigue.network.FeathersPackets;
 import com.darkona.feathersoffatigue.content.weight.ArmorWeights;
 import dev.darkona.jdlib.api.attribute.JDModifiers;
 import dev.darkona.jdlib.core.stat.ShownFields;
@@ -405,7 +405,7 @@ public final class FeathersTicker {
         data.drains.clear();
         data.initialized = false;
         if (data.shown.sent(FeathersData.Shown.MAX_STAMINA) > 0 && MountExertion.riderOf(entity) instanceof ServerPlayer rider) {
-            FeathersNetwork.sendNoFeathers(rider, entity);
+            FeathersPackets.sendNoFeathers(rider, entity);
         }
         data.shown.forget();
     }
@@ -433,6 +433,6 @@ public final class FeathersTicker {
         boolean splitChanged = !data.weightSplit.sameAs(data.syncedWeightSplit);
         if (!shown.shouldSend() && !splitChanged) return;
         data.syncedWeightSplit.copyFrom(data.weightSplit);
-        FeathersNetwork.sendSync(player, entity, data);
+        FeathersPackets.sendSync(player, entity, data);
     }
 }

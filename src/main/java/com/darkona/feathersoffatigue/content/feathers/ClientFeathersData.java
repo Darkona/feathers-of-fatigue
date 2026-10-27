@@ -27,14 +27,15 @@ public final class ClientFeathersData extends SyncedFeathers implements ClientFe
 
     private ClientFeathersData() {}
 
-    public static void accept(SyncPayload payload) {
+    @Override
+    public void accept(SyncPayload payload) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null && payload.entityId() != player.getId()) {
-            if (payload.entityId() != INSTANCE.mountId) INSTANCE.mountSeated = false;
-            INSTANCE.mountId = payload.entityId();
-            INSTANCE.mount.apply(payload);
+            if (payload.entityId() != mountId) mountSeated = false;
+            mountId = payload.entityId();
+            mount.apply(payload);
         } else {
-            INSTANCE.apply(payload);
+            apply(payload);
         }
     }
 

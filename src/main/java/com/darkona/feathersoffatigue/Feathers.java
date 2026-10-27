@@ -19,7 +19,7 @@ import com.darkona.feathersoffatigue.content.feathers.FeathersTicker;
 import com.darkona.feathersoffatigue.content.feathers.HungerRegen;
 import com.darkona.feathersoffatigue.content.feathers.ModEffects;
 import com.darkona.feathersoffatigue.content.feathers.ModItems;
-import com.darkona.feathersoffatigue.network.FeathersNetwork;
+import com.darkona.feathersoffatigue.network.FeathersPackets;
 import com.darkona.feathersoffatigue.content.feathers.ModAttributes;
 import com.darkona.feathersoffatigue.content.feathers.ModPotions;
 import com.darkona.feathersoffatigue.content.feathers.BuiltInFeatherStyles;
@@ -53,7 +53,7 @@ public final class Feathers {
 
         modEventBus.addListener(FeathersTicker::addAttributes);
         modEventBus.addListener(FeathersTicker::onConfigChanged);
-        modEventBus.addListener(FeathersNetwork::register);
+        modEventBus.addListener(FeathersPackets::register);
         modEventBus.addListener((RegisterDataMapTypesEvent event) -> {
             event.register(FeathersDataMaps.ARMOR_WEIGHT);
             event.register(FeathersDataMaps.MOUNT_STATS);

@@ -1,7 +1,8 @@
 package com.darkona.feathersoffatigue.network;
 
-import com.darkona.feathersoffatigue.content.feathers.ClientFeathersData;
+import com.darkona.feathersoffatigue.network.FeathersPackets;
 import com.darkona.feathersoffatigue.content.feathers.FeathersData;
+import com.darkona.feathersoffatigue.content.feathers.FeathersServiceImpl;
 import dev.darkona.jdlib.api.debug.JDDebugFeed;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -12,11 +13,11 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
-public final class FeathersNetwork {
+public final class FeathersPackets {
 
     private static final String PROTOCOL_VERSION = "5";
 
-    private FeathersNetwork() {}
+    private FeathersPackets() {}
 
     public static void register(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar(PROTOCOL_VERSION);
@@ -24,7 +25,7 @@ public final class FeathersNetwork {
         registrar.playToServer(SpendRequestPayload.TYPE, SpendRequestPayload.STREAM_CODEC, SpendRequestPayload::handle);
 
         registrar.playToClient(SyncPayload.TYPE, SyncPayload.STREAM_CODEC,
-                (payload, context) -> ClientFeathersData.accept(payload));
+                (payload, context) -> FeathersServiceImpl.acceptOnClient(payload));
     }
 
     public static void sendSync(ServerPlayer player, LivingEntity entity, FeathersData data) {
