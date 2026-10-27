@@ -1,4 +1,4 @@
-package com.darkona.feathersoffatigue.content.feathers;
+package com.darkona.feathersoffatigue.content.feathers.client;
 
 import com.darkona.feathersoffatigue.api.client.FeatherStyle;
 import com.darkona.feathersoffatigue.api.client.FeatherVariants;

@@ -1,5 +1,7 @@
-package com.darkona.feathersoffatigue.content.feathers;
+package com.darkona.feathersoffatigue.content.feathers.client;
 
+import com.darkona.feathersoffatigue.content.feathers.ClientFeathersData;
+import com.darkona.feathersoffatigue.content.feathers.SyncedFeathers;
 import com.darkona.feathersoffatigue.Feathers;
 import com.darkona.feathersoffatigue.api.FeathersAPI;
 import com.darkona.feathersoffatigue.api.FeathersView;

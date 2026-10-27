@@ -1,4 +1,4 @@
-package com.darkona.feathersoffatigue.content.feathers;
+package com.darkona.feathersoffatigue.content.feathers.client;
 
 import com.darkona.feathersoffatigue.Feathers;
 import com.mojang.blaze3d.platform.NativeImage;

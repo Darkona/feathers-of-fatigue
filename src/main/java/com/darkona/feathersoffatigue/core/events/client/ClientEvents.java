@@ -1,10 +1,10 @@
-package com.darkona.feathersoffatigue.core.events;
+package com.darkona.feathersoffatigue.core.events.client;
 
 import com.darkona.feathersoffatigue.content.feathers.ClientFeathersData;
 import com.darkona.feathersoffatigue.api.FeathersAPI;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
 import com.darkona.feathersoffatigue.content.feathers.BasicExertion;
-import com.darkona.feathersoffatigue.content.feathers.FeathersHud;
+import com.darkona.feathersoffatigue.content.feathers.client.FeathersHud;
 import com.darkona.feathersoffatigue.config.ClientConfig;
 import com.darkona.feathersoffatigue.config.ServerConfig;
 import net.minecraft.ChatFormatting;
