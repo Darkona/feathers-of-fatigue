@@ -4,7 +4,7 @@ import com.darkona.feathersoffatigue.api.Climate;
 import com.darkona.feathersoffatigue.api.ClimateProvider;
 import com.darkona.feathersoffatigue.api.registry.FeathersMobEffects;
 import com.darkona.feathersoffatigue.config.FeathersServerConfig;
-import com.darkona.feathersoffatigue.registry.ModEffects.FeathersMobEffect;
+import com.darkona.feathersoffatigue.core.ModEffects.FeathersMobEffect;
 import dev.darkona.jdlib.core.registry.PriorityList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;

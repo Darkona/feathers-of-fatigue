@@ -1,4 +1,4 @@
-package com.darkona.feathersoffatigue.registry;
+package com.darkona.feathersoffatigue.core;
 
 import com.darkona.feathersoffatigue.api.registry.FeathersAttributes;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
