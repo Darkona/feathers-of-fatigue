@@ -1,4 +1,4 @@
-package com.darkona.feathersoffatigue.foundation.events;
+package com.darkona.feathersoffatigue.core.events;
 
 import com.darkona.feathersoffatigue.content.feathers.ClientFeathersData;
 import com.darkona.feathersoffatigue.api.FeathersAPI;
