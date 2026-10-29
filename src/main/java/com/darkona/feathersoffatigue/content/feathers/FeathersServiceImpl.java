@@ -18,6 +18,7 @@ import com.darkona.feathersoffatigue.config.ServerConfig;
 import com.darkona.feathersoffatigue.content.mount.MountTuning;
 import com.darkona.feathersoffatigue.network.FeathersPackets;
 import com.darkona.feathersoffatigue.content.weight.ArmorWeights;
+import dev.darkona.jdlib.core.stat.LayeredPayment;
 import dev.darkona.jdlib.core.stat.SourcedPools;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -250,8 +251,9 @@ public final class FeathersServiceImpl implements FeathersService {
 
     public static SpendResult simulateAgainst(FeathersView view, int cost, boolean allowStrain, boolean ignoreExhaustion) {
         if (view.exhausted() && !ignoreExhaustion) return SpendResult.EXHAUSTED;
-        int room = allowStrain && ServerConfig.ENABLE_STRAIN.get() ? Math.max(0, view.maxStrain() - view.strain()) : 0;
-        return cost <= view.availableStamina() + room ? SpendResult.OK : SpendResult.INSUFFICIENT;
+        int bonus = view.bonusStamina();
+        int room = LayeredPayment.overdrawRoom(view.strain(), view.maxStrain(), allowStrain && ServerConfig.ENABLE_STRAIN.get());
+        return LayeredPayment.affordable(cost, bonus, view.availableStamina() - bonus, room) ? SpendResult.OK : SpendResult.INSUFFICIENT;
     }
 
     static void payAndSettle(LivingEntity entity, FeathersData data, int cost, boolean strainEnabled) {
