@@ -19,6 +19,7 @@ import com.darkona.feathersoffatigue.content.mount.MountTuning;
 import com.darkona.feathersoffatigue.network.FeathersPackets;
 import com.darkona.feathersoffatigue.content.weight.ArmorWeights;
 import dev.darkona.jdlib.core.stat.LayeredPayment;
+import dev.darkona.jdlib.core.stat.Resource;
 import dev.darkona.jdlib.core.stat.SourcedPools;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -290,7 +291,7 @@ public final class FeathersServiceImpl implements FeathersService {
             int firstTick = effectiveCost(entity, data, source, Math.ceil(staminaPerTick));
             if (!data.canPay(firstTick, options.allowStrain(), ServerConfig.ENABLE_STRAIN.get())) return SpendResult.INSUFFICIENT;
         }
-        data.drains.refresh(source, staminaPerTick, options.timeoutTicks(), options.allowStrain(), options.blocksRegen(), now);
+        data.drains.refresh(source, Resource.perTick(staminaPerTick), options.timeoutTicks(), options.allowStrain(), options.blocksRegen(), now);
         if (started) NeoForge.EVENT_BUS.post(new DrainEvent.Started(entity, source, staminaPerTick));
         return SpendResult.OK;
     }
