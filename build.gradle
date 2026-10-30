@@ -15,12 +15,14 @@ base {
 java.toolchain.languageVersion = JavaLanguageVersion.of(java_version as int)
 java.withSourcesJar()
 
-// Test-only data, on the classpath only when running the GameTests: src/gametest/resources as is (it wins over the
-// mod's files at the same path), and for data maps, which allow one file per namespace, the mod's own entries merged
-// with the test entries from src/gametest/datamaps.
-if (gradle.startParameter.taskNames.any { it.contains('GameTest') }) {
-    def mergedDataMaps = layout.buildDirectory.dir('gametest-datamaps')
-    def mergeTestDataMaps = tasks.register('mergeTestDataMaps') {
+// Test-only data, in the gametest source set only when running the GameTests, so it never reaches the mod's jars:
+// src/gametest/resources as is (the gametest source set comes last in the dev mod, so it wins over the mod's files at
+// the same path), and for data maps, which allow one file per namespace, the mod's own entries merged with the test
+// entries from src/gametest/datamaps.
+def gameTestsRequested = gradle.startParameter.taskNames.any { it.contains('GameTest') }
+def mergedDataMaps = layout.buildDirectory.dir('gametest-datamaps')
+if (gameTestsRequested) {
+    tasks.register('mergeTestDataMaps') {
         def modMaps = file('src/main/resources/data/feathers_of_fatigue/data_maps/entity_type')
         def testMaps = file('src/gametest/datamaps')
         inputs.dir(modMaps)
@@ -38,8 +40,6 @@ if (gradle.startParameter.taskNames.any { it.contains('GameTest') }) {
             }
         }
     }
-    sourceSets.main.resources.srcDirs = [files(mergedDataMaps).builtBy(mergeTestDataMaps), 'src/gametest/resources'] + sourceSets.main.resources.srcDirs
-    tasks.named('processResources', ProcessResources) { duplicatesStrategy = DuplicatesStrategy.EXCLUDE }
 }
 
 // The public API lives in its own source set and ships twice: inside the mod jar, and alone as
@@ -47,7 +47,7 @@ if (gradle.startParameter.taskNames.any { it.contains('GameTest') }) {
 sourceSets {
     api
     gametest {
-        resources.srcDirs = []
+        resources.srcDirs = gameTestsRequested ? [files(mergedDataMaps).builtBy('mergeTestDataMaps'), 'src/gametest/resources'] : []
         compileClasspath += sourceSets.main.output + sourceSets.api.output
         runtimeClasspath += sourceSets.main.output + sourceSets.api.output
     }
