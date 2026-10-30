@@ -9,17 +9,13 @@ import com.darkona.feathersoffatigue.api.registry.FeathersAttributes;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
 import com.darkona.feathersoffatigue.api.registry.FeathersMobEffects;
 import com.darkona.feathersoffatigue.config.ServerConfig;
-import com.darkona.feathersoffatigue.content.feathers.FeathersData;
 import com.darkona.feathersoffatigue.content.feathers.FeathersServiceImpl;
 import com.darkona.feathersoffatigue.content.feathers.StaminaHooks;
 import com.darkona.feathersoffatigue.index.FeathersAttachmentRegistry;
 import dev.darkona.jdlib.api.stat.ResourceCodecs;
 import dev.darkona.jdlib.core.stat.Resource;
-import dev.darkona.jdlib.core.stat.SourcedPools;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -113,40 +109,6 @@ public class StaminaResourceTests {
         } finally {
             ServerConfig.ENABLE_STRAIN.set(strain);
         }
-        helper.succeed();
-    }
-
-    @GameTest(template = "empty")
-    public static void oldSavesMoveIntoTheResource(GameTestHelper helper) {
-        ServerPlayer player = player(helper);
-        CompoundTag old = new CompoundTag();
-        old.putInt("stamina", 7000);
-        old.putInt("strain", 1500);
-        old.putInt("regen_delay", 30);
-        old.putBoolean("exhausted", false);
-        ListTag bonuses = new ListTag();
-        CompoundTag bonus = new CompoundTag();
-        bonus.putString("source", TEST.toString());
-        bonus.putInt("amount", 2000);
-        bonus.putLong("expires_at", SourcedPools.FOREVER);
-        bonuses.add(bonus);
-        old.put("bonuses", bonuses);
-        CompoundTag counters = new CompoundTag();
-        counters.putDouble("test.counter", 4.0);
-        old.put("counters", counters);
-
-        FeathersData loaded = new FeathersData();
-        loaded.deserializeNBT(helper.getLevel().registryAccess(), old);
-        player.setData(FeathersAttachmentRegistry.FEATHERS, loaded);
-
-        FeathersView f = FeathersAPI.get(player);
-        helper.assertValueEqual(f.stamina(), 7000, "stamina from the old save");
-        helper.assertValueEqual(f.strain(), 1500, "strain from the old save");
-        helper.assertValueEqual(f.regenDelay(), 30, "regen delay from the old save");
-        helper.assertValueEqual(f.bonusStamina(), 2000, "bonus from the old save");
-        helper.assertValueEqual(loaded.getCounter("test.counter"), 4.0, "counters stay with Feathers");
-        CompoundTag saved = loaded.serializeNBT(helper.getLevel().registryAccess());
-        helper.assertFalse(saved.contains("stamina"), "the new save keeps the stamina in the resource only: " + saved);
         helper.succeed();
     }
 }

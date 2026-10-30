@@ -14,7 +14,6 @@ import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -26,12 +25,10 @@ public final class FeathersData extends StaminaView implements INBTSerializable<
 
     private static final int SPEND_LOG_SIZE = 32;
     private static final int SPEND_FOLD_TICKS = 20;
-    private static final String LEGACY_STAMINA = "stamina";
 
     enum Shown { REST }
 
     @Nullable Resource<ResourceLocation> resource;
-    private @Nullable CompoundTag legacy;
     final Object2DoubleOpenHashMap<String> counters = new Object2DoubleOpenHashMap<>();
 
     final WeightSplit weightSplit = new WeightSplit();
@@ -111,19 +108,6 @@ public final class FeathersData extends StaminaView implements INBTSerializable<
         return r != null ? r.bonuses().amount(source) : 0;
     }
 
-    void migrateLegacy(Resource<ResourceLocation> into) {
-        CompoundTag tag = legacy;
-        if (tag == null) return;
-        legacy = null;
-        into.load(tag.getInt(LEGACY_STAMINA), tag.getInt("strain"), tag.getInt("regen_delay"), tag.getBoolean("exhausted"));
-        into.bonuses().clear();
-        for (Tag t : tag.getList("bonuses", Tag.TAG_COMPOUND)) {
-            CompoundTag entry = (CompoundTag) t;
-            ResourceLocation source = ResourceLocation.tryParse(entry.getString("source"));
-            if (source != null) into.bonus(source, entry.getInt("amount"), entry.getLong("expires_at"));
-        }
-    }
-
     void logSpend(ResourceLocation source, int amount, long gameTime) {
         if (spendLog == null) spendLog = new RecentSourceLog<>(SPEND_LOG_SIZE, SPEND_FOLD_TICKS);
         spendLog.record(source, amount, gameTime);
@@ -159,7 +143,7 @@ public final class FeathersData extends StaminaView implements INBTSerializable<
 
     @Override
     public @NotNull CompoundTag serializeNBT(HolderLookup.@NotNull Provider provider) {
-        CompoundTag tag = legacy != null ? legacy.copy() : new CompoundTag();
+        CompoundTag tag = new CompoundTag();
         CompoundTag counterTag = new CompoundTag();
         for (Object2DoubleMap.Entry<String> e : counters.object2DoubleEntrySet()) {
             counterTag.putDouble(e.getKey(), e.getDoubleValue());
@@ -170,8 +154,6 @@ public final class FeathersData extends StaminaView implements INBTSerializable<
 
     @Override
     public void deserializeNBT(HolderLookup.@NotNull Provider provider, @NotNull CompoundTag tag) {
-        legacy = tag.contains(LEGACY_STAMINA, Tag.TAG_INT) ? tag.copy() : null;
-        if (legacy != null) legacy.remove("counters");
         counters.clear();
         CompoundTag counterTag = tag.getCompound("counters");
         for (String key : counterTag.getAllKeys()) {

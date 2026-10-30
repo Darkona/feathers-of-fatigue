@@ -157,7 +157,6 @@ public final class FeathersServiceImpl implements FeathersService {
         data.initialized = true;
         Resource<ResourceLocation> r = JDResources.of(entity, FeathersAttachmentRegistry.STAMINA);
         data.resource = r;
-        data.migrateLegacy(r);
         updateWeight(entity, data);
         if (data.fresh) {
             r.refill(entity, Resource.Hooks.none());
