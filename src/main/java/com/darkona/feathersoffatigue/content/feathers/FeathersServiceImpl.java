@@ -2,14 +2,14 @@ package com.darkona.feathersoffatigue.content.feathers;
 
 import com.darkona.feathersoffatigue.index.FeathersAttachmentRegistry;
 import com.darkona.feathersoffatigue.network.SyncPayload;
+import dev.darkona.jdlib.api.attribute.JDModifiers;
+import dev.darkona.jdlib.api.stat.JDResources;
 import dev.darkona.jdlib.core.registry.PriorityList;
 import com.darkona.feathersoffatigue.Feathers;
 import com.darkona.feathersoffatigue.api.*;
 import com.darkona.feathersoffatigue.api.event.DrainEvent;
-import com.darkona.feathersoffatigue.api.event.ExhaustionEvent;
 import com.darkona.feathersoffatigue.api.event.GainEvent;
 import com.darkona.feathersoffatigue.api.event.SpendEvent;
-import com.darkona.feathersoffatigue.api.event.StrainEvent;
 import com.darkona.feathersoffatigue.api.registry.FeathersAttributes;
 import com.darkona.feathersoffatigue.api.registry.FeathersDataMaps;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
@@ -18,13 +18,13 @@ import com.darkona.feathersoffatigue.config.ServerConfig;
 import com.darkona.feathersoffatigue.content.mount.MountTuning;
 import com.darkona.feathersoffatigue.network.FeathersPackets;
 import com.darkona.feathersoffatigue.content.weight.ArmorWeights;
-import dev.darkona.jdlib.core.stat.LayeredPayment;
 import dev.darkona.jdlib.core.stat.Resource;
 import dev.darkona.jdlib.core.stat.SourcedPools;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -45,12 +45,12 @@ public final class FeathersServiceImpl implements FeathersService {
 
         FeathersView localView();
 
-        SpendResult payPredicted(int cost, SpendOptions options);
-
         void accept(SyncPayload payload);
     }
 
     private static volatile ClientBridge clientBridge;
+
+    private static final ResourceLocation ARMOR = FeathersIds.id("armor");
 
     private FeathersServiceImpl() {}
 
@@ -155,24 +155,47 @@ public final class FeathersServiceImpl implements FeathersService {
     static void ensureInitialized(LivingEntity entity, FeathersData data) {
         if (data.initialized) return;
         data.initialized = true;
-        refreshMaximums(entity, data);
+        Resource<ResourceLocation> r = JDResources.of(entity, FeathersAttachmentRegistry.STAMINA);
+        data.resource = r;
+        data.migrateLegacy(r);
+        updateWeight(entity, data);
         if (data.fresh) {
-            data.stamina = data.maxStamina;
+            r.refill(entity, Resource.Hooks.none());
             data.fresh = false;
         }
-        data.weight = ArmorWeights.totalWeight(entity, data.weightSplit);
         data.shown.resendNext();
     }
 
-    static void refreshMaximums(LivingEntity entity, FeathersData data) {
-        AttributeInstance maxFeathers = data.maxFeathersAttribute(entity);
-        AttributeInstance maxStrain = data.maxStrainAttribute(entity);
-        int max = maxFeathers != null ? Stamina.ofFeathers(maxFeathers.getValue()) : 0;
-        int strainMax = maxStrain != null ? Stamina.ofFeathers(maxStrain.getValue()) : 0;
-        if (max == data.maxStamina && strainMax == data.maxStrain) return;
-        data.maxStamina = max;
-        data.maxStrain = strainMax;
-        if (data.stamina > max) data.stamina = max;
+    static void updateWeight(LivingEntity entity, FeathersData data) {
+        int weight = ArmorWeights.totalWeight(entity, data.weightSplit);
+        JDModifiers.toggle(entity, FeathersAttributes.ARMOR_WEIGHT, ARMOR, weight != 0, weight, AttributeModifier.Operation.ADD_VALUE);
+        reshape(entity, data);
+    }
+
+    static void reshape(LivingEntity entity, FeathersData data) {
+        Resource<ResourceLocation> r = data.resource;
+        if (r != null) FeathersAttachmentRegistry.STAMINA.shape(entity, r);
+    }
+
+    public static @Nullable Resource<ResourceLocation> stamina(LivingEntity entity) {
+        if (onClient(entity)) {
+            return JDResources.holds(entity, FeathersAttachmentRegistry.STAMINA) ? JDResources.of(entity, FeathersAttachmentRegistry.STAMINA) : null;
+        }
+        FeathersData data = data(entity);
+        ensureInitialized(entity, data);
+        return data.resource;
+    }
+
+    private static Resource.Hooks<ResourceLocation, LivingEntity> hooks(LivingEntity entity) {
+        return onClient(entity) ? Resource.Hooks.none() : StaminaHooks.INSTANCE;
+    }
+
+    public static SpendResult result(Resource.Spent spent) {
+        return switch (spent) {
+            case OK -> SpendResult.OK;
+            case EXHAUSTED -> SpendResult.EXHAUSTED;
+            case INSUFFICIENT -> SpendResult.INSUFFICIENT;
+        };
     }
 
     static int effectiveCost(LivingEntity entity, FeathersData data, ResourceLocation source, double baseCost) {
@@ -189,50 +212,50 @@ public final class FeathersServiceImpl implements FeathersService {
         return Math.max(0, cost);
     }
 
-    private static int clientCost(LivingEntity entity, FeathersView feathers, ResourceLocation source, double baseCost) {
-        return effectiveCost(entity, feathers, entity.getAttribute(FeathersAttributes.USAGE_MULTIPLIER), source, baseCost);
+    private static int cost(LivingEntity entity, ResourceLocation source, double baseCost) {
+        if (onClient(entity)) {
+            ClientBridge bridge = clientBridge;
+            FeathersView view = bridge != null ? bridge.localView() : FeathersView.NONE;
+            return effectiveCost(entity, view, entity.getAttribute(FeathersAttributes.USAGE_MULTIPLIER), source, baseCost);
+        }
+        return effectiveCost(entity, data(entity), source, baseCost);
+    }
+
+    private static boolean predictable(LivingEntity entity) {
+        if (!onClient(entity)) return true;
+        ClientBridge bridge = clientBridge;
+        return bridge != null && bridge.isLocalPlayer(entity);
     }
 
     @Override
     public SpendResult spend(LivingEntity entity, ResourceLocation source, int stamina, SpendOptions options) {
-        if (!supports(entity) || isExempt(entity)) return SpendResult.EXEMPT;
+        if (!supports(entity) || isExempt(entity) || !predictable(entity)) return SpendResult.EXEMPT;
+        Resource<ResourceLocation> r = stamina(entity);
+        if (r == null) return SpendResult.EXEMPT;
+        boolean client = onClient(entity);
 
-        if (onClient(entity)) {
-            ClientBridge bridge = clientBridge;
-            if (bridge == null || !bridge.isLocalPlayer(entity)) return SpendResult.EXEMPT;
-            FeathersView local = bridge.localView();
-            int cost = stamina > 0 ? clientCost(entity, local, source, stamina) : 0;
-            if (options.simulate()) return simulateAgainst(local, cost, options.allowStrain(), options.ignoreExhaustion());
-            return bridge.payPredicted(cost, options);
-        }
-
-        FeathersData data = data(entity);
-        ensureInitialized(entity, data);
-        boolean strainEnabled = ServerConfig.ENABLE_STRAIN.get();
-
-        if (data.exhausted && !options.ignoreExhaustion()) return SpendResult.EXHAUSTED;
+        if (r.exhausted() && !options.ignoreExhaustion()) return SpendResult.EXHAUSTED;
 
         if (stamina <= 0) {
-            if (!options.simulate()) applyRegenDelay(data, options);
+            if (!options.simulate()) applyRegenDelay(r, options);
             return SpendResult.OK;
         }
 
-        int cost = effectiveCost(entity, data, source, stamina);
-        if (options.simulate()) {
-            return data.canPay(cost, options.allowStrain(), strainEnabled) ? SpendResult.OK : SpendResult.INSUFFICIENT;
+        int cost = cost(entity, source, stamina);
+        if (options.simulate()) return result(r.check(cost, options.allowStrain(), true));
+
+        if (!client) {
+            SpendEvent.Pre pre = NeoForge.EVENT_BUS.post(new SpendEvent.Pre(entity, source, cost, options));
+            if (pre.isCanceled()) return SpendResult.CANCELLED;
+            cost = pre.getCost();
         }
 
-        SpendEvent.Pre pre = NeoForge.EVENT_BUS.post(new SpendEvent.Pre(entity, source, cost, options));
-        if (pre.isCanceled()) return SpendResult.CANCELLED;
-        cost = pre.getCost();
+        Resource.Spent spent = r.spend(entity, cost, options.allowStrain(), true, hooks(entity));
+        if (spent != Resource.Spent.OK) return result(spent);
+        applyRegenDelay(r, options);
+        if (client) return SpendResult.OK;
 
-        if (!data.canPay(cost, options.allowStrain(), strainEnabled)) return SpendResult.INSUFFICIENT;
-
-        payAndSettle(entity, data, cost, strainEnabled);
-        data.logSpend(source, cost, entity.level().getGameTime());
-
-        applyRegenDelay(data, options);
-
+        data(entity).logSpend(source, cost, entity.level().getGameTime());
         NeoForge.EVENT_BUS.post(new SpendEvent.Post(entity, source, cost, SpendResult.OK));
         if (ServerConfig.DEBUG_MODE.get()) {
             Feathers.LOGGER.info("{} spent {} stamina on {}", entity.getName().getString(), cost, source);
@@ -241,8 +264,8 @@ public final class FeathersServiceImpl implements FeathersService {
         return SpendResult.OK;
     }
 
-    private static void applyRegenDelay(FeathersData data, SpendOptions options) {
-        data.regenDelay = regenDelayAfter(data.regenDelay, options);
+    private static void applyRegenDelay(Resource<ResourceLocation> r, SpendOptions options) {
+        r.regenDelay(regenDelayAfter(r.regenDelay(), options));
     }
 
     public static int regenDelayAfter(int current, SpendOptions options) {
@@ -250,48 +273,21 @@ public final class FeathersServiceImpl implements FeathersService {
         return (int) Math.min((long) current + delay, ServerConfig.MAX_COOLDOWN.get() * 20L);
     }
 
-    public static SpendResult simulateAgainst(FeathersView view, int cost, boolean allowStrain, boolean ignoreExhaustion) {
-        if (view.exhausted() && !ignoreExhaustion) return SpendResult.EXHAUSTED;
-        int bonus = view.bonusStamina();
-        int room = LayeredPayment.overdrawRoom(view.strain(), view.maxStrain(), allowStrain && ServerConfig.ENABLE_STRAIN.get());
-        return LayeredPayment.affordable(cost, bonus, view.availableStamina() - bonus, room) ? SpendResult.OK : SpendResult.INSUFFICIENT;
-    }
-
-    static void payAndSettle(LivingEntity entity, FeathersData data, int cost, boolean strainEnabled) {
-        boolean wasStrained = data.strain > 0;
-        data.pay(cost);
-        if (!wasStrained && data.strain > 0) NeoForge.EVENT_BUS.post(new StrainEvent.Started(entity));
-        checkExhausted(entity, data, strainEnabled);
-    }
-
-    static void checkExhausted(LivingEntity entity, FeathersData data, boolean strainEnabled) {
-        if (!data.exhausted && data.maxStamina > 0 && ServerConfig.ENABLE_EXHAUSTION.get() && data.isSpent(strainEnabled)) {
-            data.exhausted = true;
-            NeoForge.EVENT_BUS.post(new ExhaustionEvent.Exhausted(entity));
-        }
-    }
-
     @Override
     public SpendResult startDrain(LivingEntity entity, ResourceLocation source, double staminaPerTick, DrainOptions options) {
-        if (!supports(entity) || isExempt(entity)) return SpendResult.EXEMPT;
-        if (onClient(entity)) {
-            ClientBridge bridge = clientBridge;
-            if (bridge == null || !bridge.isLocalPlayer(entity)) return SpendResult.EXEMPT;
-            FeathersView local = bridge.localView();
-            return simulateAgainst(local, clientCost(entity, local, source, Math.ceil(staminaPerTick)), options.allowStrain(), false);
-        }
+        if (!supports(entity) || isExempt(entity) || !predictable(entity)) return SpendResult.EXEMPT;
+        Resource<ResourceLocation> r = stamina(entity);
+        if (r == null) return SpendResult.EXEMPT;
+        boolean client = onClient(entity);
 
-        FeathersData data = data(entity);
-        ensureInitialized(entity, data);
-        long now = entity.level().getGameTime();
-
-        boolean started = !data.drains.has(source);
+        boolean started = client || !r.drains().has(source);
         if (started) {
-            if (data.exhausted) return SpendResult.EXHAUSTED;
-            int firstTick = effectiveCost(entity, data, source, Math.ceil(staminaPerTick));
-            if (!data.canPay(firstTick, options.allowStrain(), ServerConfig.ENABLE_STRAIN.get())) return SpendResult.INSUFFICIENT;
+            Resource.Spent first = r.check(cost(entity, source, Math.ceil(staminaPerTick)), options.allowStrain(), false);
+            if (first != Resource.Spent.OK) return result(first);
         }
-        data.drains.refresh(source, Resource.perTick(staminaPerTick), options.timeoutTicks(), options.allowStrain(), options.blocksRegen(), now);
+        if (client) return SpendResult.OK;
+        r.drain(source, Resource.perTick(staminaPerTick), options.timeoutTicks(), options.allowStrain(), options.blocksRegen(),
+                entity.level().getGameTime());
         if (started) NeoForge.EVENT_BUS.post(new DrainEvent.Started(entity, source, staminaPerTick));
         return SpendResult.OK;
     }
@@ -299,59 +295,41 @@ public final class FeathersServiceImpl implements FeathersService {
     @Override
     public void stopDrain(LivingEntity entity, ResourceLocation source) {
         if (!supports(entity) || onClient(entity)) return;
-        FeathersData data = data(entity);
-        if (!data.drains.remove(source)) return;
+        Resource<ResourceLocation> r = stamina(entity);
+        if (r == null || !r.stopDrain(source)) return;
         NeoForge.EVENT_BUS.post(new DrainEvent.Stopped(entity, source, DrainEvent.Stopped.Reason.STOPPED));
     }
 
     @Override
     public boolean isDraining(LivingEntity entity, ResourceLocation source) {
-        return supports(entity) && !onClient(entity) && data(entity).drains.has(source);
+        if (!supports(entity) || onClient(entity)) return false;
+        Resource<ResourceLocation> r = stamina(entity);
+        return r != null && r.drains().has(source);
+    }
+
+    private @Nullable Resource<ResourceLocation> serverStamina(LivingEntity entity) {
+        return supports(entity) && !onClient(entity) ? stamina(entity) : null;
     }
 
     @Override
     public int gain(LivingEntity entity, ResourceLocation source, int stamina) {
-        if (!supports(entity) || onClient(entity) || stamina <= 0) return 0;
-        FeathersData data = data(entity);
-        ensureInitialized(entity, data);
+        Resource<ResourceLocation> r = serverStamina(entity);
+        if (r == null || stamina <= 0) return 0;
         GainEvent event = NeoForge.EVENT_BUS.post(new GainEvent(entity, source, stamina));
         if (event.isCanceled()) return 0;
-        int recovered = Math.min(data.strain, event.getAmount());
-        data.strain -= recovered;
-        int gained = Math.clamp(data.maxStamina - data.stamina, 0, event.getAmount() - recovered);
-        data.stamina += gained;
-        if (recovered > 0 && data.strain == 0) NeoForge.EVENT_BUS.post(new StrainEvent.Cleared(entity));
-        FeathersTicker.checkRecovered(entity, data);
-        return recovered + gained;
+        return r.receive(entity, event.getAmount(), false, StaminaHooks.INSTANCE);
     }
 
     @Override
     public void setStamina(LivingEntity entity, int stamina) {
-        if (!supports(entity) || onClient(entity)) return;
-        FeathersData data = data(entity);
-        ensureInitialized(entity, data);
-        data.stamina = Math.clamp(stamina, 0, data.maxStamina);
-        if (data.stamina > 0 && data.strain > 0) {
-            data.strain = 0;
-            NeoForge.EVENT_BUS.post(new StrainEvent.Cleared(entity));
-        }
-        FeathersTicker.checkRecovered(entity, data);
+        Resource<ResourceLocation> r = serverStamina(entity);
+        if (r != null) r.set(entity, stamina, StaminaHooks.INSTANCE);
     }
 
     @Override
     public void reset(LivingEntity entity) {
-        if (!supports(entity) || onClient(entity)) return;
-        FeathersData data = data(entity);
-        ensureInitialized(entity, data);
-        boolean wasStrained = data.strain > 0;
-        data.stamina = data.maxStamina;
-        data.strain = 0;
-        data.regenDelay = 0;
-        if (wasStrained) NeoForge.EVENT_BUS.post(new StrainEvent.Cleared(entity));
-        if (data.exhausted) {
-            data.exhausted = false;
-            NeoForge.EVENT_BUS.post(new ExhaustionEvent.Recovered(entity));
-        }
+        Resource<ResourceLocation> r = serverStamina(entity);
+        if (r != null) r.refill(entity, StaminaHooks.INSTANCE);
     }
 
     private static long until(LivingEntity entity, int ticks) {
@@ -360,26 +338,29 @@ public final class FeathersServiceImpl implements FeathersService {
 
     @Override
     public void addBonusStamina(LivingEntity entity, ResourceLocation source, int stamina, int ticks) {
-        if (!supports(entity) || onClient(entity)) return;
-        FeathersData data = data(entity);
-        if (stamina <= 0) data.bonuses.remove(source);
-        else data.bonuses.set(source, stamina, until(entity, ticks));
-        FeathersTicker.checkRecovered(entity, data);
+        Resource<ResourceLocation> r = serverStamina(entity);
+        if (r == null) return;
+        if (stamina <= 0) r.bonuses().remove(source);
+        else r.bonus(source, stamina, until(entity, ticks));
+        r.checkRecovered(entity, StaminaHooks.INSTANCE);
     }
 
     @Override
     public void removeBonusStamina(LivingEntity entity, ResourceLocation source) {
-        if (supports(entity) && !onClient(entity)) data(entity).bonuses.remove(source);
+        Resource<ResourceLocation> r = serverStamina(entity);
+        if (r != null) r.bonuses().remove(source);
     }
 
     @Override
     public void blockRegen(LivingEntity entity, ResourceLocation source, int ticks) {
-        if (supports(entity) && !onClient(entity)) data(entity).regenBlocks.set(source, 0, until(entity, ticks));
+        Resource<ResourceLocation> r = serverStamina(entity);
+        if (r != null) r.blockRegen(source, until(entity, ticks));
     }
 
     @Override
     public void unblockRegen(LivingEntity entity, ResourceLocation source) {
-        if (supports(entity) && !onClient(entity)) data(entity).regenBlocks.remove(source);
+        Resource<ResourceLocation> r = serverStamina(entity);
+        if (r != null) r.regenBlocks().remove(source);
     }
 
     @Override
@@ -411,7 +392,8 @@ public final class FeathersServiceImpl implements FeathersService {
     public void recalculateWeight(LivingEntity entity) {
         if (!supports(entity) || onClient(entity)) return;
         FeathersData data = data(entity);
-        data.weight = ArmorWeights.totalWeight(entity, data.weightSplit);
+        ensureInitialized(entity, data);
+        updateWeight(entity, data);
     }
 
     @Override
@@ -436,6 +418,8 @@ public final class FeathersServiceImpl implements FeathersService {
 
     @Override
     public void sync(LivingEntity entity) {
-        if (supports(entity) && !onClient(entity)) data(entity).shown.resendNext();
+        if (!supports(entity) || onClient(entity)) return;
+        data(entity).shown.resendNext();
+        if (JDResources.holds(entity, FeathersAttachmentRegistry.STAMINA)) entity.syncData(JDResources.attachment(FeathersAttachmentRegistry.STAMINA));
     }
 }

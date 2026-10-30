@@ -26,5 +26,11 @@ public final class FeathersAttributes {
     /** Multiplies armor weight. A value of 1.0 is normal. An ADD_MULTIPLIED_BASE modifier of -0.5 halves it. */
     public static final DeferredHolder<Attribute, Attribute> ARMOR_WEIGHT_MULTIPLIER = DeferredHolder.create(Registries.ATTRIBUTE, id("armor_weight_multiplier"));
 
+    /**
+     * Armor weight, in feathers: the part of the maximum that cannot be spent. Feathers adds the weight of the worn armor and of
+     * every {@code WeightSource} as its own modifier; any ADD_VALUE modifier adds weight (a backpack), and multipliers scale it.
+     */
+    public static final DeferredHolder<Attribute, Attribute> ARMOR_WEIGHT = DeferredHolder.create(Registries.ATTRIBUTE, id("armor_weight"));
+
     private FeathersAttributes() {}
 }

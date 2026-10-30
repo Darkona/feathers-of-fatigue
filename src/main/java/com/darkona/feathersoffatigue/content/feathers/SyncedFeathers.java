@@ -1,106 +1,75 @@
 package com.darkona.feathersoffatigue.content.feathers;
 
-import com.darkona.feathersoffatigue.api.FeathersView;
 import com.darkona.feathersoffatigue.api.RestState;
-import com.darkona.feathersoffatigue.api.Stamina;
-import com.darkona.feathersoffatigue.network.SyncPayload;
 import com.darkona.feathersoffatigue.content.weight.WeightSplit;
+import com.darkona.feathersoffatigue.index.FeathersAttachmentRegistry;
+import com.darkona.feathersoffatigue.network.SyncPayload;
+import dev.darkona.jdlib.api.stat.JDResources;
+import dev.darkona.jdlib.core.stat.Resource;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.LivingEntity;
+import org.jetbrains.annotations.Nullable;
 
-public class SyncedFeathers implements FeathersView {
+public class SyncedFeathers extends StaminaView {
 
-    protected boolean synced;
-    protected int stamina, maxStamina, strain, maxStrain, bonus, weight, regenDelay;
-    protected boolean exhausted;
-    protected RestState rest = RestState.NONE;
-    protected final WeightSplit weightSplit = new WeightSplit();
+    private static final WeightSplit NO_SPLIT = new WeightSplit();
+
+    protected @Nullable LivingEntity entity;
+    protected @Nullable Resource<ResourceLocation> resource;
+    private int extrasOf = -1;
+    private RestState rest = RestState.NONE;
+    private final WeightSplit weightSplit = new WeightSplit();
 
     void apply(SyncPayload p) {
-        synced = true;
-        stamina = p.stamina();
-        maxStamina = p.maxStamina();
-        strain = p.strain();
-        maxStrain = p.maxStrain();
-        bonus = p.bonus();
-        weight = p.weight();
-        regenDelay = p.regenDelay();
-        exhausted = p.exhausted();
+        extrasOf = p.entityId();
         rest = p.rest();
         weightSplit.readFrom(p.weightSplit());
     }
 
-    @SuppressWarnings("unused")
-    public int weightPart(int part) {
-        return weightSplit.part(part);
+    void follow(@Nullable LivingEntity followed) {
+        entity = followed;
+        resource = followed != null && JDResources.holds(followed, FeathersAttachmentRegistry.STAMINA)
+                ? JDResources.of(followed, FeathersAttachmentRegistry.STAMINA) : null;
     }
 
-    public WeightSplit weightSplit() {
-        return weightSplit;
+    void predict() {
+        LivingEntity e = entity;
+        if (e != null && resource != null) JDResources.tick(e, FeathersAttachmentRegistry.STAMINA, e.level());
     }
 
     void clear() {
-        synced = false;
-        stamina = maxStamina = strain = maxStrain = bonus = weight = regenDelay = 0;
-        exhausted = false;
+        entity = null;
+        resource = null;
+        extrasOf = -1;
         rest = RestState.NONE;
         weightSplit.clear();
     }
 
-    void tick() {
-        if (regenDelay > 0) regenDelay--;
+    private boolean extrasMatch() {
+        LivingEntity e = entity;
+        return e != null && e.getId() == extrasOf;
+    }
+
+    public @Nullable LivingEntity entity() {
+        return entity;
+    }
+
+    @SuppressWarnings("unused")
+    public int weightPart(int part) {
+        return weightSplit().part(part);
+    }
+
+    public WeightSplit weightSplit() {
+        return extrasMatch() ? weightSplit : NO_SPLIT;
     }
 
     @Override
-    public boolean hasFeathers() {
-        return synced;
-    }
-
-    @Override
-    public int stamina() {
-        return stamina;
-    }
-
-    @Override
-    public int maxStamina() {
-        return maxStamina;
-    }
-
-    @Override
-    public int availableStamina() {
-        return Math.max(0, stamina - Stamina.ofFeathers(weight)) + bonus;
-    }
-
-    @Override
-    public int weight() {
-        return weight;
-    }
-
-    @Override
-    public int strain() {
-        return strain;
-    }
-
-    @Override
-    public int maxStrain() {
-        return maxStrain;
-    }
-
-    @Override
-    public int bonusStamina() {
-        return bonus;
-    }
-
-    @Override
-    public int regenDelay() {
-        return regenDelay;
-    }
-
-    @Override
-    public boolean exhausted() {
-        return exhausted;
+    protected @Nullable Resource<ResourceLocation> resource() {
+        return resource;
     }
 
     @Override
     public RestState restState() {
-        return rest;
+        return extrasMatch() ? rest : RestState.NONE;
     }
 }

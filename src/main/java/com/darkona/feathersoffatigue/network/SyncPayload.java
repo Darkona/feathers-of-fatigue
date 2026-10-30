@@ -13,8 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import static com.darkona.feathersoffatigue.api.registry.FeathersIds.id;
 
-public record SyncPayload(int entityId, int stamina, int maxStamina, int strain, int maxStrain, int bonus, int weight, int regenDelay,
-                          boolean exhausted, RestState rest, int[] weightSplit) implements CustomPacketPayload {
+public record SyncPayload(int entityId, RestState rest, int[] weightSplit) implements CustomPacketPayload {
 
     public static final Type<SyncPayload> TYPE = new Type<>(id("sync"));
 
@@ -25,22 +24,12 @@ public record SyncPayload(int entityId, int stamina, int maxStamina, int strain,
     public static final StreamCodec<ByteBuf, SyncPayload> STREAM_CODEC = new StreamCodec<>() {
         @Override
         public @NotNull SyncPayload decode(@NotNull ByteBuf buf) {
-            return new SyncPayload(VarInt.read(buf), VarInt.read(buf), VarInt.read(buf), VarInt.read(buf),
-                    VarInt.read(buf), VarInt.read(buf), VarInt.read(buf),
-                    VarInt.read(buf), ByteBufCodecs.BOOL.decode(buf), REST_CODEC.decode(buf), readParts(buf));
+            return new SyncPayload(VarInt.read(buf), REST_CODEC.decode(buf), readParts(buf));
         }
 
         @Override
         public void encode(@NotNull ByteBuf buf, @NotNull SyncPayload p) {
             VarInt.write(buf, p.entityId);
-            VarInt.write(buf, p.stamina);
-            VarInt.write(buf, p.maxStamina);
-            VarInt.write(buf, p.strain);
-            VarInt.write(buf, p.maxStrain);
-            VarInt.write(buf, p.bonus);
-            VarInt.write(buf, p.weight);
-            VarInt.write(buf, p.regenDelay);
-            ByteBufCodecs.BOOL.encode(buf, p.exhausted);
             REST_CODEC.encode(buf, p.rest);
             VarInt.write(buf, p.weightSplit.length);
             for (int value : p.weightSplit) VarInt.write(buf, value);
@@ -60,16 +49,7 @@ public record SyncPayload(int entityId, int stamina, int maxStamina, int strain,
     private static final int MAX_SOURCES = 64;
 
     public static SyncPayload of(int entityId, FeathersData data) {
-        return new SyncPayload(entityId, data.stamina(), data.maxStamina(), data.strain(), data.maxStrain(), data.bonusStamina(),
-                data.weight(), data.regenDelay(), data.exhausted(), data.restState(), weightParts(data));
-    }
-
-    public static SyncPayload none(int entityId) {
-        return new SyncPayload(entityId, 0, 0, 0, 0, 0, 0, 0, false, RestState.NONE, new int[ArmorWeights.PARTS]);
-    }
-
-    private static int[] weightParts(FeathersData data) {
-        return data.weightSplit().toArray();
+        return new SyncPayload(entityId, data.restState(), data.weightSplit().toArray());
     }
 
     @Override

@@ -3,7 +3,6 @@ package com.darkona.feathersoffatigue.content.feathers;
 import com.darkona.feathersoffatigue.api.FeathersView;
 import com.darkona.feathersoffatigue.api.SpendOptions;
 import com.darkona.feathersoffatigue.api.SpendResult;
-import com.darkona.feathersoffatigue.api.Stamina;
 import com.darkona.feathersoffatigue.api.client.ClientFeathersService;
 import com.darkona.feathersoffatigue.network.SpendRequestPayload;
 import com.darkona.feathersoffatigue.network.SyncPayload;
@@ -19,11 +18,7 @@ public final class ClientFeathersData extends SyncedFeathers implements ClientFe
 
     public static final ClientFeathersData INSTANCE = new ClientFeathersData();
 
-
     private final SyncedFeathers mount = new SyncedFeathers();
-    private int mountId = -1;
-    private boolean mountSeated;
-
 
     private ClientFeathersData() {}
 
@@ -31,8 +26,6 @@ public final class ClientFeathersData extends SyncedFeathers implements ClientFe
     public void accept(SyncPayload payload) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null && payload.entityId() != player.getId()) {
-            if (payload.entityId() != mountId) mountSeated = false;
-            mountId = payload.entityId();
             mount.apply(payload);
         } else {
             apply(payload);
@@ -43,28 +36,19 @@ public final class ClientFeathersData extends SyncedFeathers implements ClientFe
     public void clear() {
         super.clear();
         mount.clear();
-        mountId = -1;
-        mountSeated = false;
     }
 
-    @Override
     public void tick() {
-        super.tick();
-        mount.tick();
-        if (mountId == -1) return;
         LocalPlayer player = Minecraft.getInstance().player;
+        follow(player);
+        predict();
         Entity vehicle = player != null ? player.getVehicle() : null;
-        if (vehicle != null && vehicle.getId() == mountId) {
-            mountSeated = true;
-        } else if (mountSeated || vehicle != null) {
-            mount.clear();
-            mountId = -1;
-            mountSeated = false;
-        }
+        mount.follow(vehicle instanceof LivingEntity living ? living : null);
+        mount.predict();
     }
 
     public FeathersView mount() {
-        return mountSeated && mount.hasFeathers() ? mount : FeathersView.NONE;
+        return mount.hasFeathers() ? mount : FeathersView.NONE;
     }
 
     @Override
@@ -75,7 +59,7 @@ public final class ClientFeathersData extends SyncedFeathers implements ClientFe
     @Override
     public @Nullable FeathersView clientView(LivingEntity entity) {
         if (entity == Minecraft.getInstance().player) return this;
-        return entity.getId() == mountId && mount.hasFeathers() ? mount : null;
+        return entity == mount.entity() && mount.hasFeathers() ? mount : null;
     }
 
     @Override
@@ -87,22 +71,6 @@ public final class ClientFeathersData extends SyncedFeathers implements ClientFe
     public SpendResult predictSpend(ResourceLocation source, int stamina, SpendOptions options) {
         LocalPlayer player = Minecraft.getInstance().player;
         return player != null ? FeathersServiceImpl.INSTANCE.spend(player, source, stamina, options) : SpendResult.EXEMPT;
-    }
-
-    @Override
-    public SpendResult payPredicted(int cost, SpendOptions options) {
-        if (!synced) return SpendResult.EXEMPT;
-        SpendResult check = FeathersServiceImpl.simulateAgainst(this, cost, options.allowStrain(), options.ignoreExhaustion());
-        if (check != SpendResult.OK) return check;
-
-        int fromBonus = Math.min(bonus, cost);
-        bonus -= fromBonus;
-        int left = cost - fromBonus;
-        int fromStamina = Math.min(Math.max(0, stamina - Stamina.ofFeathers(weight)), left);
-        stamina -= fromStamina;
-        strain += left - fromStamina;
-        regenDelay = FeathersServiceImpl.regenDelayAfter(regenDelay, options);
-        return SpendResult.OK;
     }
 
     @Override

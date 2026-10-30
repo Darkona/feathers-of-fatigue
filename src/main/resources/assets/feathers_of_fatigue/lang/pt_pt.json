@@ -79,6 +79,7 @@
   "item.feathers_of_fatigue.feather_ring.tooltip.ring": "Reduz para metade o peso da armadura quando usado num espaço de anel.",
   "item.feathers_of_fatigue.feather_ring.tooltip.offhand": "Reduz para metade o peso da armadura quando segurado na mão secundária.",
   "feathers_of_fatigue.armor_weight_multiplier": "Multiplicador de peso da armadura",
+  "feathers_of_fatigue.armor_weight": "Peso da armadura",
   "jade.feathers_of_fatigue.mount_stamina": "Resistência: %s/%s penas",
   "config.jade.plugin_feathers_of_fatigue.mount_stamina": "Resistência das montadas"
 }

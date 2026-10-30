@@ -1,8 +1,6 @@
 package com.darkona.feathersoffatigue.content.mount;
 
 import com.darkona.feathersoffatigue.api.FeathersAPI;
-import com.darkona.feathersoffatigue.api.FeathersView;
-import com.darkona.feathersoffatigue.api.SpendResult;
 import com.darkona.feathersoffatigue.api.Stamina;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
 import com.darkona.feathersoffatigue.config.ServerConfig;
@@ -11,6 +9,7 @@ import com.darkona.feathersoffatigue.content.feathers.FeathersData;
 import com.darkona.feathersoffatigue.content.feathers.FeathersServiceImpl;
 import com.darkona.feathersoffatigue.content.feathers.FeathersTicker;
 import dev.darkona.jdlib.api.attribute.JDModifiers;
+import dev.darkona.jdlib.core.stat.Resource;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -94,9 +93,8 @@ public final class MountExertion {
 
     public static boolean canJump(LivingEntity mount) {
         if (!FeathersServiceImpl.isMount(mount)) return true;
-        FeathersView view = FeathersAPI.get(mount);
-        if (!view.hasFeathers()) return true;
-        return FeathersServiceImpl.simulateAgainst(view, Stamina.ofFeathers(fullJumpFeathers(mount)), true, false) == SpendResult.OK;
+        Resource<ResourceLocation> stamina = FeathersServiceImpl.stamina(mount);
+        return stamina == null || stamina.check(Stamina.ofFeathers(fullJumpFeathers(mount)), true, false) == Resource.Spent.OK;
     }
 
     private static double fullJumpFeathers(LivingEntity mount) {

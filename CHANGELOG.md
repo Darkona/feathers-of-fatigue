@@ -2,6 +2,18 @@
 
 Changes by feature, newest version first.
 
+## Unreleased
+
+### For players and pack makers
+
+- Armor weight is an attribute, `feathers_of_fatigue:armor_weight` (in feathers, reserved from the maximum): worn armor and weight sources add to it as Feathers' own modifier, and any item, effect, mod or `/attribute` can add weight with an ordinary attribute modifier (a heavy backpack) or scale it.
+- The stamina is saved in its own entity attachment, `feathers_of_fatigue:stamina`, instead of inside `feathers_of_fatigue:feathers`. Old saves move over the first time a player or a mount loads; nothing is lost.
+- Client and server must run the same version: the network protocol changed.
+
+### For mod developers
+
+- New attribute holder `FeathersAttributes.ARMOR_WEIGHT`. Nothing else in the API changed.
+
 ## 1.21.1-1.0.1 (NeoForge), 2026-10-01
 
 Same as 1.21.1-1.0.0 below, except for what this section lists.

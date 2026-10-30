@@ -79,6 +79,7 @@
   "item.feathers_of_fatigue.feather_ring.tooltip.ring": "Divise par deux le poids de l'armure s'il est porté dans un emplacement d'anneau.",
   "item.feathers_of_fatigue.feather_ring.tooltip.offhand": "Divise par deux le poids de l'armure s'il est tenu dans la main secondaire.",
   "feathers_of_fatigue.armor_weight_multiplier": "Multiplicateur de poids d'armure",
+  "feathers_of_fatigue.armor_weight": "Poids d'armure",
   "jade.feathers_of_fatigue.mount_stamina": "Endurance : %s/%s plumes",
   "config.jade.plugin_feathers_of_fatigue.mount_stamina": "Endurance des montures"
 }

@@ -3,12 +3,16 @@ package com.darkona.feathersoffatigue.gametest;
 import com.darkona.feathersoffatigue.api.FeathersAPI;
 import com.darkona.feathersoffatigue.api.FeathersView;
 import com.darkona.feathersoffatigue.config.CompatConfig;
-import com.darkona.feathersoffatigue.content.feathers.FeathersData;
 import com.darkona.feathersoffatigue.content.feathers.FeathersServiceImpl;
 import com.darkona.feathersoffatigue.content.feathers.FeathersTicker;
+import com.darkona.feathersoffatigue.content.feathers.StaminaView;
+import dev.darkona.jdlib.api.stat.ResourceCodecs;
+import dev.darkona.jdlib.core.stat.Resource;
 import dev.darkona.jdlib.testkit.TestPlayers;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.common.ModConfigSpec;
@@ -58,9 +62,14 @@ final class TestSupport {
     }
 
     static FeathersView saveAndLoad(GameTestHelper helper, ServerPlayer player) {
-        CompoundTag tag = FeathersServiceImpl.data(player).serializeNBT(helper.getLevel().registryAccess());
-        FeathersData loaded = new FeathersData();
-        loaded.deserializeNBT(helper.getLevel().registryAccess(), tag);
-        return loaded;
+        Resource<ResourceLocation> saved = FeathersServiceImpl.stamina(player);
+        Tag tag = ResourceCodecs.SAVED.encodeStart(NbtOps.INSTANCE, saved).getOrThrow();
+        Resource<ResourceLocation> loaded = ResourceCodecs.SAVED.parse(NbtOps.INSTANCE, tag).getOrThrow();
+        return new StaminaView() {
+            @Override
+            protected Resource<ResourceLocation> resource() {
+                return loaded;
+            }
+        };
     }
 }

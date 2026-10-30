@@ -79,6 +79,7 @@
   "item.feathers_of_fatigue.feather_ring.tooltip.ring": "Halbiert das Rüstungsgewicht, wenn er in einem Ringplatz getragen wird.",
   "item.feathers_of_fatigue.feather_ring.tooltip.offhand": "Halbiert das Rüstungsgewicht, wenn er in der Zweithand gehalten wird.",
   "feathers_of_fatigue.armor_weight_multiplier": "Rüstungsgewicht-Multiplikator",
+  "feathers_of_fatigue.armor_weight": "Rüstungsgewicht",
   "jade.feathers_of_fatigue.mount_stamina": "Ausdauer: %s/%s Federn",
   "config.jade.plugin_feathers_of_fatigue.mount_stamina": "Reittier-Ausdauer"
 }

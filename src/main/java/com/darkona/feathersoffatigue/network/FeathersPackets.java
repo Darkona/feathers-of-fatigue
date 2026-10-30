@@ -1,6 +1,5 @@
 package com.darkona.feathersoffatigue.network;
 
-import com.darkona.feathersoffatigue.network.FeathersPackets;
 import com.darkona.feathersoffatigue.content.feathers.FeathersData;
 import com.darkona.feathersoffatigue.content.feathers.FeathersServiceImpl;
 import dev.darkona.jdlib.api.debug.JDDebugFeed;
@@ -15,7 +14,7 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public final class FeathersPackets {
 
-    private static final String PROTOCOL_VERSION = "5";
+    private static final String PROTOCOL_VERSION = "6";
 
     private FeathersPackets() {}
 
@@ -30,10 +29,6 @@ public final class FeathersPackets {
 
     public static void sendSync(ServerPlayer player, LivingEntity entity, FeathersData data) {
         send(player, SyncPayload.of(entity.getId(), data));
-    }
-
-    public static void sendNoFeathers(ServerPlayer player, LivingEntity entity) {
-        send(player, SyncPayload.none(entity.getId()));
     }
 
     public static void sendSpendDebug(LivingEntity entity, ResourceLocation source, int cost) {

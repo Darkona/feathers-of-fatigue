@@ -18,6 +18,7 @@ public final class FeathersAttributeRegistry {
         register("feathers_per_second", 0.4, -40.0, 40.0);
         register("usage_multiplier", 1.0, 0.0, 40.0);
         register("armor_weight_multiplier", 1.0, 0.0, 10.0);
+        register("armor_weight", 0.0, 0.0, 1000.0);
     }
 
     private static void register(String name, double defaultValue, double min, double max) {

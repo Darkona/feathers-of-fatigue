@@ -1,6 +1,7 @@
 package com.darkona.feathersoffatigue.gametest;
 
 import com.darkona.feathersoffatigue.api.FeathersAPI;
+import com.darkona.feathersoffatigue.api.Stamina;
 import com.darkona.feathersoffatigue.api.registry.FeathersAttributes;
 import com.darkona.feathersoffatigue.api.registry.FeathersEnchantments;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
@@ -10,6 +11,8 @@ import com.darkona.feathersoffatigue.content.feathers.FeathersServiceImpl;
 import com.darkona.feathersoffatigue.index.FeathersItemRegistry;
 import com.darkona.feathersoffatigue.network.SyncPayload;
 import com.darkona.feathersoffatigue.content.weight.ArmorWeights;
+import dev.darkona.jdlib.api.stat.ResourceCodecs;
+import dev.darkona.jdlib.core.stat.Resource;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.core.Holder;
@@ -18,6 +21,7 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -165,11 +169,14 @@ public class ArmorWeightTests {
             SyncPayload.STREAM_CODEC.encode(buf, sent);
             SyncPayload read = SyncPayload.STREAM_CODEC.decode(buf);
             helper.assertValueEqual(buf.readableBytes(), 0, "bytes left after reading the sync");
-            helper.assertTrue(read.entityId() == sent.entityId() && read.stamina() == sent.stamina() && read.maxStamina() == sent.maxStamina()
-                    && read.strain() == sent.strain() && read.maxStrain() == sent.maxStrain() && read.bonus() == sent.bonus()
-                    && read.weight() == sent.weight() && read.regenDelay() == sent.regenDelay() && read.exhausted() == sent.exhausted()
-                    && read.rest() == sent.rest() && Arrays.equals(read.weightSplit(), sent.weightSplit()), "the sync reads back as sent: " + sent + " / " + read);
-            helper.assertTrue(sent.weight() > 0 && sent.bonus() > 0 && sent.regenDelay() > 0, "the sync carries weight, bonus and a delay: " + sent);
+            helper.assertTrue(read.entityId() == sent.entityId() && read.rest() == sent.rest()
+                    && Arrays.equals(read.weightSplit(), sent.weightSplit()), "the sync reads back as sent: " + sent + " / " + read);
+            helper.assertTrue(Arrays.stream(sent.weightSplit()).sum() > 0, "the sync carries the weight split: " + Arrays.toString(sent.weightSplit()));
+
+            Resource<ResourceLocation> server = FeathersServiceImpl.stamina(player);
+            ResourceCodecs.Synced synced = ResourceCodecs.Synced.of(server);
+            helper.assertTrue(synced.reserved() == Stamina.ofFeathers(8) && synced.bonus() > 0 && synced.regenDelay() > 0,
+                    "the resource's sync carries weight, bonus and a delay: " + synced);
         });
     }
 }

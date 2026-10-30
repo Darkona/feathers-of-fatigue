@@ -78,6 +78,7 @@
   "item.feathers_of_fatigue.feather_ring.tooltip.ring": "Halves armor weight while worn in a ring slot.",
   "item.feathers_of_fatigue.feather_ring.tooltip.offhand": "Halves armor weight while held in the off hand.",
   "feathers_of_fatigue.armor_weight_multiplier": "Armor Weight Multiplier",
+  "feathers_of_fatigue.armor_weight": "Armor Weight",
   "jade.feathers_of_fatigue.mount_stamina": "Stamina: %s/%s feathers",
   "config.jade.plugin_feathers_of_fatigue.mount_stamina": "Mount stamina"
 }
