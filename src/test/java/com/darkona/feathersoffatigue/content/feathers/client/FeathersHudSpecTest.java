@@ -1,8 +1,8 @@
 package com.darkona.feathersoffatigue.content.feathers.client;
 
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import dev.darkona.jdlib.api.hud.HudSide;
 import dev.darkona.jdlib.api.hud.JDHudBars;
-import dev.darkona.jdlib.api.hud.VanillaLayer;
 import dev.darkona.jdlib.api.hud.StackMath;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +26,7 @@ class FeathersHudSpecTest {
     void theSpecIsThePlaceOfTheOldLayer() {
         JDHudBars.Spec spec = FeathersHud.spec(() -> true, () -> 0, () -> 0);
         assertEquals(FeathersHud.LAYER_ID, spec.id());
-        assertEquals(VanillaLayer.AIR_LEVEL, spec.anchor());
+        assertEquals(VanillaGuiLayers.AIR_LEVEL, spec.anchor());
         assertEquals(JDHudBars.Order.ABOVE, spec.order());
         assertEquals(HudSide.RIGHT, spec.side());
         assertEquals(49, spec.unstackedBase());

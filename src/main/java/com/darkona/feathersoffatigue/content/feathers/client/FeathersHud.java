@@ -1,5 +1,6 @@
 package com.darkona.feathersoffatigue.content.feathers.client;
 
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import com.darkona.feathersoffatigue.content.feathers.ClientFeathersData;
 import com.darkona.feathersoffatigue.content.feathers.SyncedFeathers;
 import com.darkona.feathersoffatigue.Feathers;
@@ -20,7 +21,6 @@ import dev.darkona.jdlib.api.hud.HudFrame;
 import dev.darkona.jdlib.api.hud.HudGate;
 import dev.darkona.jdlib.api.hud.HudSide;
 import dev.darkona.jdlib.api.hud.JDHudBars;
-import dev.darkona.jdlib.api.hud.VanillaLayer;
 import dev.darkona.jdlib.core.hud.BarFade;
 import dev.darkona.jdlib.core.hud.GainFlash;
 import dev.darkona.jdlib.core.hud.IconMotion;
@@ -116,7 +116,7 @@ public final class FeathersHud {
     }
 
     public static JDHudBars.Spec spec(BooleanSupplier stacks, IntSupplier xOffset, IntSupplier yOffset) {
-        return new JDHudBars.Spec(LAYER_ID, VanillaLayer.AIR_LEVEL, JDHudBars.Order.ABOVE, HudSide.RIGHT, 0,
+        return new JDHudBars.Spec(LAYER_ID, VanillaGuiLayers.AIR_LEVEL, JDHudBars.Order.ABOVE, HudSide.RIGHT, 0,
                 HudGate.standard().and(mc -> DATA.hasFeathers() && DATA.maxStamina() > 0),
                 stacks, xOffset, yOffset, UNSTACKED_BASE, FeathersHud::paint);
     }
