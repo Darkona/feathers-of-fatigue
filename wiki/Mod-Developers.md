@@ -24,7 +24,7 @@ if (!FeathersAPI.startDrain(player, MY_GLIDE, Stamina.perTick(1.5)).allowed()) s
 
 The source (`MY_DASH`) is your own `Identifier` (`ResourceLocation` on 1.21.1 and older). It shows in `/feathers debug` and in the spend events. With `SpendOptions`, a spend can never strain, be only a simulation, or set its own regeneration pause. `canSpend` checks without spending.
 
-On the client, a spend predicts the result from the synced feathers. It uses the same price as the server: the usage multiplier and the stamina modifiers, with the same source. The decision of the server is final. `ClientFeathers.predictSpend` does the same for actions that the client decides.
+On the client, a spend predicts the result from the synced feathers. It uses the same price as the server: the usage multiplier and the stamina modifiers, with the same source. The decision of the server is final. `ClientFeathers.predictSpend` does the same for actions that the client decides. A drain started on the client runs there too, and each sync settles the result.
 
 ## Reading
 

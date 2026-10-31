@@ -69,6 +69,7 @@ This version needs exactly NeoForge 26.3.0.36-beta. NeoForge 26.3 is in beta, an
 
 - **Armor materials:** material rules name the armor material, so the turtle shell is `@minecraft:turtle`. Copper armor does not exist, and the default `armor_weights` list has no copper entries.
 - **API:** ids are `ResourceLocation`.
+- **Food:** recovering feathers costs food by default, and with Droplets of Thirst that food drains thirst too. The speed follows the food bar and saturation. Other versions keep regeneration free by default.
 
 **Tested with:** Cold Sweat 2.4.3.1, Tough As Nails 10.1.0.13, Legendary Survival Overhaul 2.4.7.2, Droplets of Thirst 1.21.1-1.0.0, Thirst Was Taken 1.21.1-2.1.5, Serene Seasons 10.1.0.9, Curios 9.5.1, Jade 15.10.6, Overflowing Bars 21.1.1, Naturalist and Mob Wrangler.
 
