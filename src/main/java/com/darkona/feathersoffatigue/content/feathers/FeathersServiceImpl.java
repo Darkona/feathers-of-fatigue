@@ -284,18 +284,17 @@ public final class FeathersServiceImpl implements FeathersService {
             Resource.Spent first = r.check(cost(entity, source, Math.ceil(staminaPerTick)), options.allowStrain(), false);
             if (first != Resource.Spent.OK) return result(first);
         }
-        if (client) return SpendResult.OK;
         r.drain(source, Resource.perTick(staminaPerTick), options.timeoutTicks(), options.allowStrain(), options.blocksRegen(),
                 entity.level().getGameTime());
-        if (started) NeoForge.EVENT_BUS.post(new DrainEvent.Started(entity, source, staminaPerTick));
+        if (!client && started) NeoForge.EVENT_BUS.post(new DrainEvent.Started(entity, source, staminaPerTick));
         return SpendResult.OK;
     }
 
     @Override
     public void stopDrain(LivingEntity entity, ResourceLocation source) {
-        if (!supports(entity) || onClient(entity)) return;
+        if (!supports(entity) || !predictable(entity)) return;
         Resource<ResourceLocation> r = stamina(entity);
-        if (r == null || !r.stopDrain(source)) return;
+        if (r == null || !r.stopDrain(source) || onClient(entity)) return;
         NeoForge.EVENT_BUS.post(new DrainEvent.Stopped(entity, source, DrainEvent.Stopped.Reason.STOPPED));
     }
 

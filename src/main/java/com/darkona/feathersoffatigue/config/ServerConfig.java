@@ -101,7 +101,7 @@ public final class ServerConfig {
 
         HUNGER_PER_FEATHER = builder
                 .comment("Food exhaustion per regenerated feather when regen_uses_hunger is on. 4.0 exhaustion = one hunger point.")
-                .defineInRange("hunger_exhaustion_per_feather", 0.3, 0.0, 40.0);
+                .defineInRange("hunger_exhaustion_per_feather", 0.1, 0.0, 40.0);
 
         SATURATION_REGEN_BONUS = builder
                 .comment("Regeneration multiplier at maximum saturation: 1.5 regenerates 50% faster.",

@@ -11,7 +11,8 @@ Changes by feature, newest version first.
 - Client and server must run the same version: the network protocol changed.
 - The mod has a new logo, shown in the Mods screen.
 - The strong Energized tipped arrow now has the right English name, Arrow of Energy.
-- Recovering feathers now costs food by default, and they stop coming back at 6 hunger points or less. Turn it off with `regen_uses_hunger`.
+- Sprinting and jumping now move the feathers on the client right away, with the same code as the server, instead of waiting for the next sync.
+- Recovering feathers now costs food by default, and they stop coming back at 6 hunger points or less. Turn it off with `regen_uses_hunger`. A whole bar of 20 feathers costs half a hunger point (`hunger_exhaustion_per_feather`, now 0.1).
 - Feathers come back slower as the food bar empties, on a smooth scale from `hunger_regen_penalty` (now 0.5) to normal speed at a full bar. Saturation adds a bonus on top that grows with it, up to `saturation_regen_bonus` (now 1.5).
 - With Droplets of Thirst, the food spent on recovering feathers drains thirst too.
 - Server configs that already exist keep their old values: change them by hand to get the new defaults.

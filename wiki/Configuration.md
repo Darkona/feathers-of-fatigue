@@ -55,9 +55,9 @@ Targets can also be mounts.
 	#Regenerating feathers costs food, like healing: no regeneration at 6 hunger points or less.
 	regen_uses_hunger = true
 	#Food exhaustion per regenerated feather when regen_uses_hunger is on. 4.0 exhaustion = one hunger point.
-	# Default: 0.3
+	# Default: 0.1
 	# Range: 0.0 ~ 40.0
-	hunger_exhaustion_per_feather = 0.3
+	hunger_exhaustion_per_feather = 0.1
 	#Regeneration multiplier at maximum saturation: 1.5 regenerates 50% faster.
 	#It grows in a straight line with saturation, on top of the food bar. 1.0 turns it off.
 	# Default: 1.5

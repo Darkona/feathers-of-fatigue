@@ -29,7 +29,7 @@ public final class BasicExertion {
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
-        if (player.level().isClientSide() || !isActive() || !player.isSprinting() || player.isPassenger()) return;
+        if (!isActive() || !player.isSprinting() || player.isPassenger()) return;
 
         double perSecond = ServerConfig.SPRINT_FEATHERS_PER_SECOND.get();
         if (perSecond <= 0) return;
@@ -40,7 +40,7 @@ public final class BasicExertion {
 
     @SubscribeEvent
     public static void onJump(LivingEvent.LivingJumpEvent event) {
-        if (!(event.getEntity() instanceof Player player) || player.level().isClientSide() || !isActive()) return;
+        if (!(event.getEntity() instanceof Player player) || !isActive()) return;
         double feathers = ServerConfig.JUMP_FEATHERS.get();
         if (feathers > 0) FeathersAPI.spend(player, JUMP, Stamina.ofFeathers(feathers));
     }
