@@ -13,7 +13,7 @@ Changes by feature, newest version first.
 - The strong Energized tipped arrow now has the right English name, Arrow of Energy.
 - Recovering feathers now costs food by default, and they stop coming back at 6 hunger points or less. Turn it off with `regen_uses_hunger`.
 - Feathers come back slower as the food bar empties, on a smooth scale from `hunger_regen_penalty` (now 0.5) to normal speed at a full bar. Saturation adds a bonus on top that grows with it, up to `saturation_regen_bonus` (now 1.5).
-- With Droplets of Thirst, recovering feathers costs thirst by default (`thirst_per_regenerated_feather`, now 0.075).
+- With Droplets of Thirst, the food spent on recovering feathers drains thirst too.
 - Server configs that already exist keep their old values: change them by hand to get the new defaults.
 - New switches for two effects: `effect_energized_enabled` and `effect_cooling_enabled`.
 - Thirst Was Taken: the thirst spent on recovering feathers now shows on the client right away.

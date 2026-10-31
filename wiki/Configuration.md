@@ -234,10 +234,11 @@ Targets can also be mounts.
 	# Default: 0.02
 	# Range: 0.0 ~ 20.0
 	regen_bonus_per_quench_point = 0.02
-	#Thirst points each regenerated feather costs. 0 = regenerating costs no thirst.
-	# Default: 0.075
+	#Extra thirst points each regenerated feather costs.
+	#Droplets of Thirst already drains thirst with the food spent on regeneration, unless its mode is OWN.
+	# Default: 0.0
 	# Range: 0.0 ~ 20.0
-	thirst_per_regenerated_feather = 0.075
+	thirst_per_regenerated_feather = 0.0
 
 #Serene Seasons: winter outdoors is cold, a summer day in the sun is hot.
 [serene_seasons]
