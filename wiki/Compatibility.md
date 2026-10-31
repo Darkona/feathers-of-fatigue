@@ -12,7 +12,7 @@ These mods work out of the box. Each one has its own switch in `FeathersOfFatigu
 
 | Mod | What it does with feathers |
 |---|---|
-| Droplets of Thirst | Thirst slows recovery, and being well quenched speeds it up. Regeneration can cost thirst |
+| Droplets of Thirst | Thirst slows recovery, and being well quenched speeds it up. Recovering feathers costs thirst |
 | Serene Seasons | Winter outdoors is cold, and the summer sun is hot |
 | Curios | The Feather Ring goes in a ring slot |
 | Jade | Shows the stamina of a mount when you look at it |

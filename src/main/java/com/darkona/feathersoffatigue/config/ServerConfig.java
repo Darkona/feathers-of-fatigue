@@ -38,6 +38,8 @@ public final class ServerConfig {
     public static final IntValue EFFECT_LINGER;
     public static final BooleanValue ENABLE_ENDURANCE;
     public static final BooleanValue ENABLE_MOMENTUM;
+    public static final BooleanValue ENABLE_ENERGIZED;
+    public static final BooleanValue ENABLE_COOLING;
 
     public static final BooleanValue ENABLE_REST;
     public static final IntValue REST_STILL_TICKS;
@@ -95,21 +97,22 @@ public final class ServerConfig {
 
         REGEN_USES_HUNGER = builder
                 .comment("Regenerating feathers costs food, like healing: no regeneration at 6 hunger points or less.")
-                .define("regen_uses_hunger", false);
+                .define("regen_uses_hunger", true);
 
         HUNGER_PER_FEATHER = builder
                 .comment("Food exhaustion per regenerated feather when regen_uses_hunger is on. 4.0 exhaustion = one hunger point.")
                 .defineInRange("hunger_exhaustion_per_feather", 0.3, 0.0, 40.0);
 
         SATURATION_REGEN_BONUS = builder
-                .comment("Regeneration multiplier with a full food bar and saturation left: 1.5 regenerates 50% faster.",
-                        "1.0 turns it off.")
-                .defineInRange("saturation_regen_bonus", 1.0, 1.0, 10.0);
+                .comment("Regeneration multiplier at maximum saturation: 1.5 regenerates 50% faster.",
+                        "It grows in a straight line with saturation, on top of the food bar. 1.0 turns it off.")
+                .defineInRange("saturation_regen_bonus", 1.5, 1.0, 10.0);
 
         HUNGER_REGEN_PENALTY = builder
                 .comment("Regeneration multiplier at 6 hunger points or less: 0.5 regenerates at half speed, 0.0 stops it.",
-                        "1.0 turns it off. With regen_uses_hunger on, regeneration already stops there.")
-                .defineInRange("hunger_regen_penalty", 1.0, 0.0, 1.0);
+                        "It rises in a straight line to normal speed at a full food bar. 1.0 turns it off.",
+                        "With regen_uses_hunger on, regeneration stops at 6 hunger points or less anyway.")
+                .defineInRange("hunger_regen_penalty", 0.5, 0.0, 1.0);
 
         builder.pop();
 
@@ -180,6 +183,14 @@ public final class ServerConfig {
         ENABLE_MOMENTUM = builder
                 .comment("Momentum effect: halves costs.")
                 .define("effect_momentum_enabled", true);
+
+        ENABLE_ENERGIZED = builder
+                .comment("Energized effect: doubles regeneration.")
+                .define("effect_energized_enabled", true);
+
+        ENABLE_COOLING = builder
+                .comment("Cooling effect: protects from Heat and Fatigue.")
+                .define("effect_cooling_enabled", true);
 
         builder.pop();
 

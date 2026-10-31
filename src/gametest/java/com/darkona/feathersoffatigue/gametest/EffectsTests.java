@@ -6,6 +6,7 @@ import com.darkona.feathersoffatigue.api.FeathersView;
 import com.darkona.feathersoffatigue.api.Stamina;
 import com.darkona.feathersoffatigue.api.registry.FeathersIds;
 import com.darkona.feathersoffatigue.api.registry.FeathersMobEffects;
+import com.darkona.feathersoffatigue.config.ServerConfig;
 import com.darkona.feathersoffatigue.content.feathers.ClimateEffects;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -34,6 +35,23 @@ public class EffectsTests {
         player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 200));
         helper.assertFalse(player.addEffect(new MobEffectInstance(FeathersMobEffects.HOT, 200)), "Heat applied despite Fire Resistance");
         helper.assertFalse(player.addEffect(new MobEffectInstance(FeathersMobEffects.FATIGUE, 200)), "Fatigue applied despite Fire Resistance");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void energizedAndCoolingFollowTheirSwitches(GameTestHelper helper) {
+        ServerPlayer player = player(helper);
+        ServerConfig.ENABLE_ENERGIZED.set(false);
+        ServerConfig.ENABLE_COOLING.set(false);
+        try {
+            helper.assertFalse(player.addEffect(new MobEffectInstance(FeathersMobEffects.ENERGIZED, 200)), "Energized applied while off");
+            helper.assertFalse(player.addEffect(new MobEffectInstance(FeathersMobEffects.COOLING, 200)), "Cooling applied while off");
+        } finally {
+            ServerConfig.ENABLE_ENERGIZED.set(true);
+            ServerConfig.ENABLE_COOLING.set(true);
+        }
+        helper.assertTrue(player.addEffect(new MobEffectInstance(FeathersMobEffects.ENERGIZED, 200)), "Energized refused while on");
+        helper.assertTrue(player.addEffect(new MobEffectInstance(FeathersMobEffects.COOLING, 200)), "Cooling refused while on");
         helper.succeed();
     }
 

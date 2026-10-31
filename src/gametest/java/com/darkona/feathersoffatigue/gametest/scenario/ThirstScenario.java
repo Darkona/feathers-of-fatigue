@@ -8,6 +8,10 @@ public final class ThirstScenario {
 
     private ThirstScenario() {}
 
+    public static int thirst(Player player) {
+        return player.getData(ModAttachment.PLAYER_THIRST).getThirst();
+    }
+
     public static void thirst(Player player, int thirst, int quench) {
         IThirst data = player.getData(ModAttachment.PLAYER_THIRST);
         data.setThirst(thirst);

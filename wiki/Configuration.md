@@ -53,21 +53,22 @@ Targets can also be mounts.
 	# Range: 0 ~ 600
 	max_cooldown_seconds = 5
 	#Regenerating feathers costs food, like healing: no regeneration at 6 hunger points or less.
-	regen_uses_hunger = false
+	regen_uses_hunger = true
 	#Food exhaustion per regenerated feather when regen_uses_hunger is on. 4.0 exhaustion = one hunger point.
 	# Default: 0.3
 	# Range: 0.0 ~ 40.0
 	hunger_exhaustion_per_feather = 0.3
-	#Regeneration multiplier with a full food bar and saturation left: 1.5 regenerates 50% faster.
-	#1.0 turns it off.
-	# Default: 1.0
+	#Regeneration multiplier at maximum saturation: 1.5 regenerates 50% faster.
+	#It grows in a straight line with saturation, on top of the food bar. 1.0 turns it off.
+	# Default: 1.5
 	# Range: 1.0 ~ 10.0
-	saturation_regen_bonus = 1.0
+	saturation_regen_bonus = 1.5
 	#Regeneration multiplier at 6 hunger points or less: 0.5 regenerates at half speed, 0.0 stops it.
-	#1.0 turns it off. With regen_uses_hunger on, regeneration already stops there.
-	# Default: 1.0
+	#It rises in a straight line to normal speed at a full food bar. 1.0 turns it off.
+	#With regen_uses_hunger on, regeneration stops at 6 hunger points or less anyway.
+	# Default: 0.5
 	# Range: 0.0 ~ 1.0
-	hunger_regen_penalty = 1.0
+	hunger_regen_penalty = 0.5
 
 [exhaustion_and_strain]
 	#Strain: when feathers run out, keep exerting by overspending into red 'negative' feathers, up to
@@ -116,6 +117,10 @@ Targets can also be mounts.
 	effect_endurance_enabled = true
 	#Momentum effect: halves costs.
 	effect_momentum_enabled = true
+	#Energized effect: doubles regeneration.
+	effect_energized_enabled = true
+	#Cooling effect: protects from Heat and Fatigue.
+	effect_cooling_enabled = true
 
 [resting]
 	#Resting speeds up paying back strain: standing still, crouching still, or sitting (riding a boat,
@@ -230,9 +235,9 @@ Targets can also be mounts.
 	# Range: 0.0 ~ 20.0
 	regen_bonus_per_quench_point = 0.02
 	#Thirst points each regenerated feather costs. 0 = regenerating costs no thirst.
-	# Default: 0.0
+	# Default: 0.075
 	# Range: 0.0 ~ 20.0
-	thirst_per_regenerated_feather = 0.0
+	thirst_per_regenerated_feather = 0.075
 
 #Serene Seasons: winter outdoors is cold, a summer day in the sun is hot.
 [serene_seasons]

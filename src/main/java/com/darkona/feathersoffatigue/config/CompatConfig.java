@@ -89,7 +89,7 @@ public final class CompatConfig {
         DROPLETS_OF_THIRST_QUENCH_BONUS = builder.comment("Feathers per second gained per point of quenched (thirst saturation).")
                 .defineInRange("regen_bonus_per_quench_point", 0.02, 0.0, 20.0);
         DROPLETS_OF_THIRST_THIRST_PER_FEATHER = builder.comment("Thirst points each regenerated feather costs. 0 = regenerating costs no thirst.")
-                .defineInRange("thirst_per_regenerated_feather", 0.0, 0.0, 20.0);
+                .defineInRange("thirst_per_regenerated_feather", 0.075, 0.0, 20.0);
         builder.pop();
 
         builder.comment("Tough As Nails: its temperature drives Cold, Heat and Fatigue; its thirst drives regeneration.").push("tough_as_nails");

@@ -66,6 +66,8 @@ FeathersAPI.registerWeightSource(MY_BACKPACK, new WeightSource() {
 // Call FeathersAPI.recalculateWeight(entity) when the backpack's weight changes.
 ```
 
+Weight is also an attribute, `feathers_of_fatigue:armor_weight`, in feathers reserved from the maximum. Worn armor and weight sources add to it. Any item, effect or mod can add weight or scale it with an ordinary attribute modifier, and `/attribute` works too.
+
 ## Feather styles
 
 Every feather on the HUD is made of grayscale sprites, tinted with a `FeatherStyle`. A style has:

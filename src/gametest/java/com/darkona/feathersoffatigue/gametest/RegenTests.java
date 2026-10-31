@@ -34,6 +34,76 @@ public class RegenTests {
         return player;
     }
 
+    private static double regenAtFood(ServerPlayer player, int food, float saturation) {
+        player.getFoodData().setFoodLevel(food);
+        player.getFoodData().setSaturation(saturation);
+        player.tickCount = 0;
+        tick(player, 1);
+        return FeathersAPI.getRegenPerSecond(player);
+    }
+
+    private static void withHungerRules(Runnable test) {
+        boolean usesHunger = ServerConfig.REGEN_USES_HUNGER.get();
+        double bonus = ServerConfig.SATURATION_REGEN_BONUS.get();
+        double penalty = ServerConfig.HUNGER_REGEN_PENALTY.get();
+        ServerConfig.REGEN_USES_HUNGER.set(true);
+        ServerConfig.SATURATION_REGEN_BONUS.set(1.5);
+        ServerConfig.HUNGER_REGEN_PENALTY.set(0.5);
+        try {
+            test.run();
+        } finally {
+            ServerConfig.REGEN_USES_HUNGER.set(usesHunger);
+            ServerConfig.SATURATION_REGEN_BONUS.set(bonus);
+            ServerConfig.HUNGER_REGEN_PENALTY.set(penalty);
+        }
+    }
+
+    @GameTest(template = "empty")
+    public static void regenerationFollowsTheFoodBar(GameTestHelper helper) {
+        withHungerRules(() -> {
+            ServerPlayer player = emptyPlayer(helper);
+            double base = player.getAttributeBaseValue(FeathersAttributes.FEATHERS_PER_SECOND);
+            helper.assertTrue(Math.abs(regenAtFood(player, 20, 0f) - base) < 1e-6, "full bar: the base");
+            helper.assertTrue(Math.abs(regenAtFood(player, 13, 0f) - base * 0.75) < 1e-6, "half way: three quarters");
+            helper.assertTrue(Math.abs(regenAtFood(player, 6, 0f) - base * 0.5) < 1e-6, "hungry: half the base");
+        });
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void saturationAddsABonus(GameTestHelper helper) {
+        withHungerRules(() -> {
+            ServerPlayer player = emptyPlayer(helper);
+            double base = player.getAttributeBaseValue(FeathersAttributes.FEATHERS_PER_SECOND);
+            helper.assertTrue(Math.abs(regenAtFood(player, 20, 10f) - base * 1.25) < 1e-6, "half saturation: a quarter faster");
+            helper.assertTrue(Math.abs(regenAtFood(player, 20, 20f) - base * 1.5) < 1e-6, "full saturation: 1.5 times the base");
+        });
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void regeneratingCostsFood(GameTestHelper helper) {
+        withHungerRules(() -> {
+            ServerPlayer player = emptyPlayer(helper);
+            float before = player.getFoodData().getExhaustionLevel();
+            tick(player, 100);
+            helper.assertTrue(FeathersAPI.get(player).stamina() > 0, "feathers came back");
+            helper.assertTrue(player.getFoodData().getExhaustionLevel() > before, "regenerating adds food exhaustion");
+        });
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void regenerationStopsWhenHungry(GameTestHelper helper) {
+        withHungerRules(() -> {
+            ServerPlayer player = emptyPlayer(helper);
+            player.getFoodData().setFoodLevel(6);
+            tick(player, 100);
+            helper.assertTrue(FeathersAPI.get(player).stamina() == 0, "no feathers at 6 food");
+        });
+        helper.succeed();
+    }
+
     @GameTest(template = "empty")
     public static void commandBasesSurviveDeath(GameTestHelper helper) {
         ServerPlayer dead = player(helper);

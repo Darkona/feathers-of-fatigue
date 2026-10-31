@@ -26,7 +26,7 @@ public final class ThirstCompat {
         if (!CompatConfig.THIRST.get() || !(entity instanceof Player player)) return 0.0;
 
         int owed = ThirstRegen.owedSinceLastCall(player, feathers, THIRST_KEYS, CompatConfig.THIRST_PER_FEATHER.get());
-        if (owed > 0) ThirstBridge.drain(player, owed);
+        if (owed > 0 && !player.level().isClientSide()) ThirstBridge.drain(player, owed);
 
         return ThirstRegen.factor(ThirstBridge.thirst(player), ThirstBridge.quench(player),
                 CompatConfig.THIRST_REGEN_REDUCTION.get(), CompatConfig.QUENCH_REGEN_BONUS.get());

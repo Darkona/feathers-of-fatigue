@@ -19,5 +19,6 @@ final class ThirstBridge {
     static void drain(Player player, int points) {
         IThirst thirst = player.getData(ModAttachment.PLAYER_THIRST);
         thirst.setThirst(Math.max(0, thirst.getThirst() - points));
+        thirst.updateThirstData(player);
     }
 }

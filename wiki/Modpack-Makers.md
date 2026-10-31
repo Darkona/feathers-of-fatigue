@@ -55,6 +55,8 @@ armor_weights = [
 
 `body` is horse armor. On Minecraft 26.x and 1.21.11, the material is the equipment model of the armor (the `asset_id` of its `minecraft:equippable` component). For vanilla armor, that is its material: `minecraft:turtle_scute` for the turtle shell, `minecraft:copper` for copper armor. On 1.21.1 and older, it is the armor material (`minecraft:turtle`).
 
+Armor weight is also the attribute `feathers_of_fatigue:armor_weight`, in feathers, so items, effects and `/attribute` can add weight or scale it with ordinary attribute modifiers.
+
 The data map sets weights per item from a datapack, in `data/feathers_of_fatigue/data_maps/item/armor_weight.json`:
 
 ```json

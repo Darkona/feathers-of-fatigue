@@ -81,6 +81,24 @@ public class SurvivalCompatTests {
     }
 
     @GameTest(template = "empty")
+    public static void thirstWasTakenRegenerationCostsThirst(GameTestHelper helper) {
+        if (ThirstCompat.LOADED) withCompat(() -> {
+            CompatConfig.THIRST_PER_FEATHER.set(1.0);
+            try {
+                ServerPlayer player = player(helper);
+                ThirstScenario.thirst(player, 20, 0);
+                FeathersAPI.setStamina(player, 0);
+                tick(player, 200);
+                int thirst = ThirstScenario.thirst(player);
+                helper.assertTrue(thirst <= 18, "one thirst point per regenerated feather: thirst should drop, was " + thirst);
+            } finally {
+                CompatConfig.THIRST_PER_FEATHER.set(CompatConfig.THIRST_PER_FEATHER.getDefault());
+            }
+        });
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
     public static void dropletsOfThirstSlowsRegeneration(GameTestHelper helper) {
         if (DropletsOfThirstCompat.LOADED) withCompat(() -> {
             ServerPlayer player = player(helper);
@@ -104,7 +122,7 @@ public class SurvivalCompatTests {
                 int thirst = DropletsOfThirstScenario.thirst(player);
                 helper.assertTrue(thirst <= 18, "one thirst point per regenerated feather: thirst should drop, was " + thirst);
             } finally {
-                CompatConfig.DROPLETS_OF_THIRST_THIRST_PER_FEATHER.set(0.0);
+                CompatConfig.DROPLETS_OF_THIRST_THIRST_PER_FEATHER.set(CompatConfig.DROPLETS_OF_THIRST_THIRST_PER_FEATHER.getDefault());
             }
         });
         helper.succeed();

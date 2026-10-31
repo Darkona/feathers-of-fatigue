@@ -32,11 +32,15 @@ If you spend absolutely everything (no feathers and no strain room left), you ar
 
 Standing still, crouching or sitting down (a boat, a horse, or most seats from furniture mods) pays strain back faster. Sleeping through the night restores everything, also when a sleep mod skips the night for you. If you leave the bed before morning, sleep restores nothing.
 
-## Food (optional)
+## Food
 
-A well-fed body recovers faster. With a full food bar and saturation left, feathers come back quicker (`saturation_regen_bonus` in the server config). At 6 hunger points (3 drumsticks) or less, they come back slower (`hunger_regen_penalty`). Both are off by default. Only players eat, so mounts are not affected.
+Feathers come back at normal speed with a full food bar, and slower as it empties. Saturation adds a bonus on top: the more of it you have, the faster they return, up to 50% faster.
 
-With `regen_uses_hunger` on, regeneration costs food like healing does. At that hunger level, it stops completely.
+Recovering feathers also costs food, the same way healing does. At 6 hunger points (3 drumsticks) or less, feathers stop coming back until you eat. Only players eat, so mounts are not affected.
+
+Server owners can change all of this: `regen_uses_hunger` turns the food cost and the stop off, and `saturation_regen_bonus` and `hunger_regen_penalty` set how much saturation and hunger change the speed.
+
+With Droplets of Thirst installed, recovering feathers costs thirst too.
 
 ## Weather and climate
 
@@ -87,6 +91,8 @@ Modpacks can give feathers to other creatures (see [Modpack Makers](Modpack-Make
 | Energy | Faster recovery |
 | Momentum | Cheaper actions |
 | Cooling | Protects from heat |
+| Coldness | Makes you cold: slower recovery |
+| Heat | Makes you hot: everything costs double |
 
 | ![Endurance](images/endurance.png) | ![Energized](images/energized.png) | ![Momentum](images/momentum.png) |
 |---|---|---|

@@ -42,6 +42,7 @@ final class TestSupport {
     static ServerPlayer player(GameTestHelper helper) {
         clearNoon(helper.getLevel());
         ServerPlayer player = TestPlayers.survival(helper, "feathers-test");
+        player.getFoodData().setSaturation(0f);
         FeathersAPI.get(player);
         return player;
     }

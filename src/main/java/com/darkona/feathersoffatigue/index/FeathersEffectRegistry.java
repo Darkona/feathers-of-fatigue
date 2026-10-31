@@ -40,8 +40,12 @@ public final class FeathersEffectRegistry {
             }
         }.addAttributeModifier(FEATHERS_PER_SECOND, id("effect.cold"), -0.5, ADD_MULTIPLIED_TOTAL));
 
-        EFFECTS.register("energized", () -> new FeathersMobEffect(MobEffectCategory.BENEFICIAL, 0x71CEFF)
-                .addAttributeModifier(FEATHERS_PER_SECOND, id("effect.energized"), 1.0, ADD_MULTIPLIED_TOTAL));
+        EFFECTS.register("energized", () -> new FeathersMobEffect(MobEffectCategory.BENEFICIAL, 0x71CEFF) {
+            @Override
+            public boolean canApply(LivingEntity entity) {
+                return super.canApply(entity) && ServerConfig.ENABLE_ENERGIZED.get();
+            }
+        }.addAttributeModifier(FEATHERS_PER_SECOND, id("effect.energized"), 1.0, ADD_MULTIPLIED_TOTAL));
 
         EFFECTS.register("hot", () -> new FeathersMobEffect(MobEffectCategory.HARMFUL, 0x7E5D48) {
             @Override
@@ -73,7 +77,12 @@ public final class FeathersEffectRegistry {
             }
         }.addAttributeModifier(FEATHERS_PER_SECOND, id("effect.strain"), -0.75, ADD_MULTIPLIED_TOTAL));
 
-        EFFECTS.register("cooling", () -> new FeathersMobEffect(MobEffectCategory.BENEFICIAL, 0x5FE0B4));
+        EFFECTS.register("cooling", () -> new FeathersMobEffect(MobEffectCategory.BENEFICIAL, 0x5FE0B4) {
+            @Override
+            public boolean canApply(LivingEntity entity) {
+                return super.canApply(entity) && ServerConfig.ENABLE_COOLING.get();
+            }
+        });
     }
 
     public static void register(IEventBus modEventBus) {

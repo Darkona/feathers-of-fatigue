@@ -9,6 +9,14 @@ Changes by feature, newest version first.
 - Armor weight is an attribute, `feathers_of_fatigue:armor_weight` (in feathers, reserved from the maximum): worn armor and weight sources add to it as Feathers' own modifier, and any item, effect, mod or `/attribute` can add weight with an ordinary attribute modifier (a heavy backpack) or scale it.
 - The stamina is saved in its own entity attachment, `feathers_of_fatigue:stamina`, instead of inside `feathers_of_fatigue:feathers`. Stamina saved by earlier versions is not carried over: players and mounts start with a full bar.
 - Client and server must run the same version: the network protocol changed.
+- The mod has a new logo, shown in the Mods screen.
+- The strong Energized tipped arrow now has the right English name, Arrow of Energy.
+- Recovering feathers now costs food by default, and they stop coming back at 6 hunger points or less. Turn it off with `regen_uses_hunger`.
+- Feathers come back slower as the food bar empties, on a smooth scale from `hunger_regen_penalty` (now 0.5) to normal speed at a full bar. Saturation adds a bonus on top that grows with it, up to `saturation_regen_bonus` (now 1.5).
+- With Droplets of Thirst, recovering feathers costs thirst by default (`thirst_per_regenerated_feather`, now 0.075).
+- Server configs that already exist keep their old values: change them by hand to get the new defaults.
+- New switches for two effects: `effect_energized_enabled` and `effect_cooling_enabled`.
+- Thirst Was Taken: the thirst spent on recovering feathers now shows on the client right away.
 
 ### For mod developers
 
