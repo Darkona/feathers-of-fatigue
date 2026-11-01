@@ -31,7 +31,7 @@ public final class FeathersIds {
      * @param path the resource path
      * @return {@code feathers_of_fatigue:path}
      */
-    @SuppressWarnings("removal") // The constructor is the only way on every Forge 47 build.
+    @SuppressWarnings("removal")
     public static ResourceLocation id(String path) {
         return new ResourceLocation(MOD_ID, path);
     }

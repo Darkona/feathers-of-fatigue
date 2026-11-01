@@ -7,7 +7,6 @@
   "effect.feathers_of_fatigue.strain": "Belastung",
   "enchantment.feathers_of_fatigue.heavy": "Fluch der Schwere",
   "enchantment.feathers_of_fatigue.lightweight": "Leichtgewicht",
-  "feathers_of_fatigue.feather_regen": "Federregeneration",
   "feathers_of_fatigue.feathers_per_second": "Feather Recovery",
   "feathers_of_fatigue.max_feathers": "Maximale Federn",
   "feathers_of_fatigue.usage_multiplier": "Usage Multiplier",
@@ -79,6 +78,7 @@
   "item.feathers_of_fatigue.feather_ring.tooltip.ring": "Halbiert das Rüstungsgewicht, wenn er in einem Ringplatz getragen wird.",
   "item.feathers_of_fatigue.feather_ring.tooltip.offhand": "Halbiert das Rüstungsgewicht, wenn er in der Zweithand gehalten wird.",
   "feathers_of_fatigue.armor_weight_multiplier": "Rüstungsgewicht-Multiplikator",
+  "feathers_of_fatigue.armor_weight": "Rüstungsgewicht",
   "jade.feathers_of_fatigue.mount_stamina": "Ausdauer: %s/%s Federn",
   "config.jade.plugin_feathers_of_fatigue.mount_stamina": "Reittier-Ausdauer"
 }

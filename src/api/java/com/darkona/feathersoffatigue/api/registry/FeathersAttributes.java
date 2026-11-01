@@ -26,5 +26,11 @@ public final class FeathersAttributes {
     /** Multiplies armor weight. A value of 1.0 is normal. A MULTIPLY_BASE modifier of -0.5 halves it. */
     public static final RegistryObject<Attribute> ARMOR_WEIGHT_MULTIPLIER = RegistryObject.create(id("armor_weight_multiplier"), ForgeRegistries.ATTRIBUTES);
 
+    /**
+     * Armor weight, in feathers: the part of the maximum that cannot be spent. Feathers adds the weight of the worn armor and of
+     * every {@code WeightSource} as its own modifier; any ADDITION modifier adds weight (a backpack), and multipliers scale it.
+     */
+    public static final RegistryObject<Attribute> ARMOR_WEIGHT = RegistryObject.create(id("armor_weight"), ForgeRegistries.ATTRIBUTES);
+
     private FeathersAttributes() {}
 }

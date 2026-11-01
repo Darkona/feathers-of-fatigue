@@ -16,12 +16,14 @@ base {
 java.toolchain.languageVersion = JavaLanguageVersion.of(java_version as int)
 java.withSourcesJar()
 
-// Test-only data, on the classpath only when running the GameTests: src/gametest/resources as is (it wins over the
-// mod's files at the same path), and for data maps, which take one file per namespace from each pack, the mod's own
-// entries merged with the test entries from src/gametest/datamaps.
-if (gradle.startParameter.taskNames.any { it.contains('GameTest') }) {
-    def mergedDataMaps = layout.buildDirectory.dir('gametest-datamaps')
-    def mergeTestDataMaps = tasks.register('mergeTestDataMaps') {
+// Test-only data, in the gametest source set only when running the GameTests, so it never reaches the mod's jars:
+// src/gametest/resources as is (the gametest source set comes last in the dev mod, so it wins over the mod's files at
+// the same path), and for data maps, which take one file per namespace from each pack, the mod's own entries merged
+// with the test entries from src/gametest/datamaps.
+def gameTestsRequested = gradle.startParameter.taskNames.any { it.contains('GameTest') }
+def mergedDataMaps = layout.buildDirectory.dir('gametest-datamaps')
+if (gameTestsRequested) {
+    tasks.register('mergeTestDataMaps') {
         def modMaps = file('src/main/resources/data/feathers_of_fatigue/data_maps/entity_type')
         def testMaps = file('src/gametest/datamaps')
         inputs.dir(modMaps)
@@ -39,14 +41,17 @@ if (gradle.startParameter.taskNames.any { it.contains('GameTest') }) {
             }
         }
     }
-    sourceSets.main.resources.srcDirs = [files(mergedDataMaps).builtBy(mergeTestDataMaps), 'src/gametest/resources'] + sourceSets.main.resources.srcDirs
-    tasks.named('processResources', ProcessResources) { duplicatesStrategy = DuplicatesStrategy.EXCLUDE }
 }
 
 // The public API lives in its own source set and ships twice: inside the mod jar, and alone as
 // feathers-of-fatigue-api for other mods to compile against.
 sourceSets {
     api
+    gametest {
+        resources.srcDirs = gameTestsRequested ? [files(mergedDataMaps).builtBy('mergeTestDataMaps'), 'src/gametest/resources'] : []
+        compileClasspath += sourceSets.main.output + sourceSets.api.output
+        runtimeClasspath += sourceSets.main.output + sourceSets.api.output
+    }
 }
 
 repositories {
@@ -75,6 +80,7 @@ legacyForge {
         disableRecompilation = false
     }
     addModdingDependenciesTo(sourceSets.api)
+    addModdingDependenciesTo(sourceSets.gametest)
 
     parchment {
         mappingsVersion = project.parchment_mappings_version
@@ -102,6 +108,7 @@ legacyForge {
             systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
         }
         configureEach {
+            sourceSet = sourceSets.gametest
             systemProperty 'forge.logging.markers', 'REGISTRIES'
             systemProperty 'mixin.env.remapRefMap', 'true'
             logLevel = org.slf4j.event.Level.DEBUG
@@ -112,6 +119,7 @@ legacyForge {
         "${mod_id}" {
             sourceSet(sourceSets.main)
             sourceSet(sourceSets.api)
+            sourceSet(sourceSets.gametest)
         }
     }
 }
@@ -124,6 +132,10 @@ mixin {
 configurations {
     localRuntime
     runtimeClasspath.extendsFrom localRuntime
+    gametestImplementation.extendsFrom implementation
+    gametestCompileOnly.extendsFrom compileOnly
+    gametestRuntimeOnly.extendsFrom runtimeOnly
+    gametestRuntimeClasspath.extendsFrom localRuntime
 }
 
 obfuscation {
@@ -152,6 +164,17 @@ dependencies {
     modCompileOnly "top.theillusivec4.curios:curios-forge:${curios_version}:api"
     modCompileOnly "maven.modrinth:jade:${jade_version}"
     modLocalRuntime "top.theillusivec4.curios:curios-forge:${curios_version}"
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'com.tngtech.archunit:archunit-junit5:1.5.1'
+}
+
+tasks.named('test', Test) {
+    useJUnitPlatform()
+    dependsOn 'compileGametestJava'
+    systemProperty 'feathers.classes', sourceSets.main.java.destinationDirectory.get().asFile.absolutePath
+    systemProperty 'feathers.gametestClasses', sourceSets.gametest.java.destinationDirectory.get().asFile.absolutePath
 }
 
 // Compat mods on the dev runtime, for boot checks and GameTests with them loaded:

@@ -1,29 +1,24 @@
 package com.darkona.feathersoffatigue.network;
 
 import com.darkona.feathersoffatigue.api.MountStats;
-import com.darkona.feathersoffatigue.data.DataMaps;
+import com.darkona.feathersoffatigue.index.FeathersDataMapRegistry;
 import io.netty.handler.codec.DecoderException;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * The armor weight and mount stats data maps as the server loaded them: the client weighs tooltips and decides
- * which creatures are mounts from them too.
- */
-public record DataMapsPayload(DataMaps.Raw raw) {
-
+public record DataMapsPayload(FeathersDataMapRegistry.Raw raw) {
     private static final int MAX_ENTRIES = 1 << 16;
 
     void encode(FriendlyByteBuf buf) {
         buf.writeVarInt(raw.armor().size());
-        for (DataMaps.ArmorEntry entry : raw.armor()) {
+        for (FeathersDataMapRegistry.ArmorEntry entry : raw.armor()) {
             buf.writeUtf(entry.key());
             buf.writeVarInt(entry.weight());
         }
         buf.writeVarInt(raw.mounts().size());
-        for (DataMaps.MountEntry entry : raw.mounts()) {
+        for (FeathersDataMapRegistry.MountEntry entry : raw.mounts()) {
             buf.writeUtf(entry.key());
             buf.writeJsonWithCodec(MountStats.CODEC, entry.stats());
         }
@@ -31,12 +26,12 @@ public record DataMapsPayload(DataMaps.Raw raw) {
 
     static DataMapsPayload decode(FriendlyByteBuf buf) {
         int armorCount = count(buf);
-        List<DataMaps.ArmorEntry> armor = new ArrayList<>(armorCount);
-        for (int i = 0; i < armorCount; i++) armor.add(new DataMaps.ArmorEntry(buf.readUtf(), buf.readVarInt()));
+        List<FeathersDataMapRegistry.ArmorEntry> armor = new ArrayList<>(armorCount);
+        for (int i = 0; i < armorCount; i++) armor.add(new FeathersDataMapRegistry.ArmorEntry(buf.readUtf(), buf.readVarInt()));
         int mountCount = count(buf);
-        List<DataMaps.MountEntry> mounts = new ArrayList<>(mountCount);
-        for (int i = 0; i < mountCount; i++) mounts.add(new DataMaps.MountEntry(buf.readUtf(), buf.readJsonWithCodec(MountStats.CODEC)));
-        return new DataMapsPayload(new DataMaps.Raw(armor, mounts));
+        List<FeathersDataMapRegistry.MountEntry> mounts = new ArrayList<>(mountCount);
+        for (int i = 0; i < mountCount; i++) mounts.add(new FeathersDataMapRegistry.MountEntry(buf.readUtf(), buf.readJsonWithCodec(MountStats.CODEC)));
+        return new DataMapsPayload(new FeathersDataMapRegistry.Raw(armor, mounts));
     }
 
     private static int count(FriendlyByteBuf buf) {

@@ -2,6 +2,35 @@
 
 Changes by feature, newest version first.
 
+## 1.20.1-1.1.0 (Forge 47), Unreleased
+
+The 1.1.0 changes of 1.21.1, on Forge 47. Same as 1.20.1-1.0.1 below, except for what this section lists.
+
+### For players and pack makers
+
+- Armor weight is an attribute, `feathers_of_fatigue:armor_weight` (in feathers, reserved from the maximum): worn armor and weight sources add to it as Feathers' own modifier, and any item, effect, mod or `/attribute` can add weight with an ordinary attribute modifier (a heavy backpack) or scale it.
+- Client and server must run the same version: the network protocol changed.
+- The mod has a new logo, shown in the Mods screen.
+- The strong Energized tipped arrow now has the right English name, Arrow of Energy.
+- Sprinting and jumping now move the feathers on the client right away, with the same code as the server, instead of waiting for the next sync.
+- Recovering feathers now costs food by default, and they stop coming back at 6 hunger points or less. Turn it off with `regen_uses_hunger`. A whole bar of 20 feathers costs half a hunger point (`hunger_exhaustion_per_feather`, now 0.1).
+- Feathers come back slower as the food bar empties, on a smooth scale from `hunger_regen_penalty` (now 0.5) to normal speed at a full bar. Saturation adds a bonus on top that grows with it, up to `saturation_regen_bonus` (now 1.5).
+- With Droplets of Thirst 1.20.1-1.1.0 or later, the food spent on recovering feathers drains thirst too.
+- Server configs that already exist keep their old values: change them by hand to get the new defaults.
+- New switches for two effects: `effect_energized_enabled` and `effect_cooling_enabled`.
+- Thirst Was Taken: the thirst spent on recovering feathers now shows on the client right away.
+- Values set with `/feathers` or the API for maximum feathers, maximum strain and regeneration now survive death, as they do on 1.21.1.
+- Tested with Cold Sweat 2.4.5.
+
+### For mod developers
+
+- New attribute holder `FeathersAttributes.ARMOR_WEIGHT`. On 1.20.1 weight is added with an `ADDITION` modifier. Nothing else in the API changed.
+- The API jar is `com.darkona.feathersoffatigue:feathers-of-fatigue-api:1.20.1-1.1.0`.
+
+### Not in this version
+
+- **Stamina in its own attachment:** on 1.21.1 the stamina moved to the attachment `feathers_of_fatigue:stamina`, which comes from a library this branch does not use. Here it stays in the feathers capability, so stamina saved by earlier versions carries over.
+
 ## 1.20.1-1.0.1 (Forge 47), 2026-10-01
 
 Same as 1.20.1-1.0.0 below, except for what this section lists.

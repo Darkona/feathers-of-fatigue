@@ -54,7 +54,6 @@ public final class FeathersAPI {
         return Objects.requireNonNull(service, "Feathers of Fatigue is not loaded");
     }
 
-    /* Reading */
 
     /**
      * Checks whether an entity uses the stamina system. Use this before showing controls or other integration UI.
@@ -76,7 +75,6 @@ public final class FeathersAPI {
         return service().view(entity);
     }
 
-    /* Spending */
 
     /**
      * Spends stamina once, all or nothing. Use this for discrete actions such as jumps or attacks.
@@ -192,7 +190,6 @@ public final class FeathersAPI {
         return service().isDraining(entity, source);
     }
 
-    /* Giving */
 
     /**
      * Gives stamina: pays strain back first, as regeneration does, then fills the bar up to the maximum.
@@ -250,7 +247,6 @@ public final class FeathersAPI {
         service().reset(entity);
     }
 
-    /* Regeneration and rest */
 
     /**
      * Pauses regeneration for an activity. Source identifiers keep blocks from different mods independent.
@@ -296,7 +292,6 @@ public final class FeathersAPI {
         service().removeRestBonus(entity, source);
     }
 
-    /* Climate and weight */
 
     /**
      * Gets the entity's climate from the latest provider evaluation.
@@ -337,7 +332,6 @@ public final class FeathersAPI {
         service().recalculateWeight(entity);
     }
 
-    /* Extension points. Register during mod construction or common setup. */
 
     /**
      * Registers or replaces a climate provider. Higher priorities run first.
@@ -381,7 +375,6 @@ public final class FeathersAPI {
         service().registerStaminaModifier(id, ordinal, modifier);
     }
 
-    /* Data maps: see FeathersDataMaps. */
 
     /**
      * Gets an item's entry in the {@code feathers_of_fatigue:armor_weight} data map. Server config rules can still override
@@ -443,7 +436,6 @@ public final class FeathersAPI {
         service().sync(entity);
     }
 
-    /* Attributes and effects: plain vanilla calls, gathered here for convenience. */
 
     /**
      * Changes the base maximum stamina attribute. Attribute modifiers still apply to the final value.

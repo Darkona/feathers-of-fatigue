@@ -91,7 +91,6 @@ public final class FeatherStyles {
     public static synchronized void registerStyleProvider(ResourceLocation id, int priority, FeatherStyleProvider provider) {
         ProviderEntry entry = new ProviderEntry(Objects.requireNonNull(id), priority, Objects.requireNonNull(provider));
         ProviderEntry[] next = Registrations.withEntry(providers, entry, ProviderEntry::id);
-        // Stable: equal priorities keep their registration order.
         Arrays.sort(next, Comparator.comparingInt(ProviderEntry::priority).reversed());
         providers = next;
         version++;

@@ -7,7 +7,6 @@
   "effect.feathers_of_fatigue.strain": "Tensión",
   "enchantment.feathers_of_fatigue.heavy": "Maldición de Pesadez",
   "enchantment.feathers_of_fatigue.lightweight": "Ligereza",
-  "feathers_of_fatigue.feather_regen": "Regeneración de Plumas",
   "feathers_of_fatigue.feathers_per_second": "Feather Recovery",
   "feathers_of_fatigue.max_feathers": "Plumas Máximas",
   "feathers_of_fatigue.usage_multiplier": "Usage Multiplier",
@@ -79,6 +78,7 @@
   "item.feathers_of_fatigue.feather_ring.tooltip.ring": "Reduce a la mitad el peso de la armadura si lo llevas en un hueco de anillo.",
   "item.feathers_of_fatigue.feather_ring.tooltip.offhand": "Reduce a la mitad el peso de la armadura si lo llevas en la mano secundaria.",
   "feathers_of_fatigue.armor_weight_multiplier": "Multiplicador de peso de armadura",
+  "feathers_of_fatigue.armor_weight": "Peso de armadura",
   "jade.feathers_of_fatigue.mount_stamina": "Resistencia: %s/%s plumas",
   "config.jade.plugin_feathers_of_fatigue.mount_stamina": "Resistencia de monturas"
 }

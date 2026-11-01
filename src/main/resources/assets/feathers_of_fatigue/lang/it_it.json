@@ -7,7 +7,6 @@
   "effect.feathers_of_fatigue.strain": "Sforzo",
   "enchantment.feathers_of_fatigue.heavy": "Maledizione del Peso",
   "enchantment.feathers_of_fatigue.lightweight": "Leggerezza",
-  "feathers_of_fatigue.feather_regen": "Rigenerazione delle Piume",
   "feathers_of_fatigue.feathers_per_second": "Feather Recovery",
   "feathers_of_fatigue.max_feathers": "Piume Massime",
   "feathers_of_fatigue.usage_multiplier": "Usage Multiplier",
@@ -79,6 +78,7 @@
   "item.feathers_of_fatigue.feather_ring.tooltip.ring": "Dimezza il peso dell'armatura se indossato in uno slot per anelli.",
   "item.feathers_of_fatigue.feather_ring.tooltip.offhand": "Dimezza il peso dell'armatura se tenuto nella mano secondaria.",
   "feathers_of_fatigue.armor_weight_multiplier": "Moltiplicatore peso armatura",
+  "feathers_of_fatigue.armor_weight": "Peso armatura",
   "jade.feathers_of_fatigue.mount_stamina": "Resistenza: %s/%s piume",
   "config.jade.plugin_feathers_of_fatigue.mount_stamina": "Resistenza delle cavalcature"
 }
