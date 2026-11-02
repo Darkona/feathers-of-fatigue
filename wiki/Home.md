@@ -2,7 +2,7 @@
 
 Feathers of Fatigue adds stamina to Minecraft, as a row of feathers above your food bar. Sprinting, jumping and whatever other mods choose cost feathers. When they run out, you can push on for a while, at a price.
 
-Minecraft 26.3 · NeoForge · based on Elenai's Feathers. Also for 26.2, 26.1.2, 1.21.11 and 1.21.1 (NeoForge) and 1.20.1, 1.19.2 and 1.18.2 (Forge). [Minecraft Versions](Minecraft-Versions) lists what is different.
+Minecraft 1.21.1 · NeoForge · based on Elenai's Feathers. Also for 1.20.1 (Forge). [Minecraft Versions](Minecraft-Versions) lists what is different.
 
 ![Feathers above the food bar, with a golden row of Endurance feathers](images/hud.png)
 
@@ -14,4 +14,4 @@ Minecraft 26.3 · NeoForge · based on Elenai's Feathers. Also for 26.2, 26.1.2,
 - [Modpack Makers](Modpack-Makers): mounts, armor weights and opt-outs with datapacks.
 - [Mod Developers](Mod-Developers): how to spend feathers and connect to them from your own mod.
 - [Resource Packs](Resource-Packs): how to recolor the feathers, or draw your own.
-- [Minecraft Versions](Minecraft-Versions): what is different on each Minecraft version.
+- [Minecraft Versions](Minecraft-Versions): what is different on 1.20.1.
