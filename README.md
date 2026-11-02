@@ -14,7 +14,7 @@ It works out of the box with Droplets of Thirst, Serene Seasons, Curios, Jade an
 
 ![Riding a camel: its feathers, in its colors](https://raw.githubusercontent.com/Darkona/feathers-of-fatigue/main/wiki/images/mount-camel.png)
 
-**Minecraft versions:** 26.3, 26.2, 26.1.2, 1.21.11 and 1.21.1 on NeoForge, and 1.20.1, 1.19.2 and 1.18.2 on Forge. The [wiki](https://github.com/Darkona/feathers-of-fatigue/wiki) has every mechanic with its numbers, the configuration, and what each [Minecraft version](https://github.com/Darkona/feathers-of-fatigue/wiki/Minecraft-Versions) supports.
+**Minecraft versions:** 1.21.1 on NeoForge and 1.20.1 on Forge. The [wiki](https://github.com/Darkona/feathers-of-fatigue/wiki) has every mechanic with its numbers, the configuration, and what each [Minecraft version](https://github.com/Darkona/feathers-of-fatigue/wiki/Minecraft-Versions) supports.
 
 ## Credits and license
 

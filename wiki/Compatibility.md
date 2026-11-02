@@ -12,33 +12,37 @@ These mods work out of the box. Each one has its own switch in `FeathersOfFatigu
 
 | Mod | What it does with feathers |
 |---|---|
-| Droplets of Thirst | Thirst slows recovery, and being well quenched speeds it up. Regeneration can cost thirst |
+| Droplets of Thirst | Thirst slows recovery, and being well quenched speeds it up. Recovering feathers costs thirst |
 | Serene Seasons | Winter outdoors is cold, and the summer sun is hot |
 | Curios | The Feather Ring goes in a ring slot |
 | Jade | Shows the stamina of a mount when you look at it |
 | AppleSkin, Overflowing Bars | Sit nicely next to the feathers |
 
-Older Minecraft versions also support these:
+These mods work too, each with its own switch:
 
 | Mod | What it does with feathers |
 |---|---|
-| Tough As Nails (26.2 and older) | Its temperature decides cold and heat. Its thirst slows or speeds up recovery |
-| Cold Sweat (1.21.1 and older) | Your body temperature decides when you are cold or overheating |
-| Legendary Survival Overhaul (1.21.1 and older, not 1.19.2) | The same as Tough As Nails, from its temperature and hydration |
-| Thirst Was Taken (1.21.1 and older) | The same as Droplets of Thirst, for worlds still on the original mod (Droplets of Thirst is its maintained continuation) |
+| Tough As Nails | Its temperature decides cold and heat. Its thirst slows or speeds up recovery |
+| Cold Sweat | Your body temperature decides when you are cold or overheating |
+| Legendary Survival Overhaul | The same as Tough As Nails, from its temperature and hydration |
+| Thirst Was Taken | The same as Droplets of Thirst, for worlds still on the original mod (Droplets of Thirst is its maintained continuation) |
 
-These mods have no build for the newer versions. [Minecraft Versions](Minecraft-Versions) lists what each version supports and was tested with.
+[Minecraft Versions](Minecraft-Versions) lists what each version was tested with.
 
 ## Versions
 
 Feathers of Fatigue calls these mods directly. For this reason it accepts the versions it was tested with, up to the next major version. With a version outside that range, the game stops at load and names the mod and the range, so it does not crash later in the middle of play.
 
-| Mod | Accepted versions (26.3) |
+| Mod | Accepted versions (1.21.1) |
 |---|---|
-| Droplets of Thirst | 26.3-1.0.0-beta.1 up to 26.3-2 |
-| Serene Seasons | 26.1.2.0.7 up to 26.1.3 (its builds for 26.x keep 26.1 numbers) |
-| Curios | 17.0.0-beta.2 up to 18 |
-| Jade | 26.3.1 up to 26.4 |
-| Overflowing Bars | 26.3.0 up to 26.4 |
+| Droplets of Thirst | 1.21.1-1.0.0 up to 1.21.1-2 |
+| Thirst Was Taken | 1.21.1-2.1.5 up to 1.21.1-3 |
+| Cold Sweat | 2.4.3.1 up to 3 |
+| Tough As Nails | 10.1.0.13 up to 11 |
+| Legendary Survival Overhaul | 2.4.7.2 up to 3 |
+| Serene Seasons | 10.1.0.9 up to 11 |
+| Curios | 9.5.1 up to 10 |
+| Jade | 15.10.6 up to 16 |
+| Overflowing Bars | 21.1.1 up to 22 |
 
-Droplets of Thirst has the same rule on every Minecraft version: from `<minecraft>-1.0.0` up to `<minecraft>-2`, where `<minecraft>` is the version that Feathers of Fatigue is made for. On 1.21.1, that is `1.21.1-1.0.0` up to `1.21.1-2`. On 26.3, where Droplets of Thirst is a beta too, it starts at `26.3-1.0.0-beta.1`.
+On 1.20.1, Droplets of Thirst has the same rule: from `1.20.1-1.0.0` up to `1.20.1-2`.

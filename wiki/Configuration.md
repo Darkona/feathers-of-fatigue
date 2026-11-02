@@ -53,21 +53,22 @@ Targets can also be mounts.
 	# Range: 0 ~ 600
 	max_cooldown_seconds = 5
 	#Regenerating feathers costs food, like healing: no regeneration at 6 hunger points or less.
-	regen_uses_hunger = false
+	regen_uses_hunger = true
 	#Food exhaustion per regenerated feather when regen_uses_hunger is on. 4.0 exhaustion = one hunger point.
-	# Default: 0.3
+	# Default: 0.1
 	# Range: 0.0 ~ 40.0
-	hunger_exhaustion_per_feather = 0.3
-	#Regeneration multiplier with a full food bar and saturation left: 1.5 regenerates 50% faster.
-	#1.0 turns it off.
-	# Default: 1.0
+	hunger_exhaustion_per_feather = 0.1
+	#Regeneration multiplier at maximum saturation: 1.5 regenerates 50% faster.
+	#It grows in a straight line with saturation, on top of the food bar. 1.0 turns it off.
+	# Default: 1.5
 	# Range: 1.0 ~ 10.0
-	saturation_regen_bonus = 1.0
+	saturation_regen_bonus = 1.5
 	#Regeneration multiplier at 6 hunger points or less: 0.5 regenerates at half speed, 0.0 stops it.
-	#1.0 turns it off. With regen_uses_hunger on, regeneration already stops there.
-	# Default: 1.0
+	#It rises in a straight line to normal speed at a full food bar. 1.0 turns it off.
+	#With regen_uses_hunger on, regeneration stops at 6 hunger points or less anyway.
+	# Default: 0.5
 	# Range: 0.0 ~ 1.0
-	hunger_regen_penalty = 1.0
+	hunger_regen_penalty = 0.5
 
 [exhaustion_and_strain]
 	#Strain: when feathers run out, keep exerting by overspending into red 'negative' feathers, up to
@@ -116,6 +117,10 @@ Targets can also be mounts.
 	effect_endurance_enabled = true
 	#Momentum effect: halves costs.
 	effect_momentum_enabled = true
+	#Energized effect: doubles regeneration.
+	effect_energized_enabled = true
+	#Cooling effect: protects from Heat and Fatigue.
+	effect_cooling_enabled = true
 
 [resting]
 	#Resting speeds up paying back strain: standing still, crouching still, or sitting (riding a boat,
@@ -150,7 +155,7 @@ Targets can also be mounts.
 	#  @minecraft:iron/chestplate=3    one piece of an armor material (helmet, chestplate, leggings, boots, body for horse armor)
 	#  @minecraft:iron=2               every piece of an armor material
 	#Armor that matches nothing weighs its defense points times unlisted_armor_weight_per_defense.
-	armor_weights = ["@minecraft:leather=1", "@minecraft:chainmail=1", "@minecraft:turtle_scute=1", "@minecraft:copper=1", "@minecraft:gold=2", "@minecraft:iron=2", "@minecraft:diamond=3", "@minecraft:netherite=4", "@minecraft:leather/body=1", "@minecraft:copper/body=1", "@minecraft:gold/body=1", "@minecraft:iron/body=2", "@minecraft:diamond/body=2"]
+	armor_weights = ["@minecraft:leather=1", "@minecraft:chainmail=1", "@minecraft:turtle=1", "@minecraft:gold=2", "@minecraft:iron=2", "@minecraft:diamond=3", "@minecraft:netherite=4", "@minecraft:leather/body=1", "@minecraft:gold/body=1", "@minecraft:iron/body=2", "@minecraft:diamond/body=2"]
 	#Weight of armor no rule or data map covers, per point of defense. 0 makes it weightless.
 	# Default: 0.5
 	# Range: 0.0 ~ 10.0
@@ -229,7 +234,8 @@ Targets can also be mounts.
 	# Default: 0.02
 	# Range: 0.0 ~ 20.0
 	regen_bonus_per_quench_point = 0.02
-	#Thirst points each regenerated feather costs. 0 = regenerating costs no thirst.
+	#Extra thirst points each regenerated feather costs.
+	#Droplets of Thirst already drains thirst with the food spent on regeneration, unless its mode is OWN.
 	# Default: 0.0
 	# Range: 0.0 ~ 20.0
 	thirst_per_regenerated_feather = 0.0
@@ -252,7 +258,7 @@ Targets can also be mounts.
 	summer_heat_from_temperature = 0.8
 ```
 
-Older versions support more mods, each with a section: Tough As Nails on 26.2 and older, and Cold Sweat, Thirst Was Taken and Legendary Survival Overhaul on 1.21.1 and older (see [Minecraft Versions](Minecraft-Versions)). The Cold Sweat and Thirst Was Taken sections come before `[droplets_of_thirst]`. The other two come before `[serene_seasons]`. On those versions, Feathers of Fatigue ignores `[serene_seasons]` while a body-temperature mod is in charge:
+Four more mods each have a section: Cold Sweat, Thirst Was Taken, Tough As Nails and Legendary Survival Overhaul. The Cold Sweat and Thirst Was Taken sections come before `[droplets_of_thirst]`. The other two come before `[serene_seasons]`. While a body-temperature mod is in charge, Feathers of Fatigue ignores `[serene_seasons]`:
 
 ```toml
 #Cold Sweat: body temperature decides Cold, Heat and Fatigue instead of biomes.
