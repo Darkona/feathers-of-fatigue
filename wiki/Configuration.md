@@ -155,7 +155,7 @@ Targets can also be mounts.
 	#  @minecraft:iron/chestplate=3    one piece of an armor material (helmet, chestplate, leggings, boots, body for horse armor)
 	#  @minecraft:iron=2               every piece of an armor material
 	#Armor that matches nothing weighs its defense points times unlisted_armor_weight_per_defense.
-	armor_weights = ["@minecraft:leather=1", "@minecraft:chainmail=1", "@minecraft:turtle_scute=1", "@minecraft:copper=1", "@minecraft:gold=2", "@minecraft:iron=2", "@minecraft:diamond=3", "@minecraft:netherite=4", "@minecraft:leather/body=1", "@minecraft:copper/body=1", "@minecraft:gold/body=1", "@minecraft:iron/body=2", "@minecraft:diamond/body=2"]
+	armor_weights = ["@minecraft:leather=1", "@minecraft:chainmail=1", "@minecraft:turtle=1", "@minecraft:gold=2", "@minecraft:iron=2", "@minecraft:diamond=3", "@minecraft:netherite=4", "@minecraft:leather/body=1", "@minecraft:gold/body=1", "@minecraft:iron/body=2", "@minecraft:diamond/body=2"]
 	#Weight of armor no rule or data map covers, per point of defense. 0 makes it weightless.
 	# Default: 0.5
 	# Range: 0.0 ~ 10.0
@@ -258,7 +258,7 @@ Targets can also be mounts.
 	summer_heat_from_temperature = 0.8
 ```
 
-Older versions support more mods, each with a section: Tough As Nails on 26.2 and older, and Cold Sweat, Thirst Was Taken and Legendary Survival Overhaul on 1.21.1 and older (see [Minecraft Versions](Minecraft-Versions)). The Cold Sweat and Thirst Was Taken sections come before `[droplets_of_thirst]`. The other two come before `[serene_seasons]`. On those versions, Feathers of Fatigue ignores `[serene_seasons]` while a body-temperature mod is in charge:
+Four more mods each have a section: Cold Sweat, Thirst Was Taken, Tough As Nails and Legendary Survival Overhaul. The Cold Sweat and Thirst Was Taken sections come before `[droplets_of_thirst]`. The other two come before `[serene_seasons]`. While a body-temperature mod is in charge, Feathers of Fatigue ignores `[serene_seasons]`:
 
 ```toml
 #Cold Sweat: body temperature decides Cold, Heat and Fatigue instead of biomes.

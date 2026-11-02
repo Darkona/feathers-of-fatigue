@@ -73,7 +73,7 @@ To turn it on, set `armor_weights_enabled` in the server config.
 
 Horses, donkeys, mules and camels have their own feathers. While you ride, their feathers replace yours, in the colors of the animal. Galloping and jumping tire them slowly. An exhausted mount slows down and cannot jump. If the mount cannot pay for a jump, the jump does not happen.
 
-Each animal is born with its own stamina (14 to 30 feathers by default), like speed and health, and foals take after their parents. Horse armor weighs a little: leather, copper and gold 1 feather, iron and diamond 2.
+Each animal is born with its own stamina (14 to 30 feathers by default), like speed and health, and foals take after their parents. Horse armor weighs a little: leather and gold 1 feather, iron and diamond 2.
 
 Modpacks can give feathers to other creatures (see [Modpack Makers](Modpack-Makers)).
 
